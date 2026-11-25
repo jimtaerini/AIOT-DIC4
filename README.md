@@ -48,6 +48,22 @@ openspec validate build-soc-triage-agent --strict   # 驗證規格格式
 openspec archive build-soc-triage-agent             # 任務完成後封存並合併到主規格
 ```
 
+## ICEIB 2027 論文
+
+論文投稿 ICEIB 2027（2027 年 4 月 23–25 日，淡江大學；摘要 2027-03-01、全文 2027-04-20 截止，英文、4–8 頁）。規格見 OpenSpec 變更 [`write-iceib-paper`](openspec/changes/write-iceib-paper/)。
+
+| 檔案 | 內容 |
+|---|---|
+| [`ICEIB paper/main.tex`](ICEIB%20paper/main.tex) | IEEE conference（IEEEtran）論文原始檔；以 Overleaf 編譯 |
+| [`ICEIB paper/check_a2z.py`](ICEIB%20paper/check_a2z.py) | 檢查 A2Z 標記、章節、摘要字數、引用與投稿阻礙（`[TBD]`、作者佔位文字） |
+| [`myref/`](myref/) | 寫作參考資料：A2Z SOP（[PDF](myref/A2Z%20outline%20example.pdf)、[文字版](myref/A2Z%20outline%20example.md)） |
+
+論文章節與 A2Z 的對應：Abstract A–F、I. Introduction G–L、II. Related Work M–O、III. Proposed Design PA–PM、IV. Experiment Q–V、V. Conclusion W–Z。每段在原始檔以 `% [A2Z:<代號>]` 註解標記，不會出現在 PDF。
+
+```bash
+python3 "ICEIB paper/check_a2z.py"   # 0 = 可投稿；1 = 結構問題；2 = 結構正確但仍有 [TBD] 或作者佔位文字
+```
+
 ## 原始規劃文件
 
 [`myplan/`](myplan/) 資料夾：
