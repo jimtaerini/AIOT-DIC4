@@ -1,4 +1,4 @@
-# Spec Delta：paper-references
+# Spec Delta：006-references
 
 ## Purpose
 

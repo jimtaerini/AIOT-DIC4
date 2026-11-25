@@ -1,4 +1,4 @@
-# Spec Delta：paper-format
+# Spec Delta：007-format
 
 ## Purpose
 

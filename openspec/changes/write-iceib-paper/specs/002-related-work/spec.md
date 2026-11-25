@@ -1,4 +1,4 @@
-# Spec Delta：paper-related-work
+# Spec Delta：002-related-work
 
 ## Purpose
 

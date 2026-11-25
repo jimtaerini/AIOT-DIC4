@@ -1,4 +1,4 @@
-# Spec Delta：paper-abstract
+# Spec Delta：000-abstract
 
 ## Purpose
 
@@ -21,7 +21,7 @@
 - **THEN** 摘要需刪減到 250 字以內
 
 ### Requirement: Findings 只寫已驗證的結果
-F Findings MUST 只陳述 `paper-experiment` 已報告的結果；實驗完成前 SHALL 以 `[TBD]` 標示，不得寫入預期或推測的數字。
+F Findings MUST 只陳述 `004-experiment` 已報告的結果；實驗完成前 SHALL 以 `[TBD]` 標示，不得寫入預期或推測的數字。
 
 #### Scenario: 實驗尚未完成
 - **WHEN** E1 的結果檔尚不存在

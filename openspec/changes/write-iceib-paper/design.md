@@ -56,7 +56,7 @@ A2Z SOP 的章節名稱是 Proposed Scheme 與 Simulation；使用者要求 Prop
 - [加入 SWOT 表、命題與證明後超過 8 頁] → 依序刪減：AIDA 比較表、PJ 範例縮短、GUIDE profile 表改為正文一句話。
 - [實驗在全文期限前無法完成] → 摘要階段（2027-03-01）只需摘要；全文期限前未完成的實驗從 U 移除並在 Z 說明，不保留 `[TBD]`。
 - [Overleaf 與本機 `main.tex` 分歧] → 以 repo 中的 `main.tex` 為唯一來源，Overleaf 只用來編譯。
-- [ICEIB 2027 guideline 公布後有額外規定（例如字型、版權頁）] → 公布後新增一個 change 修改 `paper-format`。
+- [ICEIB 2027 guideline 公布後有額外規定（例如字型、版權頁）] → 公布後新增一個 change 修改 `007-format`。
 
 ## Open Questions
 

@@ -17,14 +17,16 @@
 
 ### New Capabilities
 
-- `paper-format`：ICEIB / IEEE 格式、章節順序、頁數、語言、A2Z 標記慣例與可編譯性。
-- `paper-abstract`：摘要的 A–F 六段內容與關鍵字。
-- `paper-introduction`：引言的 G–L 內容（現況、挑戰、文獻分類、評論、貢獻、文章結構）。
-- `paper-related-work`：相關研究的 M–O 內容，含 4×5 SWOT 歸納表。
-- `paper-proposed-design`：系統設計的 PA–PM 內容（目標、架構、圖、演算法、範例、貢獻、數學性質）。
-- `paper-experiment`：實驗的 Q–V 內容（指標、比較方法、設定、參數、結果、驗證），以及數據來源的誠實性。
-- `paper-conclusion`：結論的 W–Z 內容（回顧、優勢、成果、結論與未來工作）。
-- `paper-references`：IEEE 引用格式與引用完整性。
+- `000-abstract`：摘要的 A–F 六段內容與關鍵字。
+- `001-introduction`：引言的 G–L 內容（現況、挑戰、文獻分類、評論、貢獻、文章結構）。
+- `002-related-work`：相關研究的 M–O 內容，含 4×5 SWOT 歸納表。
+- `003-proposed-design`：系統設計的 PA–PM 內容（目標、架構、圖、演算法、範例、貢獻、數學性質）。
+- `004-experiment`：實驗的 Q–V 內容（指標、比較方法、設定、參數、結果、驗證），以及數據來源的誠實性。
+- `005-conclusion`：結論的 W–Z 內容（回顧、優勢、成果、結論與未來工作）。
+- `006-references`：IEEE 引用格式與引用完整性。
+- `007-format`：ICEIB / IEEE 格式、章節順序、頁數、語言、A2Z 標記慣例與可編譯性（跨章節）。
+
+> 能力名稱以 `00N-` 編號，順序與論文章節一致；`007-format` 為跨所有章節的格式規格。
 
 ### Modified Capabilities
 

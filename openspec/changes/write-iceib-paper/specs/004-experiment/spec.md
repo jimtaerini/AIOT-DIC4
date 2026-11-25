@@ -1,4 +1,4 @@
-# Spec Delta：paper-experiment
+# Spec Delta：004-experiment
 
 ## Purpose
 

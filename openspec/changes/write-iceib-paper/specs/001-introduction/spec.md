@@ -1,4 +1,4 @@
-# Spec Delta：paper-introduction
+# Spec Delta：001-introduction
 
 ## Purpose
 

@@ -1,4 +1,4 @@
-# Spec Delta：paper-proposed-design
+# Spec Delta：003-proposed-design
 
 ## Purpose
 
