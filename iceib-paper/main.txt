@@ -56,26 +56,26 @@ and LLM Reasoning}
 \IEEEauthorblockN{1\textsuperscript{st} Author Name}
 \IEEEauthorblockA{\textit{Dept. of [Department]} \\
 \textit{[University]}\\
-[City], Taiwan \\
-[email address]}
+{[City]}, Taiwan \\
+{[email address]}}
 \and
 \IEEEauthorblockN{2\textsuperscript{nd} Author Name}
 \IEEEauthorblockA{\textit{Dept. of [Department]} \\
 \textit{[University]}\\
-[City], Taiwan \\
-[email address]}
+{[City]}, Taiwan \\
+{[email address]}}
 \and
 \IEEEauthorblockN{3\textsuperscript{rd} Author Name}
 \IEEEauthorblockA{\textit{Dept. of [Department]} \\
 \textit{[University]}\\
-[City], Taiwan \\
-[email address]}
+{[City]}, Taiwan \\
+{[email address]}}
 \and
 \IEEEauthorblockN{4\textsuperscript{th} Author Name}
 \IEEEauthorblockA{\textit{Dept. of [Department]} \\
 \textit{[University]}\\
-[City], Taiwan \\
-[email address]}
+{[City]}, Taiwan \\
+{[email address]}}
 }
 
 \maketitle
