@@ -1,3 +1,6 @@
 .DS_Store
-data/archive/
-data/raw/
+
+# Datasets (GUIDE ~3.5 GB, ExCyTIn, raw logs) stay local; see AIOT-DIC3-ProjectRefactor/data/README.md
+**/data/archive/
+**/data/raw/
+**/data/processed/
