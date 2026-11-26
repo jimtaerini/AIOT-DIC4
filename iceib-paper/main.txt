@@ -598,8 +598,8 @@ $U$; weights $w_{ml}, w_{llm}$; safety threshold $\tau_{safety}$
 Consider an incident with six alerts and 20 evidence rows over two
 accounts and one host (illustrative values, not experimental results).
 The GBDT outputs $\mathbf{p}=(0.46,0.45,0.09)$, a near tie between TP
-and BP, with tactic coverage and detector FP rate as the top SHAP
-features. The alerts map to Credential Access and Lateral Movement. The
+and BP, with the historical label rates of its detectors and alert
+titles as the top SHAP features. The alerts map to Credential Access and Lateral Movement. The
 LLM judges TP with medium confidence, $\mathbf{q}=(0.70,0.15,0.15)$, but
 notes missing sign-in records for one account. With
 $w_{ml}=w_{llm}=0.5$, (\ref{eq:fuse}) gives $\mathbf{s}=(0.58,0.30,0.12)$.
@@ -774,6 +774,14 @@ misses 25.3\% of TP incidents, against 57.9\% for the detector rule.
 Generalization to unseen organizations is much harder: on the
 organization split the GBDT macro-F1 drops to 0.477 (detector rule
 0.426), while the time split stays close to the incident split (0.765).
+SHAP on 6{,}000 class-balanced test incidents shows that 75\% of the
+GBDT's attribution mass comes from the historical label rates of
+detectors and alert titles, whereas kill-chain features such as tactic
+count and furthest stage rank only 29th--34th of 81 features. The
+model thus judges similarity to past incidents rather than attack-chain
+position, which is why the risk rules of Table~\ref{tab:rules} act
+outside it. Among five nearest training incidents, 74\% share the true
+label of the queried incident.
 \TBD{} Describe the MR--ER curve, E2 precision and recall, E3 reward,
 E4 rubric scores, E5 cost, and the ablation, using values from
 \texttt{experiments/results/} only.

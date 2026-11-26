@@ -28,120 +28,21 @@ Writes experiments/results/e1_results.json and e1_results.md, and test-set
 GBDT probabilities to data/processed/e1_gbdt_probs_<split>.parquet.
 """
 import json
+import sys
 import time
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.metrics import f1_score, precision_recall_fscore_support
-from sklearn.model_selection import GroupKFold
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+from soc_agent.analytics.features import (CLASSES, SHORT, build_matrix, check_split,  # noqa: E402
+                                          load_tables, make_splits)
+from soc_agent.analytics.triage_model import TriageModel  # noqa: E402
 
 SEEDS = [0, 1, 2]
-CLASSES = ["TruePositive", "BenignPositive", "FalsePositive"]
-SHORT = {"TruePositive": "TP", "BenignPositive": "BP", "FalsePositive": "FP"}
-KEY = ["OrgId", "IncidentId"]
-SMOOTH = 20.0  # target-encoding smoothing toward the global prior
-# raw entity columns (IOC-like values) must never be features (M4); only counts are allowed
-FORBIDDEN_FEATURES = {"IpAddress", "Sha256", "Url", "DeviceId", "DeviceName", "AccountSid", "AccountUpn",
-                      "AccountObjectId", "AccountName", "FileName", "FolderPath", "NetworkMessageId",
-                      "RegistryKey", "RegistryValueName", "RegistryValueData", "OrgId", "IncidentId", "AlertId"}
-
-inc = pd.read_parquet("data/processed/incidents_full.parquet")
-alerts = pd.read_parquet("data/processed/alerts.parquet")
-inc["y"] = inc["label"].map({c: i for i, c in enumerate(CLASSES)}).astype(int)
-inc["kid"] = inc["source"] + ":" + inc["OrgId"].astype(str) + ":" + inc["IncidentId"].astype(str)
-alerts["kid"] = alerts["source"] + ":" + alerts["OrgId"].astype(str) + ":" + alerts["IncidentId"].astype(str)
-alerts = alerts[alerts["kid"].isin(set(inc["kid"]))]
-BASE_FEATURES = [c for c in inc.columns if c not in
-                 {"source", "OrgId", "IncidentId", "label", "first_ts", "y", "kid"}]
-assert not FORBIDDEN_FEATURES & set(BASE_FEATURES), FORBIDDEN_FEATURES & set(BASE_FEATURES)
-
-
-def make_splits(rng_seed=42):
-    rng = np.random.default_rng(rng_seed)
-    s = {}
-    # incident split
-    tr = inc[inc.source == "train"]["kid"].to_numpy()
-    val = rng.choice(tr, size=len(tr) // 10, replace=False)
-    lab = pd.Series("train", index=inc["kid"])
-    lab[inc.loc[inc.source == "test", "kid"]] = "test"
-    lab[val] = "val"
-    s["incident"] = lab
-    # org split (OrgIds are shared between official train and test)
-    orgs = np.sort(inc["OrgId"].unique())
-    test_orgs = set(rng.choice(orgs, size=len(orgs) // 5, replace=False))
-    rest = np.array([o for o in orgs if o not in test_orgs])
-    val_orgs = set(rng.choice(rest, size=len(rest) // 10, replace=False))
-    lab = pd.Series(np.where(inc["OrgId"].isin(test_orgs), "test",
-                    np.where(inc["OrgId"].isin(val_orgs), "val", "train")), index=inc["kid"])
-    s["org"] = lab
-    # time split
-    order = inc.sort_values(["first_ts", "kid"])["kid"].to_numpy()
-    n = len(order)
-    lab = pd.Series("train", index=inc["kid"])
-    lab[order[int(n * 0.8):]] = "test"
-    lab[order[int(n * 0.72):int(n * 0.8)]] = "val"
-    s["time"] = lab
-    return s
-
-
-def check_split(name, lab):
-    sets = {k: set(lab[lab == k].index) for k in ["train", "val", "test"]}
-    assert not (sets["train"] & sets["val"]) and not (sets["train"] & sets["test"]) and not (sets["val"] & sets["test"])
-    assert sum(len(v) for v in sets.values()) == len(inc)
-    out = {k: len(v) for k, v in sets.items()}
-    if name == "org":
-        org_of = inc.set_index("kid")["OrgId"]
-        tr_orgs = set(org_of[list(sets["train"])])
-        assert not tr_orgs & set(org_of[list(sets["test"])]), "org leak"
-        out["test_orgs_in_train"] = 0
-    return out
-
-
-def rate_table(a, col, y_by_kid, prior):
-    """Smoothed per-value label rates computed from alerts of the given incidents."""
-    d = a[[col, "kid"]].drop_duplicates().copy()
-    d["y"] = d["kid"].map(y_by_kid)
-    cnt = pd.crosstab(d[col], d["y"]).reindex(columns=range(3), fill_value=0)
-    n = cnt.sum(axis=1).to_numpy()[:, None]
-    rates = (cnt.to_numpy() + SMOOTH * prior) / (n + SMOOTH)
-    return pd.DataFrame(rates, index=cnt.index, columns=[f"r{c}" for c in range(3)]), cnt.sum(axis=1)
-
-
-def encode(a, col, table, prior):
-    m = a[["kid", col]].merge(table, left_on=col, right_index=True, how="left")
-    for c in range(3):
-        m[f"r{c}"] = m[f"r{c}"].fillna(prior[c])
-    g = m.groupby("kid")
-    out = pd.DataFrame(index=g.size().index)
-    for c in range(3):
-        short = SHORT[CLASSES[c]].lower()
-        out[f"{col}_{short}_mean"] = g[f"r{c}"].mean()
-        out[f"{col}_{short}_max"] = g[f"r{c}"].max()
-    seen = m[col].isin(table.index)
-    out[f"{col}_unseen_share"] = (~seen).groupby(m["kid"]).mean()
-    return out
-
-
-def target_features(lab):
-    """Detector/title encodings: OOF for train, train-only statistics for val/test."""
-    y_by_kid = inc.set_index("kid")["y"]
-    tr_kids = lab[lab == "train"].index
-    prior = np.bincount(y_by_kid[tr_kids], minlength=3) / len(tr_kids)
-    a_tr = alerts[alerts["kid"].isin(set(tr_kids))]
-    a_other = alerts[~alerts["kid"].isin(set(tr_kids))]
-    parts = []
-    # out-of-fold for training incidents
-    kids = np.array(sorted(set(a_tr["kid"])))
-    for fit_idx, enc_idx in GroupKFold(n_splits=5).split(kids, groups=kids):
-        fit_k, enc_k = set(kids[fit_idx]), set(kids[enc_idx])
-        a_fit, a_enc = a_tr[a_tr["kid"].isin(fit_k)], a_tr[a_tr["kid"].isin(enc_k)]
-        cols = [encode(a_enc, c, rate_table(a_fit, c, y_by_kid, prior)[0], prior)
-                for c in ["DetectorId", "AlertTitle"]]
-        parts.append(pd.concat(cols, axis=1))
-    full = {c: rate_table(a_tr, c, y_by_kid, prior)[0] for c in ["DetectorId", "AlertTitle"]}
-    parts.append(pd.concat([encode(a_other, c, full[c], prior) for c in full], axis=1))
-    te = pd.concat(parts)
-    return te, full["DetectorId"], prior
+inc, alerts = load_tables()
 
 
 def metrics(y, pred):
@@ -159,14 +60,11 @@ def metrics(y, pred):
 
 results = {"seeds": SEEDS, "splits": {}, "features": None}
 t0 = time.time()
-for split_name, lab in make_splits().items():
-    sizes = check_split(split_name, lab)
-    te, det_table, prior = target_features(lab)
-    X = inc.set_index("kid")[BASE_FEATURES].join(te).fillna(0)
-    feat_names = list(X.columns)
-    results["features"] = feat_names
-    y = inc.set_index("kid")["y"]
-    idx = {k: lab[lab == k].index for k in ["train", "val", "test"]}
+for split_name, lab in make_splits(inc).items():
+    sizes = check_split(inc, split_name, lab)
+    X, y, idx, tables, prior = build_matrix(inc, alerts, lab)
+    det_table = tables["DetectorId"]
+    results["features"] = list(X.columns)
     yt = y[idx["test"]].to_numpy()
     out = {"sizes": sizes, "test_label_counts": {SHORT[c]: int((yt == i).sum()) for i, c in enumerate(CLASSES)}}
 
@@ -185,15 +83,11 @@ for split_name, lab in make_splits().items():
     # GBDT, several seeds
     runs, probs = [], None
     for seed in SEEDS:
-        clf = HistGradientBoostingClassifier(
-            learning_rate=0.1, max_iter=500, max_leaf_nodes=63, min_samples_leaf=40,
-            l2_regularization=1.0, max_features=0.8, early_stopping=True, n_iter_no_change=20,
-            class_weight="balanced", random_state=seed)
-        clf.fit(X.loc[idx["train"]], y[idx["train"]], X_val=X.loc[idx["val"]], y_val=y[idx["val"]])
-        pr = clf.predict_proba(X.loc[idx["test"]])
-        assert np.allclose(pr.sum(axis=1), 1.0)
+        model = TriageModel(seed=seed).fit(X.loc[idx["train"]], y[idx["train"]],
+                                           X_val=X.loc[idx["val"]], y_val=y[idx["val"]])
+        pr = model.predict_proba(X.loc[idx["test"]])  # asserts each row sums to 1
         mm = metrics(yt, pr.argmax(axis=1))
-        mm["n_iter"] = int(clf.n_iter_)
+        mm["n_iter"] = int(model.clf.n_iter_)
         runs.append(mm)
         probs = pr if probs is None else probs + pr
     agg = {k: (float(np.mean([r[k] for r in runs])), float(np.std([r[k] for r in runs])))

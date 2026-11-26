@@ -381,6 +381,14 @@ python experiments/e0_profile_guide.py data/archive/GUIDE_Train.csv > experiment
 
 觀察：GBDT 在事件與時間切分上明顯優於規則；但對**未見過的組織**泛化困難（Macro-F1 0.78 → 0.48），支持 T3 的疑慮。純 LLM baseline、完整 Agent（含升級）與 E2–E5 尚未執行。
 
+### SHAP 與相似事件（2026-11-26）
+
+由 `experiments/e1d_explain_similar.py` 產生（事件切分、seed 0；結果見 `experiments/results/e1d_summary.json`、`e1d_shap_importance.csv`、`e1d_triage_samples.jsonl`）。程式模組：`src/soc_agent/analytics/`（`features`、`triage_model`、`explain`、`similar`、`triage`），單元測試 `tests/test_analytics.py`（9 項通過）。
+
+- 300 個測試事件的分級結果**全部**附有前 5 名 SHAP 特徵與 5 個相似歷史事件。
+- 在 6,000 個類別平衡的測試事件上，**75%** 的 SHAP 貢獻來自 Detector 與 AlertTitle 的歷史標籤率；Tactic 數、攻擊鏈最遠階段只排第 29–34 名（共 81 個特徵）。模型主要判斷「像不像過去的事件」，而不是攻擊鏈位置，這支持把 R1–R5 放在模型之外作為硬性約束（M2、T2）。
+- 5 個最近鄰訓練事件中，平均 **74%** 與查詢事件的真實標籤相同；最近鄰多數決正確率 78.3%，同一樣本上 GBDT 為 79.0%。
+
 ## 14. Limitations & Risks
 
 | 風險 | 影響 | 對策 |

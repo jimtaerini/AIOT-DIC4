@@ -1,0 +1,38 @@
+{
+ "split": "incident",
+ "seed": 0,
+ "k": 5,
+ "top_k": 5,
+ "n_shap_sample": 6000,
+ "n_result_sample": 300,
+ "every_result_has_shap_and_similar": true,
+ "top10_features_overall": {
+  "AlertTitle_fp_mean": 0.3467,
+  "AlertTitle_bp_mean": 0.3045,
+  "AlertTitle_tp_mean": 0.302,
+  "DetectorId_tp_mean": 0.2622,
+  "AlertTitle_bp_max": 0.2492,
+  "DetectorId_bp_max": 0.2249,
+  "DetectorId_fp_mean": 0.2219,
+  "AlertTitle_tp_max": 0.2208,
+  "DetectorId_tp_max": 0.2018,
+  "AlertTitle_fp_max": 0.1908
+ },
+ "top10_features_for_TP": {
+  "AlertTitle_tp_mean": 0.6887,
+  "DetectorId_tp_mean": 0.6879,
+  "DetectorId_tp_max": 0.5154,
+  "AlertTitle_tp_max": 0.4809,
+  "DetectorId_fp_max": 0.1407,
+  "ent_CloudLogonSession": 0.1295,
+  "AlertTitle_bp_max": 0.0713,
+  "ent_Ip": 0.0658,
+  "DetectorId_fp_mean": 0.0615,
+  "first_hour": 0.0585
+ },
+ "similar_same_label_share": 0.74,
+ "knn_majority_accuracy": 0.7833,
+ "gbdt_accuracy_same_sample": 0.79,
+ "note": "samples are class-balanced (1/3 TP, BP, FP), so accuracies are not comparable to Table VI",
+ "seconds": 367
+}
