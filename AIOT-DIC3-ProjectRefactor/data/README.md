@@ -18,7 +18,7 @@
   - 標籤：`IncidentGrade`（TP / BP / FP）、`ActionGrouped`、`ActionGranular`
   - 證據實體：`EntityType`、`EvidenceRole`、`Roles`、`DeviceId`、`DeviceName`、`Sha256`、`IpAddress`、`Url`、`AccountSid`、`AccountUpn`、`AccountObjectId`、`AccountName`、`NetworkMessageId`、`EmailClusterId`、`RegistryKey`、`RegistryValueName`、`RegistryValueData`、`ApplicationId`、`ApplicationName`、`OAuthApplicationId`、`ThreatFamily`、`FileName`、`FolderPath`、`ResourceIdName`、`ResourceType`
   - 環境：`OSFamily`、`OSVersion`、`AntispamDirection`、`SuspicionLevel`、`LastVerdict`、`CountryCode`、`State`、`City`
-- **匿名化**：敏感值先以 SHA1 雜湊，再替換成隨機產生的 ID；時間戳記加入雜訊。論文沒有列出哪些欄位被匿名化，實際檢查結果見下方待確認事項與 `DESIGN.md` §5。
+- **匿名化**：敏感值先以 SHA1 雜湊，再替換成隨機產生的 ID；時間戳記加入雜訊。論文沒有列出哪些欄位被匿名化，實際檢查結果見下方確認事項與 `DESIGN.md` §5。
 
 ## 待確認事項
 
@@ -26,8 +26,8 @@
 - [x] GUIDE 各欄位實際的匿名化程度：`AlertTitle` 與實體欄位為數字 ID；`Category`、`MitreTechniques` 等為可讀文字（詳見 `DESIGN.md` §5）
 - [x] GUIDE 檔案大小：`GUIDE_Train.csv` 2.4 GB、`GUIDE_Test.csv` 1.1 GB
 - [x] ExCyTIn-Bench 官方 repo 與授權：[microsoft/SecRL](https://github.com/microsoft/SecRL)，MIT；需要 Docker 與 MySQL，8 個事件的資料庫約佔 10 GB
-- [ ] 實體欄位中代表「無此實體」的固定 ID
-- [ ] 同一事件內各列的 `IncidentGrade` 是否一致
+- [x] 實體欄位中代表「無此實體」的固定 ID：每欄一個（見 `experiments/results/e1a_guide_checks.json`）
+- [x] 同一事件內各列的 `IncidentGrade` 是否一致：完全一致；23,670 個事件沒有標籤
 - [ ] 鎖定使用的 ATT&CK 版本
 
 ## 目前的實際放置位置

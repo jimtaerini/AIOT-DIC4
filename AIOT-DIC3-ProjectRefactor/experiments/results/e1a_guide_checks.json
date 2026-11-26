@@ -1,0 +1,149 @@
+{
+ "placeholders": {
+  "DeviceId": {
+   "top_value": 98799,
+   "top_share_all_rows": 0.9619,
+   "top_share_on_unrelated_rows": 0.9999
+  },
+  "DeviceName": {
+   "top_value": 153085,
+   "top_share_all_rows": 0.9267,
+   "top_share_on_unrelated_rows": 0.9999
+  },
+  "Sha256": {
+   "top_value": 138268,
+   "top_share_all_rows": 0.923,
+   "top_share_on_unrelated_rows": 1.0
+  },
+  "FileName": {
+   "top_value": 289573,
+   "top_share_all_rows": 0.8919,
+   "top_share_on_unrelated_rows": 1.0
+  },
+  "FolderPath": {
+   "top_value": 117668,
+   "top_share_all_rows": 0.908,
+   "top_share_on_unrelated_rows": 1.0
+  },
+  "IpAddress": {
+   "top_value": 360606,
+   "top_share_all_rows": 0.7712,
+   "top_share_on_unrelated_rows": 1.0
+  },
+  "Url": {
+   "top_value": 160396,
+   "top_share_all_rows": 0.9283,
+   "top_share_on_unrelated_rows": 1.0
+  },
+  "AccountSid": {
+   "top_value": 441377,
+   "top_share_all_rows": 0.7631,
+   "top_share_on_unrelated_rows": 0.9412
+  },
+  "AccountUpn": {
+   "top_value": 673934,
+   "top_share_all_rows": 0.636,
+   "top_share_on_unrelated_rows": 0.835
+  },
+  "AccountObjectId": {
+   "top_value": 425863,
+   "top_share_all_rows": 0.7656,
+   "top_share_on_unrelated_rows": 0.9403
+  },
+  "AccountName": {
+   "top_value": 453297,
+   "top_share_all_rows": 0.7513,
+   "top_share_on_unrelated_rows": 0.9412
+  },
+  "NetworkMessageId": {
+   "top_value": 529644,
+   "top_share_all_rows": 0.8782,
+   "top_share_on_unrelated_rows": 1.0
+  },
+  "EmailClusterId": {
+   "top_value": null,
+   "top_share_all_rows": 0.9898,
+   "top_share_on_unrelated_rows": 0.0
+  },
+  "RegistryKey": {
+   "top_value": 1631,
+   "top_share_all_rows": 0.9982,
+   "top_share_on_unrelated_rows": 1.0
+  },
+  "RegistryValueName": {
+   "top_value": 635,
+   "top_share_all_rows": 0.9995,
+   "top_share_on_unrelated_rows": 1.0
+  },
+  "RegistryValueData": {
+   "top_value": 860,
+   "top_share_all_rows": 0.9994,
+   "top_share_on_unrelated_rows": 1.0
+  },
+  "ApplicationId": {
+   "top_value": 2251,
+   "top_share_all_rows": 0.9776,
+   "top_share_on_unrelated_rows": 1.0
+  },
+  "ApplicationName": {
+   "top_value": 3421,
+   "top_share_all_rows": 0.977,
+   "top_share_on_unrelated_rows": 1.0
+  },
+  "OAuthApplicationId": {
+   "top_value": 881,
+   "top_share_all_rows": 0.9997,
+   "top_share_on_unrelated_rows": 1.0
+  },
+  "ResourceIdName": {
+   "top_value": 3586,
+   "top_share_all_rows": 0.9991,
+   "top_share_on_unrelated_rows": 1.0
+  },
+  "OSFamily": {
+   "top_value": 5,
+   "top_share_all_rows": 0.9796,
+   "top_share_on_unrelated_rows": 1.0
+  },
+  "OSVersion": {
+   "top_value": 66,
+   "top_share_all_rows": 0.9796,
+   "top_share_on_unrelated_rows": 1.0
+  },
+  "CountryCode": {
+   "top_value": 242,
+   "top_share_all_rows": 0.9212,
+   "top_share_on_unrelated_rows": 1.0
+  },
+  "State": {
+   "top_value": 1445,
+   "top_share_all_rows": 0.9335,
+   "top_share_on_unrelated_rows": 1.0
+  },
+  "City": {
+   "top_value": 10630,
+   "top_share_all_rows": 0.9334,
+   "top_share_on_unrelated_rows": 1.0
+  }
+ },
+ "label_consistency": {
+  "incidents": 730778,
+  "incidents_with_conflicting_grades": 0,
+  "incidents_without_grade": 23670,
+  "incidents_with_some_null_rows": 0
+ },
+ "train_test_overlap": {
+  "test_incidents": 303220,
+  "shared_incident_keys": 0,
+  "test_orgs": 4400,
+  "test_orgs_also_in_train": 4054,
+  "train_time_range": [
+   "2023-11-21 00:32:22+08:00",
+   "2024-06-17 22:45:38+08:00"
+  ],
+  "test_time_range": [
+   "2023-11-22 23:55:05+08:00",
+   "2024-06-17 21:30:09+08:00"
+  ]
+ }
+}

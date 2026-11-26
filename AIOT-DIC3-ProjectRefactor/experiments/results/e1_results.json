@@ -1,0 +1,432 @@
+{
+ "seeds": [
+  0,
+  1,
+  2
+ ],
+ "splits": {
+  "incident": {
+   "sizes": {
+    "train": 636398,
+    "val": 70710,
+    "test": 303220
+   },
+   "test_label_counts": {
+    "TP": 62540,
+    "BP": 148215,
+    "FP": 92465
+   },
+   "majority": {
+    "macro_f1": 0.2188797944333071,
+    "precision": {
+     "TP": 0.0,
+     "BP": 0.4888035090033639,
+     "FP": 0.0
+    },
+    "recall": {
+     "TP": 0.0,
+     "BP": 1.0,
+     "FP": 0.0
+    },
+    "tp_recall": 0.0,
+    "mr": 1.0,
+    "er": 0.0
+   },
+   "detector_rule": {
+    "macro_f1": 0.6749334460859558,
+    "precision": {
+     "TP": 0.5527438575842283,
+     "BP": 0.7387654699684997,
+     "FP": 0.7868066280379475
+    },
+    "recall": {
+     "TP": 0.42051487048289093,
+     "BP": 0.844968457983335,
+     "FP": 0.7328070080571026
+    },
+    "tp_recall": 0.42051487048289093,
+    "mr": 0.5794851295171091,
+    "er": 0.0
+   },
+   "gbdt": {
+    "runs": [
+     {
+      "macro_f1": 0.78009391514634,
+      "precision": {
+       "TP": 0.6122301401561966,
+       "BP": 0.8505925033617212,
+       "FP": 0.8735689397710303
+      },
+      "recall": {
+       "TP": 0.7445634793732011,
+       "BP": 0.8194244847012786,
+       "FP": 0.7971664954307035
+      },
+      "tp_recall": 0.7445634793732011,
+      "mr": 0.2554365206267989,
+      "er": 0.0,
+      "n_iter": 500
+     },
+     {
+      "macro_f1": 0.7797379261919669,
+      "precision": {
+       "TP": 0.6086186924889045,
+       "BP": 0.8522772054270112,
+       "FP": 0.8743162915415921
+      },
+      "recall": {
+       "TP": 0.7477134633834346,
+       "BP": 0.8171372668083527,
+       "FP": 0.7969501973719786
+      },
+      "tp_recall": 0.7477134633834346,
+      "mr": 0.2522865366165654,
+      "er": 0.0,
+      "n_iter": 500
+     },
+     {
+      "macro_f1": 0.7789193104071588,
+      "precision": {
+       "TP": 0.6065342014474333,
+       "BP": 0.8532425618463146,
+       "FP": 0.8723807044736562
+      },
+      "recall": {
+       "TP": 0.7477614326830828,
+       "BP": 0.8151671558209358,
+       "FP": 0.7973936083923647
+      },
+      "tp_recall": 0.7477614326830828,
+      "mr": 0.2522385673169172,
+      "er": 0.0,
+      "n_iter": 500
+     }
+    ],
+    "mean_std": {
+     "macro_f1": [
+      0.7795837172484886,
+      0.0004917718793731216
+     ],
+     "tp_recall": [
+      0.7466794584799062,
+      0.0014963513287185033
+     ],
+     "mr": [
+      0.2533205415200938,
+      0.0014963513287185033
+     ]
+    }
+   }
+  },
+  "org": {
+   "sizes": {
+    "train": 698828,
+    "val": 108781,
+    "test": 202719,
+    "test_orgs_in_train": 0
+   },
+   "test_label_counts": {
+    "TP": 34444,
+    "BP": 89230,
+    "FP": 79045
+   },
+   "majority": {
+    "macro_f1": 0.20375704889095927,
+    "precision": {
+     "TP": 0.0,
+     "BP": 0.44016594399143644,
+     "FP": 0.0
+    },
+    "recall": {
+     "TP": 0.0,
+     "BP": 1.0,
+     "FP": 0.0
+    },
+    "tp_recall": 0.0,
+    "mr": 1.0,
+    "er": 0.0
+   },
+   "detector_rule": {
+    "macro_f1": 0.4255168476670484,
+    "precision": {
+     "TP": 0.46180096873623955,
+     "BP": 0.5253082371458552,
+     "FP": 0.6148463127202041
+    },
+    "recall": {
+     "TP": 0.121791894088956,
+     "BP": 0.8976689454219433,
+     "FP": 0.3201214498070719
+    },
+    "tp_recall": 0.121791894088956,
+    "mr": 0.878208105911044,
+    "er": 0.0
+   },
+   "gbdt": {
+    "runs": [
+     {
+      "macro_f1": 0.4773276711872148,
+      "precision": {
+       "TP": 0.3325880538299348,
+       "BP": 0.5175929530854584,
+       "FP": 0.6313878860810269
+      },
+      "recall": {
+       "TP": 0.682353965857624,
+       "BP": 0.4767679031715791,
+       "FP": 0.3982668100449111
+      },
+      "tp_recall": 0.682353965857624,
+      "mr": 0.317646034142376,
+      "er": 0.0,
+      "n_iter": 23
+     },
+     {
+      "macro_f1": 0.46102277164157385,
+      "precision": {
+       "TP": 0.32630257549213004,
+       "BP": 0.49777024509273615,
+       "FP": 0.6169660890825981
+      },
+      "recall": {
+       "TP": 0.6867378933921728,
+       "BP": 0.4640927939033957,
+       "FP": 0.36711999493959135
+      },
+      "tp_recall": 0.6867378933921728,
+      "mr": 0.31326210660782716,
+      "er": 0.0,
+      "n_iter": 23
+     },
+     {
+      "macro_f1": 0.49356804381068403,
+      "precision": {
+       "TP": 0.33139173217214274,
+       "BP": 0.5410217018035348,
+       "FP": 0.651793573943662
+      },
+      "recall": {
+       "TP": 0.6805249099988387,
+       "BP": 0.46965146251260786,
+       "FP": 0.44962995761907776
+      },
+      "tp_recall": 0.6805249099988387,
+      "mr": 0.31947509000116125,
+      "er": 0.0,
+      "n_iter": 23
+     }
+    ],
+    "mean_std": {
+     "macro_f1": [
+      0.4773061622131576,
+      0.013286560430684288
+     ],
+     "tp_recall": [
+      0.6832055897495452,
+      0.0026069443289580205
+     ],
+     "mr": [
+      0.3167944102504548,
+      0.0026069443289580205
+     ]
+    }
+   }
+  },
+  "time": {
+   "sizes": {
+    "train": 727436,
+    "val": 80826,
+    "test": 202066
+   },
+   "test_label_counts": {
+    "TP": 36663,
+    "BP": 91848,
+    "FP": 73555
+   },
+   "majority": {
+    "macro_f1": 0.20833304980368406,
+    "precision": {
+     "TP": 0.0,
+     "BP": 0.4545445547494383,
+     "FP": 0.0
+    },
+    "recall": {
+     "TP": 0.0,
+     "BP": 1.0,
+     "FP": 0.0
+    },
+    "tp_recall": 0.0,
+    "mr": 1.0,
+    "er": 0.0
+   },
+   "detector_rule": {
+    "macro_f1": 0.7041806865382679,
+    "precision": {
+     "TP": 0.5792188651436994,
+     "BP": 0.7410754545018468,
+     "FP": 0.8487360484361517
+    },
+    "recall": {
+     "TP": 0.428770149742247,
+     "BP": 0.8410199459977354,
+     "FP": 0.8156889402487935
+    },
+    "tp_recall": 0.428770149742247,
+    "mr": 0.5712298502577531,
+    "er": 0.0
+   },
+   "gbdt": {
+    "runs": [
+     {
+      "macro_f1": 0.7628791539326891,
+      "precision": {
+       "TP": 0.5402510129459432,
+       "BP": 0.8580070952884795,
+       "FP": 0.8761386639676113
+      },
+      "recall": {
+       "TP": 0.7455472820009273,
+       "BP": 0.7504572772406585,
+       "FP": 0.8473251308544626
+      },
+      "tp_recall": 0.7455472820009273,
+      "mr": 0.25445271799907265,
+      "er": 0.0,
+      "n_iter": 187
+     },
+     {
+      "macro_f1": 0.7656107083385614,
+      "precision": {
+       "TP": 0.5494518979057592,
+       "BP": 0.8524647930108507,
+       "FP": 0.8794429315234722
+      },
+      "recall": {
+       "TP": 0.7327823691460055,
+       "BP": 0.7638380803065935,
+       "FP": 0.8473523213921555
+      },
+      "tp_recall": 0.7327823691460055,
+      "mr": 0.2672176308539945,
+      "er": 0.0,
+      "n_iter": 189
+     },
+     {
+      "macro_f1": 0.7661395641986801,
+      "precision": {
+       "TP": 0.5456697494332657,
+       "BP": 0.8561854024992022,
+       "FP": 0.8818141986912216
+      },
+      "recall": {
+       "TP": 0.7418923710552874,
+       "BP": 0.7594068460935458,
+       "FP": 0.8482224185983278
+      },
+      "tp_recall": 0.7418923710552874,
+      "mr": 0.2581076289447126,
+      "er": 0.0,
+      "n_iter": 166
+     }
+    ],
+    "mean_std": {
+     "macro_f1": [
+      0.7648764754899768,
+      0.0014287272150648063
+     ],
+     "tp_recall": [
+      0.74007400740074,
+      0.005367531079467319
+     ],
+     "mr": [
+      0.2599259925992599,
+      0.00536753107946732
+     ]
+    }
+   }
+  }
+ },
+ "features": [
+  "n_evidence",
+  "n_alerts",
+  "n_detectors",
+  "n_alert_titles",
+  "n_categories",
+  "n_tactics",
+  "max_stage",
+  "min_stage",
+  "duration_s",
+  "first_hour",
+  "first_dow",
+  "mitre_row_share",
+  "n_impacted",
+  "n_related",
+  "n_susp_suspicious",
+  "n_susp_incriminated",
+  "n_verdict_malicious",
+  "n_verdict_suspicious",
+  "n_verdict_nothreat",
+  "n_threatfamily",
+  "n_mail_inbound",
+  "n_mail_outbound",
+  "n_mail_intraorg",
+  "n_resource",
+  "n_roles",
+  "cat_InitialAccess",
+  "cat_Execution",
+  "cat_Persistence",
+  "cat_PrivilegeEscalation",
+  "cat_DefenseEvasion",
+  "cat_CredentialAccess",
+  "cat_Discovery",
+  "cat_LateralMovement",
+  "cat_Collection",
+  "cat_CommandAndControl",
+  "cat_Exfiltration",
+  "cat_Impact",
+  "cat_CredentialStealing",
+  "cat_Exploit",
+  "cat_Malware",
+  "cat_Ransomware",
+  "cat_SuspiciousActivity",
+  "cat_UnwantedSoftware",
+  "cat_Weaponization",
+  "cat_WebExploit",
+  "ent_Ip",
+  "ent_User",
+  "ent_MailMessage",
+  "ent_Machine",
+  "ent_File",
+  "ent_Url",
+  "ent_CloudLogonRequest",
+  "ent_Mailbox",
+  "ent_Process",
+  "ent_MailCluster",
+  "ent_CloudApplication",
+  "ent_CloudLogonSession",
+  "ent_Other",
+  "n_devices",
+  "n_accounts",
+  "n_ips",
+  "n_files",
+  "n_urls",
+  "n_mails",
+  "n_apps",
+  "n_countries",
+  "n_techniques",
+  "DetectorId_tp_mean",
+  "DetectorId_tp_max",
+  "DetectorId_bp_mean",
+  "DetectorId_bp_max",
+  "DetectorId_fp_mean",
+  "DetectorId_fp_max",
+  "DetectorId_unseen_share",
+  "AlertTitle_tp_mean",
+  "AlertTitle_tp_max",
+  "AlertTitle_bp_mean",
+  "AlertTitle_bp_max",
+  "AlertTitle_fp_mean",
+  "AlertTitle_fp_max",
+  "AlertTitle_unseen_share"
+ ]
+}

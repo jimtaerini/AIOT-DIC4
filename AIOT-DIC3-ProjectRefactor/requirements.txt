@@ -1,0 +1,9 @@
+# Experiment environment (python3 -m venv .venv && .venv/bin/pip install -r requirements.txt)
+# GBDT: scikit-learn HistGradientBoostingClassifier (LightGBM-style histogram GBDT).
+# LightGBM/XGBoost wheels on macOS need Homebrew libomp, which this machine does not have.
+duckdb>=1.1
+pyarrow>=15
+pandas>=2.2
+numpy>=1.26
+scikit-learn>=1.5
+shap>=0.46

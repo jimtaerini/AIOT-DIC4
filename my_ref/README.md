@@ -44,7 +44,7 @@ my_ref/
    * 對事件輸出 **TP / BP / FP** 分級，並以明確規則決定**何時交給人**（`NEEDS_HUMAN_REVIEW`）。
 4. **D. Development（證據融合與升級）**
    * ReAct LLM Planner + 規則式證據足夠性 `IsSufficient(E)`（C1–C3）＋ 工具預算 B。
-   * GBDT（LightGBM / XGBoost）三類機率 + SHAP + k 個相似事件。
+   * GBDT（scikit-learn 直方圖 GBDT，LightGBM 同類）三類機率 + SHAP + k 個相似事件。
    * ATT&CK STIX 2.1 RAG（Chroma）＋ NIST SP 800-61 Rev. 3 / D3FEND playbook ＋ 高風險規則 R1–R5。
    * Evidence Fusion：`s = w_ml·p + w_llm·q`；信心不足、ML 與 LLM 衝突、高風險或證據不足即升級。
 5. **E. Experiments（GUIDE + ExCyTIn-Bench）**

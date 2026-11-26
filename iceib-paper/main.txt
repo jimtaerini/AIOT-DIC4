@@ -469,7 +469,7 @@ placeholder entity IDs as missing.
 (\texttt{OrgId}, \texttt{IncidentId}). Features include alert counts,
 per-detector historical FP rates, entity-type distributions, and the
 number of techniques and tactics; volatile indicators such as IPs and
-hashes are excluded (M4). A class-weighted LightGBM/XGBoost model
+hashes are excluded (M4). A class-weighted histogram GBDT
 outputs $\mathbf{p}=(p_{TP},p_{BP},p_{FP})$, SHAP gives feature
 attributions, and the $k$ nearest historical incidents are retrieved.
 GBDT, not the LLM, is the classifier because GUIDE alert titles and
@@ -745,9 +745,12 @@ Anonymized fields & AlertTitle, DetectorId, all entities \\
 % [A2Z:S]
 Random row-level splits would leak alerts of one incident, or incidents
 of one organization, across train and test~\cite{arp2022}. We split by
-(\texttt{OrgId}, \texttt{IncidentId}) and also report
+(\texttt{OrgId}, \texttt{IncidentId}): the official GUIDE test set
+(303{,}220 labeled incidents) shares no incident key with the training
+set, so it serves as the incident-split test set, with 10\% of the
+training incidents held out for validation. We also report
 organization-held-out and time-ordered splits. The agent is implemented
-in Python with pandas and DuckDB, LightGBM/XGBoost and SHAP,
+in Python with pandas and DuckDB, scikit-learn's histogram GBDT and SHAP,
 mitreattack-python and Chroma, a tool-using LLM API, and a Streamlit
 dashboard; all scripts fix random seeds.
 
@@ -766,7 +769,11 @@ whose ER stays within an escalation budget set with analysts.
 % [A2Z:U]
 Table~\ref{tab:e1} reports E1 on the incident split, and
 Fig.~\ref{fig:mr-er} shows the MR--ER trade-off obtained by sweeping
-$\tau$.
+$\tau$. Without escalation, the GBDT reaches a macro-F1 of 0.780 and
+misses 25.3\% of TP incidents, against 57.9\% for the detector rule.
+Generalization to unseen organizations is much harder: on the
+organization split the GBDT macro-F1 drops to 0.477 (detector rule
+0.426), while the time split stays close to the incident split (0.765).
 \TBD{} Describe the MR--ER curve, E2 precision and recall, E3 reward,
 E4 rubric scores, E5 cost, and the ablation, using values from
 \texttt{experiments/results/} only.
@@ -807,9 +814,10 @@ toward higher ER and never increases MR.}
 \textbf{Method} & \textbf{Macro-F1} & \textbf{TP recall}
 & \textbf{MR} & \textbf{ER} \\
 \midrule
-Majority class        & \TBD & \TBD & \TBD & -- \\
-Detector FP-rate rule & \TBD & \TBD & \TBD & -- \\
-GBDT only             & \TBD & \TBD & \TBD & -- \\
+% Values: experiments/results/e1_results.json (incident split; GBDT = mean of 3 seeds, std <= 0.001)
+Majority class        & 0.219 & 0.000 & 1.000 & -- \\
+Detector FP-rate rule & 0.675 & 0.421 & 0.579 & -- \\
+GBDT only             & 0.780 & 0.747 & 0.253 & -- \\
 LLM only (no KB)      & \TBD & \TBD & \TBD & -- \\
 \textbf{Proposed agent} & \TBD & \TBD & \TBD & \TBD \\
 \bottomrule

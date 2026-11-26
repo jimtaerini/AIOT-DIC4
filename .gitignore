@@ -4,3 +4,6 @@
 **/data/archive/
 **/data/raw/
 **/data/processed/
+
+# Python virtual environment
+.venv/

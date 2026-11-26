@@ -116,7 +116,7 @@ flowchart LR
 - 工具輸出一律附上來源（資料表、欄位、列 ID），以滿足 NFR1。
 
 ### ⑤ Analytics Engine
-- **Triage Classifier**：以 Gradient Boosted Trees（LightGBM / XGBoost）預測 P(TP)、P(BP)、P(FP)。
+- **Triage Classifier**：以 Gradient Boosted Trees 預測 P(TP)、P(BP)、P(FP)。實作使用 scikit-learn `HistGradientBoostingClassifier`（與 LightGBM 同類的直方圖 GBDT）；LightGBM / XGBoost 在 macOS 需要 Homebrew 的 libomp，本機沒有。
 - **特徵**：告警數、Detector 歷史誤報率、實體類型分布、ATT&CK 技術數量與 Tactic 覆蓋、時間特徵等。
 - **可解釋性**：SHAP 值列出影響最大的特徵。
 - **相似事件檢索**：以特徵向量找出 k 個歷史相似事件及其標籤。
@@ -182,8 +182,8 @@ flowchart LR
 **其他重要發現**：
 - `MitreTechniques` 只在 42.5% 的列有值，E2 只能評估有標註的告警。
 - `ActionGrouped` / `ActionGranular`（處置標籤）有 99.4% 缺值，**無法用 GUIDE 量化評估處置建議**，改以 E4 報告品質評分評估。
-- 實體欄位沒有空值，「沒有該實體」似乎以固定 ID 表示（例如 `IpAddress` 最常見的值 360606），前處理時需要辨識並轉為缺值。（待確認）
-- 事件的標籤以最後讀到的列為準，尚未檢查同一事件內各列標籤是否一致。（待確認）
+- 實體欄位沒有空值，「沒有該實體」以每欄一個固定 ID 表示（例如 `IpAddress` 的 360606、`DeviceId` 的 98799）：在不屬於該實體類型的列上，這個值佔 94%–100%。前處理把它視為缺值（`experiments/e1a_check_guide.py`，結果見 `experiments/results/e1a_guide_checks.json`）。
+- 同一事件內各列的 `IncidentGrade` 完全一致（0 個事件有衝突）；另有 23,670 個事件完全沒有標籤，已排除。官方 train 與 test 沒有共用任何事件鍵（`OrgId` + `IncidentId`），因此 E1 的事件切分直接使用官方 test（303,220 起事件）；4,400 個 test 組織中有 4,054 個也出現在 train。
 
 **資料前處理**（規劃）：
 1. Evidence → Alert → Incident 三層聚合。
@@ -196,7 +196,7 @@ flowchart LR
 
 | 元件 | 方法 | 角色 |
 |---|---|---|
-| 分級模型 | LightGBM / XGBoost | 對大量結構化特徵做快速、穩定的機率預測 |
+| 分級模型 | Histogram GBDT（scikit-learn；LightGBM 同類） | 對大量結構化特徵做快速、穩定的機率預測 |
 | 解釋 | SHAP | 將模型判斷轉成分析師可讀的證據 |
 | 知識檢索 | Embedding + Vector DB（Chroma） | RAG：取回相關 ATT&CK 技術與 playbook |
 | 推理與報告 | LLM（tool use） | 整合證據、處理衝突、產生報告 |
@@ -320,7 +320,7 @@ Output: label, confidence conf, flag set flags
 2. 事件涉及的主要實體（帳號、主機）都至少有一筆上下文紀錄，例如登入、程序或網路活動。
 3. 任一查詢回傳空結果時，必須確認同一資料來源在該時間窗內仍有其他紀錄，也就是 log 沒有中斷；無法確認時視為證據不足，而不是「沒有可疑活動」。
 
-自然語言調查問題沒有告警清單，第 1 項改為「問題涉及的每個實體都已查詢過」。GUIDE 沒有原始 log，因此在 GUIDE 上第 3 項改為：檢查每筆告警的證據列是否齊全，並把代表「無此實體」的固定 ID 視為缺值，而不是一個真的實體（見 DESIGN.md §5 的待確認項目）。
+自然語言調查問題沒有告警清單，第 1 項改為「問題涉及的每個實體都已查詢過」。GUIDE 沒有原始 log，因此在 GUIDE 上第 3 項改為：檢查每筆告警的證據列是否齊全，並把代表「無此實體」的固定 ID 視為缺值，而不是一個真的實體（見 §5，已確認）。
 
 **`OneHotWithConfidence` 的轉換方式**：LLM 自行回報的數值信心通常不可靠，因此只要求 LLM 回報「低／中／高」三級信心，分別對應 c = 0.5、0.7、0.9（實際數值在驗證集上調整）。LLM 判斷的類別得到 c，其餘兩類平分 1 − c。例如 LLM 判斷為 TP、信心「中」，則 q = (0.7, 0.15, 0.15)。
 
@@ -365,7 +365,21 @@ python experiments/e0_profile_guide.py data/archive/GUIDE_Train.csv > experiment
 
 ## 13. Results
 
-尚未進行實驗。Proposal 階段只列出預期結果（見 `docs/proposal.md`），不提供實驗數據。
+### E1（非 LLM 部分，2026-11-26）
+
+由 `experiments/e1c_train_eval.py` 產生，完整結果見 `experiments/results/e1_results.md` 與 `e1_results.json`。測試集指標；GBDT 為 3 個 seed 的平均（標準差 ≤ 0.013）。這些方法不會升級，因此 ER = 0、MR = 1 − TP recall。
+
+| 切分 | 方法 | Macro-F1 | TP recall | MR |
+|---|---|---|---|---|
+| 事件（官方 test，303,220 起） | 多數類別 | 0.219 | 0.000 | 1.000 |
+| | Detector 歷史誤報率規則 | 0.675 | 0.421 | 0.579 |
+| | GBDT | 0.780 | 0.747 | 0.253 |
+| 組織（測試組織不在訓練集） | Detector 規則 | 0.426 | 0.122 | 0.878 |
+| | GBDT | 0.477 | 0.683 | 0.317 |
+| 時間（最晚 20%） | Detector 規則 | 0.704 | 0.429 | 0.571 |
+| | GBDT | 0.765 | 0.740 | 0.260 |
+
+觀察：GBDT 在事件與時間切分上明顯優於規則；但對**未見過的組織**泛化困難（Macro-F1 0.78 → 0.48），支持 T3 的疑慮。純 LLM baseline、完整 Agent（含升級）與 E2–E5 尚未執行。
 
 ## 14. Limitations & Risks
 

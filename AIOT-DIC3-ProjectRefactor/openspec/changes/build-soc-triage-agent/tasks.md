@@ -5,9 +5,9 @@
 ## 1. 資料與前處理（W1）
 
 - [x] 1.1 下載 GUIDE 並以 `experiments/e0_profile_guide.py` 完成資料檢查，驗證：`experiments/results/guide_train_profile.json` 存在且事件數為 707,108
-- [ ] 1.2 確認「無此實體」的固定 ID 與同事件內標籤一致性，並更新 DESIGN.md §5 的待確認項目，驗證：兩項不再標示「（待確認）」
-- [ ] 1.3 以 DuckDB 將 Evidence → Alert → Incident 聚合成事件層級資料，驗證：每個 `OrgId` + `IncidentId` 只有一列
-- [ ] 1.4 依事件、組織、時間三種方式切分並固定 seed，驗證：切分測試確認任一事件鍵只出現在一個集合（`triage-evaluation`）
+- [x] 1.2 確認「無此實體」的固定 ID 與同事件內標籤一致性，並更新 DESIGN.md §5 的待確認項目，驗證：兩項不再標示「（待確認）」
+- [x] 1.3 以 DuckDB 將 Evidence → Alert → Incident 聚合成事件層級資料，驗證：每個 `OrgId` + `IncidentId` 只有一列
+- [x] 1.4 依事件、組織、時間三種方式切分並固定 seed，驗證：切分測試確認任一事件鍵只出現在一個集合（`triage-evaluation`）
 
 ## 2. 請求與證據蒐集（W1–W2）
 
@@ -18,10 +18,10 @@
 
 ## 3. 分級模型（W1–W2）
 
-- [ ] 3.1 實作事件層級特徵（含 Tactic 覆蓋數、攻擊鏈最遠階段，排除 IP 與 hash），驗證：特徵清單測試不含 IP、hash 原始值
-- [ ] 3.2 訓練 GBDT 三類分級並加 class weight，驗證：在驗證集輸出三類機率且總和為 1
+- [x] 3.1 實作事件層級特徵（含 Tactic 覆蓋數、攻擊鏈最遠階段，排除 IP 與 hash），驗證：特徵清單測試不含 IP、hash 原始值
+- [x] 3.2 訓練 GBDT 三類分級並加 class weight，驗證：在驗證集輸出三類機率且總和為 1
 - [ ] 3.3 加入 SHAP 前幾名特徵與 k 個相似事件檢索，驗證：每次分級結果都含特徵貢獻與相似事件
-- [ ] 3.4 執行 E1 的多數類別、Detector 誤報率規則、純 GBDT baseline，驗證：產生 E1 baseline 結果表
+- [x] 3.4 執行 E1 的多數類別、Detector 誤報率規則、純 GBDT baseline，驗證：產生 E1 baseline 結果表
 
 ## 4. 領域知識（W2–W3）
 
