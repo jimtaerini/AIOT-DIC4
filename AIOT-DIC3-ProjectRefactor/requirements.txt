@@ -7,3 +7,4 @@ pandas>=2.2
 numpy>=1.26
 scikit-learn>=1.5
 shap>=0.46
+google-genai>=1.0     # Gemini API (LLM experiments; key from GEMINI_API_KEY)
