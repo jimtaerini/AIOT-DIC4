@@ -27,14 +27,14 @@
 
 - [ ] 4.1 鎖定 ATT&CK STIX 版本，切塊存入 Chroma，驗證：以技術 ID 查詢可取回描述、偵測與緩解
 - [ ] 4.2 實作 ATT&CK 對應與攻擊鏈階段推估，驗證：E2 在有 `MitreTechniques` 的告警上產生 Technique / Tactic Precision、Recall
-- [ ] 4.3 實作高風險規則 R1–R5，驗證：單元測試涵蓋每條規則，且 R3 不要求先後順序
+- [x] 4.3 實作高風險規則 R1–R5，驗證：單元測試涵蓋每條規則，且 R3 不要求先後順序
 - [ ] 4.4 依 NIST SP 800-61 Rev. 3 與 D3FEND 整理處置 playbook，驗證：帳號遭盜用情境產生停用帳號、保留證據等建議
 
 ## 5. Agent 與決策（W3–W4）
 
 - [ ] 5.1 實作 Planner 的 ReAct 迴圈、決策點與工具呼叫上限 B，驗證：用完預算時加上 evidence-insufficient 旗標並繼續分析
-- [ ] 5.2 實作 `OneHotWithConfidence` 與 `FuseEvidence`（Algorithm 2），驗證：範例 (0.46, 0.45, 0.09) + TP 中信心得到 (0.58, 0.30, 0.12)
-- [ ] 5.3 實作升級條件與升級原因（Algorithm 1 第 18–21 行），驗證：單元測試涵蓋 `triage-decision` 的所有情境
+- [x] 5.2 實作 `OneHotWithConfidence` 與 `FuseEvidence`（Algorithm 2），驗證：範例 (0.46, 0.45, 0.09) + TP 中信心得到 (0.58, 0.30, 0.12)
+- [x] 5.3 實作升級條件與升級原因（Algorithm 1 第 18–21 行），驗證：單元測試涵蓋 `triage-decision` 的所有情境
 - [ ] 5.4 在驗證集上調整 w_ml、w_llm、τ、τ_safety，驗證：調參紀錄只引用驗證集
 
 ## 6. 報告與回饋（W4）

@@ -12,7 +12,8 @@
 ## 2. 填入結果（依賴 `build-soc-triage-agent`）
 
 - [x] 2.1a 以 E1 非 LLM 結果填入 Table VI 前三列（多數類別、Detector 規則、GBDT）與 IV-E 的組織／時間切分說明，驗證：數字與 `AIOT-DIC3-ProjectRefactor/experiments/results/e1_results.json` 相同
-- [ ] 2.1b 以純 LLM baseline 與完整 Agent 的 E1 結果填入 Table VI 後兩列並畫 MR–ER 曲線（Fig. 2），驗證：每個數字對應 `experiments/results/` 中的值
+- [x] 2.1b 以不含 LLM 的信心升級與 R1–R5 結果畫出 Fig. 2 的 MR–ER 曲線，並在 Table VI 新增「GBDT + escalation」列，驗證：座標與數字和 `experiments/results/e1e_curve.csv`、`e1e_rules_escalation.json` 相同
+- [ ] 2.1c 以純 LLM baseline 與完整 Agent（含 LLM 融合）的結果填入 Table VI 最後兩列並在 Fig. 2 加上 Agent 曲線，驗證：每個數字對應 `experiments/results/` 中的值
 - [ ] 2.2 填入 E2–E5 與消融結果並完成 V 的有效性結論，驗證：Section IV 不再有 `[TBD]`
 
 ## 3. 同步與檢查

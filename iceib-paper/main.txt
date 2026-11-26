@@ -34,6 +34,8 @@
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
 \usetikzlibrary{arrows.meta,positioning,calc}
 \usepackage[hidelinks]{hyperref}
 
@@ -782,31 +784,49 @@ model thus judges similarity to past incidents rather than attack-chain
 position, which is why the risk rules of Table~\ref{tab:rules} act
 outside it. Among five nearest training incidents, 74\% share the true
 label of the queried incident.
-\TBD{} Describe the MR--ER curve, E2 precision and recall, E3 reward,
-E4 rubric scores, E5 cost, and the ablation, using values from
-\texttt{experiments/results/} only.
+
+% [A2Z:U]
+Fig.~\ref{fig:mr-er} shows that confidence escalation alone already
+trades analyst workload for safety: with $\tau=0.50$, selected on
+validation under a 20\% escalation budget, MR falls from 25.5\% to
+18.0\% at ER 12.0\%, and $\tau=0.60$ reaches MR 8.1\% at ER 28.8\%.
+The curves are monotone, as Proposition~\ref{prop:mono} requires. The
+kill-chain rules, however, add little on GUIDE: R1 fires on 15.0\% of
+validation incidents, but only 7.0\% of them are TP (base rate
+20.4\%), because GUIDE's Exfiltration category is dominated by benign
+and false alerts; R2 is TP-enriched (52\%) but fires on only 0.03\%.
+Adding R1--R5 therefore raises ER by 13--15 points at every $\tau$
+while lowering MR by at most 0.3 points.
+\TBD{} Report E2 precision and recall, E3 reward, E4 rubric scores,
+E5 cost, and the ablation, using values from \texttt{experiments/results/} only.
 
 \begin{figure}[t]
 % [A2Z:U]
-% Placeholder: replace the [TBD] note with the measured curve
-% (one point per tau in [0.50, 0.95]) once E1 has been run.
+% Data: AIOT-DIC3-ProjectRefactor/experiments/results/e1e_curve.csv (test, GBDT seed 0, tau = 0.50..0.95;
+% the left-most point of each curve is tau = 0, i.e. no confidence escalation).
 \centering
-\begin{tikzpicture}[font=\scriptsize]
-\draw[-{Stealth[length=1.6mm]}] (0,0) -- (6.2,0)
-  node[below left, align=right] {Escalation rate ER (\%)};
-\draw[-{Stealth[length=1.6mm]}] (0,0) -- (0,3.4)
-  node[above, align=center] {TP miss rate MR (\%)};
-\foreach \x/\l in {0/0,1.5/25,3/50,4.5/75,6/100}
-  \draw (\x,0) -- (\x,-0.08) node[below] {\l};
-\foreach \y/\l in {0/0,1.5/50,3/100}
-  \draw (0,\y) -- (-0.08,\y) node[left] {\l};
-\node[draw, dashed, align=center, fill=white] at (3.1,1.7)
-  {\TBD{}\\ Agent curve (sweep of $\tau$)\\ GBDT-only and LLM-only points};
+\begin{tikzpicture}
+\begin{axis}[width=\columnwidth, height=5.0cm, font=\scriptsize,
+  xlabel={Escalation rate ER (\%)}, ylabel={TP miss rate MR (\%)},
+  xmin=0, xmax=80, ymin=0, ymax=60, grid=major, grid style={gray!25},
+  legend style={at={(0.98,0.98)}, anchor=north east, font=\tiny, cells={anchor=west}}]
+\addplot[thick, blue, mark=*, mark size=1.2pt] coordinates
+  {(0.0,25.5) (12.0,18.0) (20.3,13.0) (28.8,8.1) (33.0,6.5) (36.4,5.6) (39.9,4.8) (43.7,3.9) (47.7,2.9) (53.2,1.8) (64.0,0.3)};
+\addlegendentry{GBDT + confidence escalation}
+\addplot[thick, orange, dashed, mark=square*, mark size=1.1pt] coordinates
+  {(14.7,25.3) (26.7,17.8) (34.9,12.8) (43.3,7.9) (47.4,6.4) (50.7,5.4) (54.1,4.7) (57.8,3.8) (61.7,2.8) (67.0,1.7) (77.2,0.2)};
+\addlegendentry{GBDT + confidence + R1--R5}
+\addplot[only marks, mark=triangle*, mark size=2.2pt, black] coordinates {(0,57.9)};
+\addlegendentry{Detector FP-rate rule}
+\addplot[only marks, mark=o, mark size=3pt, red, thick] coordinates {(12.0,18.0)};
+\addlegendentry{Selected on validation ($\tau=0.50$)}
+\end{axis}
 \end{tikzpicture}
-\caption{TP miss rate versus escalation rate on GUIDE (incident split)
-as the confidence threshold $\tau$ varies. By
-Proposition~\ref{prop:mono}, raising $\tau$ moves the operating point
-toward higher ER and never increases MR.}
+\caption{TP miss rate versus escalation rate on the GUIDE test set
+(incident split) as the confidence threshold $\tau$ rises from 0.50 to
+0.95, without an LLM. As Proposition~\ref{prop:mono} predicts, raising
+$\tau$ increases ER and never increases MR. \TBD{} Add the curve of the
+full agent with LLM fusion.}
 \label{fig:mr-er}
 \end{figure}
 
@@ -826,6 +846,8 @@ toward higher ER and never increases MR.}
 Majority class        & 0.219 & 0.000 & 1.000 & -- \\
 Detector FP-rate rule & 0.675 & 0.421 & 0.579 & -- \\
 GBDT only             & 0.780 & 0.747 & 0.253 & -- \\
+% experiments/results/e1e_rules_escalation.json (seed 0; tau chosen on validation, ER <= 20%; TP recall = 1 - MR)
+GBDT + escalation ($\tau{=}0.50$) & -- & 0.820 & 0.180 & 0.120 \\
 LLM only (no KB)      & \TBD & \TBD & \TBD & -- \\
 \textbf{Proposed agent} & \TBD & \TBD & \TBD & \TBD \\
 \bottomrule

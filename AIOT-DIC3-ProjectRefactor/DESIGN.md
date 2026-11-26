@@ -389,6 +389,31 @@ python experiments/e0_profile_guide.py data/archive/GUIDE_Train.csv > experiment
 - 在 6,000 個類別平衡的測試事件上，**75%** 的 SHAP 貢獻來自 Detector 與 AlertTitle 的歷史標籤率；Tactic 數、攻擊鏈最遠階段只排第 29–34 名（共 81 個特徵）。模型主要判斷「像不像過去的事件」，而不是攻擊鏈位置，這支持把 R1–R5 放在模型之外作為硬性約束（M2、T2）。
 - 5 個最近鄰訓練事件中，平均 **74%** 與查詢事件的真實標籤相同；最近鄰多數決正確率 78.3%，同一樣本上 GBDT 為 79.0%。
 
+### 規則 R1–R5 與信心升級（不含 LLM，2026-11-26）
+
+由 `experiments/e1e_rules_escalation.py` 產生（事件切分、GBDT seed 0；結果見 `experiments/results/e1e_rules_escalation.json`、`e1e_curve.csv`）。程式：`src/soc_agent/knowledge/rules.py`、`src/soc_agent/decision/fusion.py`；單元測試 `tests/test_rules_fusion.py`（全部 26 項測試通過）。沒有 LLM 時 s = p，不會有 conflict；GUIDE 沒有原始 log，這裡不套用 `IsSufficient`。
+
+| 規則（驗證集） | 觸發比例 | 觸發時 TP 比例（基準 20.4%） |
+|---|---|---|
+| R1 Exfiltration／Impact／Ransomware | 15.0% | **7.0%** |
+| R2 Credential Access + Lateral Movement | 0.03% | 52.2% |
+| R3 Initial Access + Execution／Persistence／PrivEsc | 0.04% | 7.7% |
+| R4 T1070 | 0.04% | 13.3% |
+| R5 ≥ 3／4／5 個戰術 | 0.15%／0.06%／0.03% | 19.8%／13.3%／9.1% |
+
+| 測試集 | τ | MR | ER |
+|---|---|---|---|
+| GBDT 不升級 | — | 25.5% | 0% |
+| GBDT + 信心升級（驗證集在 ER ≤ 20% 下選出） | 0.50 | **18.0%** | 12.0% |
+| GBDT + 信心升級 | 0.60 | 8.1% | 28.8% |
+| GBDT + 信心 + R1–R5 | 0.50 | 17.8% | 26.7% |
+
+觀察：
+- 信心升級本身就能有效以人力換安全；曲線隨 τ 單調，符合 Proposition 1。
+- **R1 在 GUIDE 上不是好的風險訊號**：GUIDE 的 Exfiltration 類別多為良性或誤報告警，R1 觸發的事件 TP 比例（7%）反而低於基準。加入 R1–R5 讓每個 τ 的 ER 增加 13–15 個百分點，MR 最多只降 0.3 個百分點。
+- R2 是唯一明顯富含 TP 的規則（52%），但極少觸發。
+- **待討論**：是否修改 R1（例如只在 Exfiltration 與其他前段戰術同時出現時觸發），需團隊決定；修改規則屬於設計變更，應先建立 OpenSpec change。
+
 ## 14. Limitations & Risks
 
 | 風險 | 影響 | 對策 |
