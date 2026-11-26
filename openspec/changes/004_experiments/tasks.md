@@ -7,6 +7,7 @@
 - [x] 1.3 撰寫 S 與 GUIDE profile 表，驗證：數字與 `my_ref/README.md` 相同，寫明依 `OrgId` + `IncidentId` 切分
 - [x] 1.4 撰寫 T，驗證：每個參數都有候選值，寫明只用驗證集
 - [x] 1.5 建立 U 的結果表骨架（`[TBD]`），驗證：Table VI 可編譯
+- [x] 1.7 撰寫 V 的「規則與資料的落差」發現（R1 在 GUIDE 上觸發 15%、TP 比例 7.0% 低於基準 20.4%；規則維持不變並作為發現報告），驗證：數字與 `e1e_rules_escalation.json` 相同
 - [x] 1.6 撰寫 V 的效度威脅，驗證：至少四項威脅（匿名化資料、LLM 幻覺、評分主觀、刪 log 攻擊）
 
 ## 2. 填入結果（依賴 `build-soc-triage-agent`）

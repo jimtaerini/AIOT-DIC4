@@ -412,7 +412,7 @@ python experiments/e0_profile_guide.py data/archive/GUIDE_Train.csv > experiment
 - 信心升級本身就能有效以人力換安全；曲線隨 τ 單調，符合 Proposition 1。
 - **R1 在 GUIDE 上不是好的風險訊號**：GUIDE 的 Exfiltration 類別多為良性或誤報告警，R1 觸發的事件 TP 比例（7%）反而低於基準。加入 R1–R5 讓每個 τ 的 ER 增加 13–15 個百分點，MR 最多只降 0.3 個百分點。
 - R2 是唯一明顯富含 TP 的規則（52%），但極少觸發。
-- **待討論**：是否修改 R1（例如只在 Exfiltration 與其他前段戰術同時出現時觸發），需團隊決定；修改規則屬於設計變更，應先建立 OpenSpec change。
+- **決定（2026-11-26）**：R1–R5 維持不變，以便與設計一致比較；把「類別式攻擊鏈規則在 GUIDE 上精確度低」寫進論文 IV-F 與 V（限制與未來工作：每條規則先以環境標籤校準，才允許強制升級）。若日後要修改規則，需先建立 OpenSpec change。
 
 ## 14. Limitations & Risks
 
@@ -437,3 +437,4 @@ python experiments/e0_profile_guide.py data/archive/GUIDE_Train.csv > experiment
 | v0.6 | 2026-11-03 | 補上 ExCyTIn-Bench 官方 repo 與授權；資料切分改以 `OrgId` + `IncidentId` 為鍵；How to Run 加入資料檢查指令 |
 | v0.7 | 2026-11-03 | 列出高風險攻擊鏈規則 R1–R5；說明 `IsSufficient` 第 3 項在 GUIDE 上的檢查方式 |
 | v0.8 | 2026-11-03 | R3 改為不要求先後順序（GUIDE 時間戳記有雜訊） |
+| v0.9 | 2026-11-26 | §5 待確認項目完成；GBDT 改用 scikit-learn 直方圖 GBDT；§13 加入 E1 非 LLM 結果、SHAP 與相似事件、R1–R5 與信心升級；決定 R1 不修改、作為發現報告 |

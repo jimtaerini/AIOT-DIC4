@@ -856,6 +856,22 @@ LLM only (no KB)      & \TBD & \TBD & \TBD & -- \\
 
 \subsection{Verification and Threats to Validity}
 % [A2Z:V]
+Without an LLM, the results already verify two parts of the design.
+Confidence escalation lowers MR monotonically as $\tau$ rises
+(Proposition~\ref{prop:mono}), so a SOC can pick its operating point
+from Fig.~\ref{fig:mr-er}. The kill-chain rules, in contrast, expose a
+gap between domain knowledge and data. Proposition~\ref{prop:safe}
+still holds, since every incident that fires R1--R5 reaches an analyst,
+but on GUIDE that guarantee is expensive: incidents categorized as
+Exfiltration or Impact are mostly benign or false positives, so R1
+alone escalates 15\% of incidents, whose TP share (7.0\%) is below the
+base rate. This suggests that a detection category records what a
+product's rule looks for rather than how far an adversary has progressed. We
+therefore keep R1--R5 unchanged for comparability and report this as a
+finding: kill-chain rules should be validated against each
+environment's labels before they are allowed to force escalation.
+
+% [A2Z:V]
 \TBD{} State whether the agent lowers MR relative to GBDT-only and
 LLM-only at the selected ER, which module the ablation shows matters
 most, and on which incidents it still fails.
@@ -899,10 +915,12 @@ cost results reported in Section~\ref{sec:exp}.
 In conclusion, turning SOC domain principles into checkable decision
 rules lets an AI agent automate the routine while keeping humans in
 charge of the hard cases. The main limitations are the anonymized,
-single-vendor training data and the residual risk of LLM errors. Future
-work will (1) add queue prioritization, (2) extend the knowledge base
-to ATT\&CK for ICS for industrial IoT, and (3) study analyst trust and
-complacency in a live SOC deployment.
+single-vendor training data, the residual risk of LLM errors, and the
+low precision of category-based kill-chain rules on GUIDE. Future work
+will (1) calibrate each risk rule against an environment's labels before
+it may force escalation, (2) add queue prioritization, (3) extend the
+knowledge base to ATT\&CK for ICS for industrial IoT, and (4) study
+analyst trust and complacency in a live SOC deployment.
 
 % =====================================================================
 \begin{thebibliography}{00}
