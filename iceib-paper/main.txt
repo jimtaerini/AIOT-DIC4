@@ -105,13 +105,19 @@ and an evidence-fusion algorithm that escalates on low confidence,
 model conflict, high-risk kill-chain patterns, or insufficient
 evidence.
 % [A2Z:E]
-To evaluate the scheme, we conduct experiments on Microsoft GUIDE,
+To evaluate the scheme, we design experiments on Microsoft GUIDE,
 with 707{,}108 analyst-labeled training incidents from 5{,}769
 organizations, and on ExCyTIn-Bench, comparing against majority-class,
-detector-rule, ML-only, and LLM-only baselines.
+detector-rule, ML-only, and LLM-only baselines under leakage-free
+incident, organization, and time splits.
 % [A2Z:F]
-\TBD{} Results show that \dots{} (state the measured TP miss rate and
-escalation rate from Section~IV).
+% Interim F for the abstract submission (no experimental numbers yet).
+% Replace with measured results from Section IV before the full paper.
+We prove that raising the confidence threshold never increases the
+true-positive miss rate and that every incident matching a late-stage
+kill-chain rule reaches an analyst, and the evaluation reports the miss
+rate jointly with the escalation rate so that a SOC can choose its
+operating point explicitly.
 \end{abstract}
 
 \begin{IEEEkeywords}
