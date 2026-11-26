@@ -39,6 +39,7 @@
 
 \newcommand{\TBD}{\textcolor{red}{\textbf{[TBD]}}}
 \newtheorem{proposition}{Proposition}
+\renewcommand{\IEEEkeywordsname}{Keywords}
 
 \begin{document}
 
@@ -757,10 +758,36 @@ whose ER stays within an escalation budget set with analysts.
 
 \subsection{Results}
 % [A2Z:U]
-Table~\ref{tab:e1} reports E1 on the incident split.
+Table~\ref{tab:e1} reports E1 on the incident split, and
+Fig.~\ref{fig:mr-er} shows the MR--ER trade-off obtained by sweeping
+$\tau$.
 \TBD{} Describe the MR--ER curve, E2 precision and recall, E3 reward,
 E4 rubric scores, E5 cost, and the ablation, using values from
 \texttt{experiments/results/} only.
+
+\begin{figure}[t]
+% [A2Z:U]
+% Placeholder: replace the [TBD] note with the measured curve
+% (one point per tau in [0.50, 0.95]) once E1 has been run.
+\centering
+\begin{tikzpicture}[font=\scriptsize]
+\draw[-{Stealth[length=1.6mm]}] (0,0) -- (6.2,0)
+  node[below left, align=right] {Escalation rate ER (\%)};
+\draw[-{Stealth[length=1.6mm]}] (0,0) -- (0,3.4)
+  node[above, align=center] {TP miss rate MR (\%)};
+\foreach \x/\l in {0/0,1.5/25,3/50,4.5/75,6/100}
+  \draw (\x,0) -- (\x,-0.08) node[below] {\l};
+\foreach \y/\l in {0/0,1.5/50,3/100}
+  \draw (0,\y) -- (-0.08,\y) node[left] {\l};
+\node[draw, dashed, align=center, fill=white] at (3.1,1.7)
+  {\TBD{}\\ Agent curve (sweep of $\tau$)\\ GBDT-only and LLM-only points};
+\end{tikzpicture}
+\caption{TP miss rate versus escalation rate on GUIDE (incident split)
+as the confidence threshold $\tau$ varies. By
+Proposition~\ref{prop:mono}, raising $\tau$ moves the operating point
+toward higher ER and never increases MR.}
+\label{fig:mr-er}
+\end{figure}
 
 \begin{table}[t]
 % [A2Z:U]
@@ -832,11 +859,6 @@ single-vendor training data and the residual risk of LLM errors. Future
 work will (1) add queue prioritization, (2) extend the knowledge base
 to ATT\&CK for ICS for industrial IoT, and (3) study analyst trust and
 complacency in a live SOC deployment.
-
-% =====================================================================
-\section*{Acknowledgment}
-\TBD{} Acknowledge the course, advisor, or funding source if
-applicable; otherwise delete this section.
 
 % =====================================================================
 \begin{thebibliography}{00}
