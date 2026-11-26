@@ -406,6 +406,8 @@ collects analyst feedback.
 \begin{figure}[t]
 % [A2Z:PG]
 \centering
+% scaled to the column width so the eight boxes never spill into the next column
+\resizebox{\columnwidth}{!}{%
 \begin{tikzpicture}[
   font=\scriptsize,
   box/.style={draw, rounded corners=2pt, align=center,
@@ -437,7 +439,8 @@ collects analyst feedback.
 \draw[arr] (r) -- (o);
 \draw[arr, dashed] (o.west) -- ++(-0.25,0) |- node[pos=0.25, left, align=center]
      {feed-\\back} (u.west);
-\end{tikzpicture}
+\end{tikzpicture}%
+}
 \caption{Architecture of the AI SOC Analyst Agent. The planner
 (\textcircled{3}) calls retrieval, analytics, and knowledge tools; the
 fusion module (\textcircled{7}) decides the label and whether to
