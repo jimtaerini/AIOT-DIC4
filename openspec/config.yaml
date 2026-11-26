@@ -5,30 +5,57 @@ context: |
   All artifacts must be written in zh-TW.
   Keep OpenSpec structural headings and SHALL/MUST keywords in English.
 
-  Project: AI SOC Analyst Agent. 結合 ML 分級（GBDT + SHAP）、MITRE ATT&CK 領域知識與 LLM 推理（ReAct），
-  對資安事件做 TP / BP / FP 分級，並在信心不足、結論衝突、高風險或證據不足時升級給人工。
-  Core principles: docs/project-core.md（A–F、M1–M5 五個核心思維、T1–T3 三個取捨、十個深度問題）。
-  Data: Microsoft GUIDE（欄位多為匿名化 ID）、ExCyTIn-Bench。Primary metric: TP 漏判率，並同時報告人工升級率。
-  Citation numbers like [3] refer to docs/proposal.md §6 References.
+  Project: AI SOC Analyst Agent — IEEE ICEIB 2027 paper workspace (AIOT-DIC4).
+  Paper source: `iceib-paper/main.tex` and its byte-identical twin `iceib-paper/main.txt`
+  (IEEEtran conference, English, 4–8 pages; compiled on Overleaf project 6b064f4bd40bb166a2b1f0f2).
+  The previous project (system design, proposal, OpenSpec change `build-soc-triage-agent`)
+  lives in `AIOT-DIC3-ProjectRefactor/` and is read-only source material for the paper.
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always state what is out of scope
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+  Change Naming Convention:
+  - Every OpenSpec change under `openspec/changes/` MUST use a zero-padded 3-digit sequential
+    prefix with underscores: `00N_xxxxx` (e.g., `000_abstract`, `001_introduction`,
+    `002_related_work`, `003_proposed_design`, `004_experiments`, `005_conclusion`, `006_references`).
+  - Determine `00N` by incrementing the highest existing numeric prefix in `openspec/changes/`.
 
-# Per-operation guidance (optional)
-# Add advisory guidance for how apply and archive work should be conducted.
-# This is separate from artifact rules above.
-# Example:
-#   operations:
-#     apply:
-#       guidance:
-#         - Keep test summaries concise
-#     archive:
-#       guidance:
-#         - Summarize the archive outcome before finishing
+  Paper Section Order (fixed):
+  Abstract + Index Terms, I. Introduction, II. Related Work, III. Proposed Design,
+  IV. Experiment, V. Conclusion, (Acknowledgment), References.
+
+  Structural Outline Authority (`my_ref/A2Z outline example.pdf` — 2020 A-Z SOP):
+  - Abstract (A–F): A Attention Getter, B But, C Cure, D Development, E Experiments, F Findings
+  - I. Introduction (G–L): G General, H However, I In literature, J Judgement, K Keypoint,
+    L List the organization
+  - II. Related Work (M–O): M Methods, N New proposed, O Organize (SWOT 4x5 table)
+  - III. Proposed Design (PA–PM): PA Aim, PB Based on/Background, PC Cure/Cause, PD Design,
+    PE Paper element, PF Formulation/Foundation, PG Graph, PH How, PI Implementation /
+    pseudo code, PJ Jump to an example, PK Key points, PL Later how to simulate, PM Math proof
+  - IV. Experiment (Q–V): Q Quality and Quantity, R Related methods, S Setup, T Tuning,
+    U Useful results, V Verify
+  - V. Conclusion (W–Z): W What proposed, X eXcel, Y Yields, Z Zen
+  Every A2Z item MUST be marked in the LaTeX source with a comment `% [A2Z:<code>]`
+  (never visible in the PDF), and `python3 iceib-paper/check_a2z.py` checks presence and order.
+
+  Domain Content Authority (`my_ref/README.md` & `my_ref/AI_SOC_Analyst_Agent_overview.png`):
+  All domain facts, architecture elements, numbers, and claims MUST follow `my_ref/README.md`
+  (which is consistent with `AIOT-DIC3-ProjectRefactor/docs/proposal.md` and `DESIGN.md`).
+  Key facts: ①–⑧ architecture; IsSufficient C1–C3; risk rules R1–R5; fusion s = w_ml·p + w_llm·q;
+  escalation on low confidence, conflict, high risk, or insufficient evidence; GUIDE profile
+  707,108 incidents / 5,769 orgs / TP 20.6% BP 49.0% FP 30.4%; primary metric TP miss rate,
+  always reported with the human-escalation rate.
+
+  Academic Integrity:
+  No experimental results exist yet. Every result MUST stay marked `[TBD]` until it can be traced
+  to a file under `AIOT-DIC3-ProjectRefactor/experiments/results/`. Never fabricate or "expect" numbers.
+
+rules:
+  proposal:
+    - State the A2Z SOP letter scope of the change (e.g., A–F, G–L, M–O, PA–PM, Q–V, W–Z).
+    - Ground problem statements and numbers in `my_ref/README.md`.
+  specs:
+    - Map each requirement to the A2Z items of the target section and require `% [A2Z:<code>]` markers.
+    - Enforce domain fidelity to `my_ref/README.md` and the no-fabrication rule (`[TBD]`).
+  design:
+    - Trace how each design choice satisfies the section's A2Z items and `my_ref/README.md`.
+  tasks:
+    - Include verification with `python3 iceib-paper/check_a2z.py`, main.tex/main.txt parity,
+      domain fidelity to `my_ref/README.md`, and zero fabricated metrics.

@@ -1,92 +1,95 @@
-# AI SOC Analyst Agent
+# AIOT-DIC4 — AI SOC Analyst Agent：IEEE ICEIB 2027 論文工作區
 
-**A Domain AI Agent for Next-Gen SOC** — *Smarter Triage. Safer Enterprise.*
+> **Knowing When to Escalate: An Evidence-Fusion SOC Triage Agent Integrating Gradient-Boosted Classification, MITRE ATT&CK Knowledge, and LLM Reasoning**
+> *GBDT + SHAP Triage · MITRE ATT&CK RAG · ReAct LLM Planner · Evidence Fusion & Escalation*
 
-本專題提出 AI SOC Analyst Agent，結合機器學習（GBDT + SHAP）、資安領域知識（MITRE ATT&CK、NIST SP 800-61 Rev. 3）與 LLM 推理（ReAct），對資安告警提供有依據、可解釋的分級（TP / BP / FP）。證據不足、資產關鍵性高或判斷不確定時，系統會主動將告警升級給人類分析師。
+![AI SOC Analyst Agent 資安專題總覽](./my_ref/AI_SOC_Analyst_Agent_overview.png)
 
-![AI SOC Analyst Agent 資安專題總覽](myplan/2.AI%20SOC%20Analyst%20Agent%20資安專題總覽.png)
+本 repo 是投稿 **ICEIB 2027**（7th International Conference on Electronic Communications, Internet of Things and Big Data，2027 年 4 月 23–25 日，淡江大學）的論文工作區。論文依 **2020 A-Z SOP** 撰寫，每個章節由一個編號的 OpenSpec 變更管理；原始專題資料保存在 `AIOT-DIC3-ProjectRefactor/`。
 
-## 核心文件
+---
 
-| 文件 | 內容 |
-|---|---|
-| [docs/project-core.md](docs/project-core.md) | 一頁整理：Abstract A–F、5 個核心思維（M1–M5）、3 個取捨（T1–T3）、10 個深度問題 |
-| [docs/proposal.md](docs/proposal.md) | 完整 Proposal；Introduction 依 A2Z G–L、Related Work 依 M–O 重構 |
-| [DESIGN.md](DESIGN.md) | 系統設計文件（v0.8），已轉換為下方的 OpenSpec 變更 |
+## 📁 專案目錄結構
 
-## OpenSpec 工作流程（Spec-Driven Development）
-
-本專題以 [OpenSpec](https://github.com/Fission-AI/OpenSpec) 管理規格：先寫規格（WHAT），再寫設計（HOW）與任務，最後實作並封存。
-
+```text
+AIOT-DIC4/
+├── README.md                              # 專案總覽與導覽（本檔案）
+├── AIOT-DIC3-ProjectRefactor/             # 原始專題（唯讀來源）：Proposal、DESIGN.md、規劃文件、系統實作規格
+│   ├── README.md · DESIGN.md
+│   ├── docs/ (project-core.md, proposal.md)
+│   ├── myplan/ · data/
+│   └── openspec/changes/build-soc-triage-agent/   # 系統實作與 E1–E5 實驗的規格
+├── iceib-paper/                           # 論文
+│   ├── main.tex                           # IEEEtran 論文原始檔（Overleaf 編譯）
+│   ├── main.txt                           # main.tex 的逐位元組副本
+│   └── check_a2z.py                       # A2Z / 章節 / 引用 / 同步 / 投稿阻礙檢查
+├── my_ref/                                # 寫作依據
+│   ├── README.md                          # 領域事實摘要：論文數字與主張的唯一來源
+│   ├── A2Z outline example.pdf / .md      # 2020 A-Z SOP
+│   └── AI_SOC_Analyst_Agent_overview.png  # 專題總覽資訊圖表
+└── openspec/
+    ├── config.yaml                        # 命名規則 00N_xxxxx、A2Z 大綱、領域事實與誠實性規則
+    └── changes/
+        ├── 000_abstract/                  # Abstract（A–F）
+        ├── 001_introduction/              # I. Introduction（G–L）
+        ├── 002_related_work/              # II. Related Work（M–O）
+        ├── 003_proposed_design/           # III. Proposed Design（PA–PM）
+        ├── 004_experiments/               # IV. Experiment（Q–V）
+        ├── 005_conclusion/                # V. Conclusion（W–Z）
+        ├── 006_references/                # References 與投稿前整體檢查
+        └── archive/2026-11-25-iceib-paper-draft/   # 第一版整體草稿規格（已封存）
 ```
-openspec/
-├── config.yaml                          # 專案脈絡與語言設定
-├── specs/                               # 封存後的主規格（目前為空）
-└── changes/build-soc-triage-agent/      # 由 DESIGN.md 轉換的變更
-    ├── proposal.md                      # Why / What Changes / 7 個 Capabilities
-    ├── specs/<capability>/spec.md       # Requirement + Scenario（WHEN / THEN）
-    ├── design.md                        # 架構、流程圖、Algorithm 1–2、決策與風險
-    └── tasks.md                         # W1–W6 實作任務（含驗證方式）
-```
 
-| Capability | 對應 DESIGN.md | 核心思維 |
-|---|---|---|
-| `triage-request` | ② Input、FR1、FR6 | — |
-| `evidence-gathering` | ③④ Planner / Retrieval | M1 |
-| `triage-classification` | ⑤ Analytics | M2、M4 |
-| `attack-mapping` | ⑥ Domain Knowledge、R1–R5 | M2、M4 |
-| `triage-decision` | ⑦ Evidence Fusion & Escalation | M3、M5 |
-| `triage-report` | ⑧ Output & Feedback | M5 |
-| `triage-evaluation` | §10 Evaluation Plan | T1–T3 |
+---
 
-常用指令（需先安裝 Node.js 與 `npm install -g @fission-ai/openspec`）：
+## 📄 論文章節與 OpenSpec 變更
+
+| 變更 | 章節 | A2Z | Spec | 狀態 |
+| :--- | :--- | :---: | :--- | :--- |
+| [`000_abstract`](openspec/changes/000_abstract/) | Abstract + Index Terms | A–F | `abstract-a-to-f` | 待 E1 結果填入 F |
+| [`001_introduction`](openspec/changes/001_introduction/) | I. Introduction | G–L | `introduction-g-to-l` | 完成 |
+| [`002_related_work`](openspec/changes/002_related_work/) | II. Related Work | M–O | `related-work-m-to-o` | 完成 |
+| [`003_proposed_design`](openspec/changes/003_proposed_design/) | III. Proposed Design | PA–PM | `proposed-design-pa-to-pm` | 待組員檢查證明 |
+| [`004_experiments`](openspec/changes/004_experiments/) | IV. Experiment | Q–V | `experiments-q-to-v` | 待實驗結果 |
+| [`005_conclusion`](openspec/changes/005_conclusion/) | V. Conclusion | W–Z | `conclusion-w-to-z` | 待實驗結果填入 Y |
+| [`006_references`](openspec/changes/006_references/) | References、投稿前檢查 | — | `references-ieee-verification` | 待作者資訊 |
+
+新變更請依 `openspec/config.yaml` 的規則以下一個編號命名（例如 `007_xxx`）。OpenSpec CLI 2.x 的 `openspec new change` 不接受底線，請手動建立資料夾（含 `.openspec.yaml`），`openspec validate` 與 `openspec list` 可正常使用。
+
+---
+
+## 🛠️ 常用指令
 
 ```bash
-openspec list                                       # 列出進行中的變更與任務進度
-openspec show build-soc-triage-agent                # 檢視變更內容
-openspec validate build-soc-triage-agent --strict   # 驗證規格格式
-openspec archive build-soc-triage-agent             # 任務完成後封存並合併到主規格
+python3 iceib-paper/check_a2z.py          # 0 = 可投稿；1 = 結構問題；2 = 仍有 [TBD] 或作者佔位文字
+cp iceib-paper/main.tex iceib-paper/main.txt   # 修改 main.tex 後同步副本
+openspec list                             # 各章節變更的任務進度
+openspec validate --all --strict          # 驗證所有規格
 ```
 
-## ICEIB 2027 論文
+論文在 Overleaf 編譯（目前 6 頁，ICEIB 限 4–8 頁）。
 
-論文投稿 ICEIB 2027（2027 年 4 月 23–25 日，淡江大學；摘要 2027-03-01、全文 2027-04-20 截止，英文、4–8 頁）。規格見 OpenSpec 變更 [`write-iceib-paper`](openspec/changes/write-iceib-paper/)。
+---
 
-| 檔案 | 內容 |
-|---|---|
-| [`ICEIB paper/main.tex`](ICEIB%20paper/main.tex) | IEEE conference（IEEEtran）論文原始檔；以 Overleaf 編譯 |
-| [`ICEIB paper/check_a2z.py`](ICEIB%20paper/check_a2z.py) | 檢查 A2Z 標記、章節、摘要字數、引用與投稿阻礙（`[TBD]`、作者佔位文字） |
-| [`myref/`](myref/) | 寫作參考資料：A2Z SOP（[PDF](myref/A2Z%20outline%20example.pdf)、[文字版](myref/A2Z%20outline%20example.md)） |
+## 📅 ICEIB 2027 期限
 
-論文章節與 A2Z 的對應：Abstract A–F、I. Introduction G–L、II. Related Work M–O、III. Proposed Design PA–PM、IV. Experiment Q–V、V. Conclusion W–Z。每段在原始檔以 `% [A2Z:<代號>]` 註解標記，不會出現在 PDF。
+| 日期 | 項目 |
+| :--- | :--- |
+| 2027-03-01 | 摘要投稿截止 |
+| 2027-03-15 | 摘要接受通知 |
+| 2027-04-20 | 全文投稿截止 |
+| 2027-04-23–25 | 會議（淡江大學，實體與線上） |
+| 2027-06-30 | 最終版截止 |
 
-```bash
-python3 "ICEIB paper/check_a2z.py"   # 0 = 可投稿；1 = 結構問題；2 = 結構正確但仍有 [TBD] 或作者佔位文字
-```
+---
 
-## 原始規劃文件
+## 🎯 核心論證（A–F 摘要）
 
-[`myplan/`](myplan/) 資料夾：
+詳見 [`my_ref/README.md`](my_ref/README.md)。
 
-| 文件 | 內容 |
-|---|---|
-| [1. AI SOC 代理分析](myplan/1.AI%20SOC%20代理分析.md) | 依《期末專題提案作業規範》與 A2Z 26 字母 SOP 對照解析專題架構 |
-| [2. AI SOC Analyst Agent 資安專題總覽](myplan/2.AI%20SOC%20Analyst%20Agent%20資安專題總覽.md) | 專題總覽圖（[PNG](myplan/2.AI%20SOC%20Analyst%20Agent%20資安專題總覽.png)）與其文字版（架構、流程、演算法、評估） |
-| [3. AI SOC 代理摘要](myplan/3.AI%20SOC%20代理摘要.md) | A–F 六段式摘要（約 500 字）與學術定位 |
-
-## 系統架構（8 大模組）
-
-1. User/Scenario
-2. Query/Input
-3. Planner & Reasoning Agent
-4. Data Acquisition/Retrieval
-5. Analytics Engine
-6. Domain Knowledge Integration
-7. Decision/Recommendation
-8. Output & Interaction
-
-## 實驗規劃
-
-- **資料集**：Microsoft GUIDE、ExCyTIn-Bench
-- **基線**：多數類別、歷史誤報率規則、純 GBDT、純 LLM
-- **評估指標**：Macro-F1、TP 漏判率、人工升級率
+- **A**：國安局 2025 年每日約 263 萬次侵擾；IBM 2026 外洩平均成本 499 萬美元、247 天。
+- **B**：ML 分級缺攻擊鏈脈絡；LLM 推理策略漏判 ≥ 40.4% 且易過早結案；自動化自滿。
+- **C**：AI SOC Analyst Agent，對事件做 TP / BP / FP 分級並明確決定何時交給人。
+- **D**：ReAct Planner + `IsSufficient` + GBDT/SHAP + ATT&CK/NIST RAG + R1–R5 + 證據融合與升級。
+- **E**：Microsoft GUIDE（707,108 起事件、5,769 個組織）與 ExCyTIn-Bench；E1–E5 + 消融。
+- **F**：尚未實驗，結果以 `[TBD]` 標示。

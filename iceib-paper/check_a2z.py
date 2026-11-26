@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
-"""Check ICEIB paper/main.tex against the write-iceib-paper OpenSpec change.
+"""Check iceib-paper/main.tex against the OpenSpec changes 000_abstract-006_references.
 
 Usage:
-    python3 "ICEIB paper/check_a2z.py" ["ICEIB paper/main.tex"]
+    python3 iceib-paper/check_a2z.py [iceib-paper/main.tex]
 
 Exit codes:
     0  structure OK and ready to submit
     1  structure problems (missing or out-of-order A2Z codes, wrong sections,
-       citation mismatches, abstract too long)
+       citation mismatches, abstract too long, main.txt differs from main.tex)
     2  structure OK, but submission blockers remain ([TBD] or author
        placeholders)
 """
+import hashlib
 import re
 import sys
 from pathlib import Path
@@ -95,6 +96,17 @@ def main() -> int:
     if bib - cited:
         problems.append(f"\\bibitem never cited: {', '.join(sorted(bib - cited))}")
 
+    # main.txt must be a byte-identical twin of main.tex
+    twin = path.with_suffix(".txt")
+    if twin.exists():
+        same = hashlib.sha256(twin.read_bytes()).digest() == hashlib.sha256(path.read_bytes()).digest()
+        twin_status = "identical" if same else "DIFFERENT"
+        if not same:
+            problems.append(f"{twin.name} differs from {path.name} (run: cp {path} {twin})")
+    else:
+        twin_status = "missing"
+        problems.append(f"{twin.name} is missing (run: cp {path} {twin})")
+
     # Submission blockers
     tbd_lines = [i + 1 for i, line in enumerate(body.splitlines())
                  if ("\\TBD" in line or "[TBD]" in line) and "\\newcommand" not in line]
@@ -110,6 +122,7 @@ def main() -> int:
     print(f"  sections: {sections}")
     print(f"  abstract words: {n}")
     print(f"  references: {len(bib)} bibitems, {len(cited)} cited keys")
+    print(f"  main.txt vs main.tex (SHA-256): {twin_status}")
     for p in problems:
         print(f"STRUCTURE: {p}")
     for b in blockers:
