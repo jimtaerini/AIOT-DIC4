@@ -8,3 +8,4 @@
 # Python virtual environment
 .venv/
 __pycache__/
+**/data/attack/

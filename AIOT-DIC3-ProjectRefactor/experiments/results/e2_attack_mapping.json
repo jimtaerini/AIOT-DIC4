@@ -1,0 +1,172 @@
+{
+ "model": "gemini-3.8-flash",
+ "attack_version": "20.1",
+ "k": 10,
+ "seed": 303,
+ "n_per_cat": 20,
+ "n_alerts": 365,
+ "categories": {
+  "Collection": 20,
+  "CommandAndControl": 20,
+  "CredentialAccess": 20,
+  "CredentialStealing": 20,
+  "DefenseEvasion": 20,
+  "Discovery": 20,
+  "Execution": 20,
+  "Exfiltration": 20,
+  "Exploit": 20,
+  "Impact": 20,
+  "InitialAccess": 20,
+  "LateralMovement": 20,
+  "Malware": 20,
+  "Persistence": 20,
+  "PrivilegeEscalation": 20,
+  "Ransomware": 20,
+  "SuspiciousActivity": 20,
+  "UnwantedSoftware": 20,
+  "WebExploit": 5
+ },
+ "detector_seen_in_train": 0.9808,
+ "mean_truth_size": 1.92,
+ "methods": {
+  "category_prior": {
+   "technique": {
+    "precision": 0.4071,
+    "recall": 0.4106,
+    "f1": 0.4088
+   },
+   "parent": {
+    "precision": 0.4432,
+    "recall": 0.4735,
+    "f1": 0.4579
+   },
+   "tactic": {
+    "precision": 0.6549,
+    "recall": 0.778,
+    "f1": 0.7111
+   },
+   "mean_predicted": 1.93,
+   "hallucinated_ids": 0,
+   "hallucination_rate": 0.0,
+   "f1_ci95": {
+    "technique": [
+     0.3617,
+     0.4586
+    ],
+    "tactic": [
+     0.6621,
+     0.7504
+    ]
+   }
+  },
+  "detector_lookup": {
+   "technique": {
+    "precision": 0.9467,
+    "recall": 0.9142,
+    "f1": 0.9301
+   },
+   "parent": {
+    "precision": 0.9464,
+    "recall": 0.935,
+    "f1": 0.9407
+   },
+   "tactic": {
+    "precision": 0.975,
+    "recall": 0.9705,
+    "f1": 0.9728
+   },
+   "mean_predicted": 1.85,
+   "hallucinated_ids": 0,
+   "hallucination_rate": 0.0,
+   "f1_ci95": {
+    "technique": [
+     0.9062,
+     0.9513
+    ],
+    "tactic": [
+     0.9572,
+     0.985
+    ]
+   }
+  },
+  "llm_only": {
+   "technique": {
+    "precision": 0.2828,
+    "recall": 0.3362,
+    "f1": 0.3072
+   },
+   "parent": {
+    "precision": 0.3302,
+    "recall": 0.4222,
+    "f1": 0.3706
+   },
+   "tactic": {
+    "precision": 0.6953,
+    "recall": 0.7158,
+    "f1": 0.7054
+   },
+   "mean_predicted": 2.28,
+   "hallucinated_ids": 0,
+   "hallucination_rate": 0.0,
+   "f1_ci95": {
+    "technique": [
+     0.2754,
+     0.3451
+    ],
+    "tactic": [
+     0.6667,
+     0.7438
+    ]
+   }
+  },
+  "llm_rag": {
+   "technique": {
+    "precision": 0.2489,
+    "recall": 0.2475,
+    "f1": 0.2482
+   },
+   "parent": {
+    "precision": 0.3328,
+    "recall": 0.3521,
+    "f1": 0.3422
+   },
+   "tactic": {
+    "precision": 0.6533,
+    "recall": 0.6553,
+    "f1": 0.6543
+   },
+   "mean_predicted": 1.9,
+   "hallucinated_ids": 0,
+   "hallucination_rate": 0.0,
+   "f1_ci95": {
+    "technique": [
+     0.2178,
+     0.2801
+    ],
+    "tactic": [
+     0.6176,
+     0.695
+    ]
+   }
+  }
+ },
+ "retrieval_recall_at_k": {
+  "technique": 0.4316,
+  "parent": 0.5458
+ },
+ "cost": {
+  "llm_only": {
+   "calls": 365,
+   "mean_tokens_in": 157,
+   "mean_tokens_out": 82,
+   "mean_latency_s": 4.02
+  },
+  "llm_rag": {
+   "calls": 365,
+   "mean_tokens_in": 1015,
+   "mean_tokens_out": 87,
+   "mean_latency_s": 4.04
+  }
+ },
+ "seconds": 398
+}

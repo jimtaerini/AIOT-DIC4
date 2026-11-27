@@ -710,7 +710,9 @@ Ablation & GUIDE & Remove \textcircled{5}, \textcircled{6}, or escalation rules 
 % [A2Z:R]
 E1 compares the agent with (i) majority class, (ii) a per-detector
 historical-FP-rate rule, (iii) GBDT only, and (iv) LLM only without the
-knowledge base. E2 compares LLM mapping with and without retrieval, E3
+knowledge base. E2 compares LLM mapping with and without retrieval,
+against two non-LLM references: the most frequent technique set of the
+alert's category and of its detector in the training data. E3
 compares against published ExCyTIn-Bench scores and a single-turn LLM
 without planning, and the ablation removes the classifier
 (\textcircled{5}), the knowledge module (\textcircled{6}), or the
@@ -757,8 +759,11 @@ set, so it serves as the incident-split test set, with 10\% of the
 training incidents held out for validation. We also report
 organization-held-out and time-ordered splits. The agent is implemented
 in Python with pandas and DuckDB, scikit-learn's histogram GBDT and SHAP,
-mitreattack-python and Chroma, a tool-using LLM API, and a Streamlit
-dashboard; all scripts fix random seeds. The LLM is Gemini 3.8 Flash
+and a tool-using LLM API; all scripts fix random seeds. The knowledge
+base pins the ATT\&CK Enterprise v20.1 STIX bundle (706 active
+techniques, 44 mitigations), embedded with \texttt{gemini-embedding-001}
+and searched by cosine similarity; every retrieved passage carries its
+technique or mitigation ID as source. The LLM is Gemini 3.8 Flash
 (temperature 0, low thinking effort, JSON output against a fixed
 schema). Because each LLM judgment is a paid API call, the LLM methods
 are evaluated on random samples of 50 validation and 150 test
@@ -767,7 +772,13 @@ re-scored on the same 150 incidents. In this E1 run the agent sees the
 evidence summary, the GBDT probabilities, the five largest SHAP
 contributions, the five most similar training incidents with their
 labels, and the rules that fired; ATT\&CK retrieval is evaluated
-separately in E2.
+separately in E2. For E2 we sample up to 20 annotated test alerts per
+alert category (365 alerts in 19 categories, fixed seed) and normalize
+GUIDE's labels to v20.1: revoked IDs follow their replacement, while
+deprecated and ICS-matrix IDs are dropped. The LLM sees the category,
+entity types and roles, verdicts and threat family, but never the
+labels, titles or detector IDs; with RAG it also receives the ten most
+similar techniques.
 
 \subsection{Parameter Tuning}
 % [A2Z:T]
@@ -835,8 +846,44 @@ intervals overlap (agent MR 6.9--32.4\%, GBDT 12.8--41.7\%), so with 37
 TP incidents the gain is suggestive rather than significant. The
 agent's prompts average 754 input and 104 output tokens, and a call
 takes 4.9~s.
-\TBD{} Report E2 precision and recall, E3 reward, E4 rubric scores,
-E5 cost, and the ablation, using values from \texttt{experiments/results/} only.
+% [A2Z:U]
+% Values: experiments/results/e2_attack_mapping.json, e2_sample.csv
+Table~\ref{tab:e2} reports E2. Neither LLM setting beats the
+category prior at the technique level (F1 0.307 without and 0.248 with
+retrieval, vs.\ 0.409), and all three reach a tactic F1 of 0.65--0.71,
+which the alert category largely gives away. The detector lookup
+reaches 0.930, because in GUIDE the technique set is almost a fixed
+property of the detector (1.13 distinct sets per detector), a
+relation that anonymization hides from the LLM. Retrieval hurt rather
+than helped: the ten retrieved techniques contain a true technique for
+only 52\% of alerts, and the LLM chose only from the list in 94\% of
+cases. Where retrieval hit, the RAG setting slightly outscored the
+LLM alone (F1 0.430 vs.\ 0.415); where it missed, it collapsed (0.029
+vs.\ 0.178). Neither setting produced an ID that does not exist in
+ATT\&CK v20.1. Retrieval, not the LLM, is thus the bottleneck, and on
+anonymized alerts retrieved candidates must not restrict the answer.
+\TBD{} Report E3 reward, E4 rubric scores, E5 cost, and the ablation,
+using values from \texttt{experiments/results/} only.
+
+\begin{table}[t]
+% [A2Z:U]
+% Values: experiments/results/e2_attack_mapping.json (gemini-3.8-flash, ATT&CK v20.1, 365 alerts, K = 10)
+\caption{ATT\&CK Mapping on 365 GUIDE Test Alerts (Micro F1)}
+\label{tab:e2}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Method} & \textbf{Technique} & \textbf{Parent tech.} & \textbf{Tactic} \\
+\midrule
+Category prior (train)  & 0.409 & 0.458 & 0.711 \\
+Detector lookup (train) & 0.930 & 0.941 & 0.973 \\
+LLM only                & 0.307 & 0.371 & 0.705 \\
+LLM + RAG ($K{=}10$)    & 0.248 & 0.342 & 0.654 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \begin{figure}[t]
 % [A2Z:U]
@@ -971,7 +1018,9 @@ confidence escalation cuts the TP miss rate from 25.5\% to 18.0\% at
 anonymized evidence (macro-F1 0.127), but fused with the classifier its
 disagreements lower MR from 27.0\% to 18.9\% while escalating 8.0\% of
 a 150-incident sample, at about 750 prompt tokens per incident.
-\TBD{} Add the ATT\&CK mapping and investigation results.
+In ATT\&CK mapping, retrieval was the bottleneck: the retrieved
+techniques missed the true one for 48\% of alerts, and the LLM rarely
+looked beyond them. \TBD{} Add the investigation and report-quality results.
 
 % [A2Z:Z]
 In conclusion, turning SOC domain principles into checkable decision

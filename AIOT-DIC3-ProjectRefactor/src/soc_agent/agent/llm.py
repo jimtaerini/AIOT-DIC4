@@ -28,10 +28,12 @@ class Judgment(BaseModel):
 
 class GeminiJudge:
     def __init__(self, model: str = "gemini-4-hydrogen", thinking_level: str = "low",
-                 min_interval_s: float = 4.0, cache_path: str | Path | None = None, max_retries: int = 6):
+                 min_interval_s: float = 4.0, cache_path: str | Path | None = None, max_retries: int = 6,
+                 schema: type[BaseModel] = Judgment):
         # reads GEMINI_API_KEY; SDK-level retries are off because judge() retries with its own backoff
         self.client = genai.Client(http_options=types.HttpOptions(retry_options=types.HttpRetryOptions(attempts=1)))
         self.model = model
+        self.schema = schema
         self.thinking_level = thinking_level
         self.min_interval_s = min_interval_s
         self.max_retries = max_retries
@@ -51,7 +53,7 @@ class GeminiJudge:
         config = types.GenerateContentConfig(
             system_instruction=system,
             response_mime_type="application/json",
-            response_schema=Judgment,
+            response_schema=self.schema,
             thinking_config=types.ThinkingConfig(thinking_level=self.thinking_level),
             temperature=0.0,
         )
@@ -64,7 +66,7 @@ class GeminiJudge:
             t = time.time()
             try:
                 r = self.client.models.generate_content(model=self.model, contents=prompt, config=config)
-                parsed = r.parsed if isinstance(r.parsed, Judgment) else Judgment.model_validate_json(r.text)
+                parsed = r.parsed if isinstance(r.parsed, self.schema) else self.schema.model_validate_json(r.text)
                 u = r.usage_metadata
                 rec = {"mode": mode, "model": self.model, "incident": incident, **parsed.model_dump(),
                        "tokens_in": u.prompt_token_count, "tokens_out": u.candidates_token_count,
@@ -84,8 +86,9 @@ class GeminiJudge:
             except Exception as e:  # malformed JSON etc.
                 if attempt < self.max_retries - 1:
                     continue
-                rec = {"mode": mode, "model": self.model, "incident": incident, "label": None,
-                       "confidence": None, "rationale": f"ERROR: {type(e).__name__}: {str(e)[:200]}",
+                rec = {"mode": mode, "model": self.model, "incident": incident,
+                       **{f: None for f in self.schema.model_fields},
+                       "error": f"{type(e).__name__}: {str(e)[:200]}",
                        "tokens_in": 0, "tokens_out": 0, "tokens_thinking": 0, "latency_s": 0,
                        "attempts": attempt + 1}
         with self._lock:
