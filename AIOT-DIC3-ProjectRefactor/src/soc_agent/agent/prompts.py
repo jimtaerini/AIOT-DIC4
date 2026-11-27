@@ -54,3 +54,28 @@ Kill-chain risk rules fired:
 
 Integrate all of this. Where the ML model and the evidence disagree, say so. Return the label,
 your confidence (low/medium/high), and a short rationale that names the evidence you relied on."""
+
+
+def ablation_prompt(summary: str, p=None, top_features: list[dict] | None = None, similar: list[dict] | None = None,
+                    rules: list[str] | None = None, rule_text: dict[str, str] | None = None) -> str:
+    """Agent prompt with modules removed for the ablation: pass None for what the agent must not see.
+    Without analytics (module 5): p, top_features and similar are None.
+    Without knowledge (module 6): rules is None."""
+    parts = ["Triage this incident. You have the evidence and the outputs of the agent's other modules.", "", summary]
+    if p is not None:
+        feats = "\n".join(
+            f"- {f['feature']} = {f['value']:.3g} ({FEATURE_NOTES.get(f['feature'], 'incident feature')}): "
+            f"{'pushes toward' if f['direction'] == 'toward' else 'pushes against'} {f['toward_class']} "
+            f"(SHAP {f['contribution']:+.2f})" for f in top_features)
+        parts += ["", "ML triage model (gradient-boosted trees trained on analyst labels):",
+                  f"P(TP) = {p[0]:.2f}, P(BP) = {p[1]:.2f}, P(FP) = {p[2]:.2f}", "Most influential features (SHAP):", feats]
+    if similar is not None:
+        parts += ["", "Most similar past incidents and their analyst labels:",
+                  "\n".join(f"- {s['incident']}: {s['label']}{' (analyst-corrected)' if s['corrected'] else ''}, "
+                            f"distance {s['distance']:.2f}" for s in similar)]
+    if rules is not None:
+        parts += ["", "Kill-chain risk rules fired:",
+                  "\n".join(f"- {r}: {rule_text[r]}" for r in rules) if rules else "- none fired"]
+    parts += ["", "Integrate all of this. Where the sources disagree, say so. Return the label,",
+              "your confidence (low/medium/high), and a short rationale that names the evidence you relied on."]
+    return "\n".join(parts)

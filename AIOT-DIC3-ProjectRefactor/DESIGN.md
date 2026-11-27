@@ -473,6 +473,24 @@ python experiments/e0_profile_guide.py data/archive/GUIDE_Train.csv > experiment
 - Agent 每個事件的 LLM 成本：推理 1 次 + RAG 報告 1 次 = 0.005 美元（2027 起 0.010 美元），12.6 秒；付費層沒有任何重試。
 - E1、E2、E4 全部 1,368 次呼叫（含評分）共 2.06 美元。ReAct 工具呼叫次數待 E3。
 
+### 消融實驗（2026-11-27）
+
+150 個測試事件，各版本都在 50 個驗證事件上重新調參（`experiments/results/e1h_ablation.json`）。
+
+| 版本 | Macro-F1 | MR | ER |
+|---|---|---|---|
+| 完整 Agent | 0.734 | 0.189 | 0.080 |
+| 移除 ⑤ 分析模組（GBDT、SHAP、相似事件） | 0.156 | 0.162 | 0.000 |
+| 移除 ⑥ 知識模組（規則） | 0.734 | 0.189 | 0.093 |
+| 移除升級機制 | 0.734 | 0.270 | 0.000 |
+| 移除 LLM 推理（GBDT + 信心升級） | 0.739 | 0.162 | 0.173 |
+
+發現：分類器決定標籤（移除後 LLM 把 132/150 判為 TP）；LLM 的分歧讓升級更省（同樣的 MR，ER 只要一半）；在 GUIDE 上規則沒有額外貢獻。
+
+### E3 調查推理：不做（2026-11-27 決定）
+
+ExCyTIn-Bench 需要 Docker + MySQL 與約 NT$80–150 的 API 費用，且論文已達 8 頁上限，因此不做；論文中實驗重新編號（報告品質改為 E3、成本改為 E4），Planner 的多步調查列為未來工作。
+
 ## 14. Limitations & Risks
 
 | 風險 | 影響 | 對策 |
@@ -499,3 +517,4 @@ python experiments/e0_profile_guide.py data/archive/GUIDE_Train.csv > experiment
 | v0.9 | 2026-11-26 | §5 待確認項目完成；GBDT 改用 scikit-learn 直方圖 GBDT；§13 加入 E1 非 LLM 結果、SHAP 與相似事件、R1–R5 與信心升級；決定 R1 不修改、作為發現報告 |
 | v1.0 | 2026-11-27 | §13 加入 LLM 基準與 Agent 融合結果（gemini-3.8-flash，150 個測試事件）；e1f 支援平行呼叫（付費層） |
 | v1.1 | 2026-11-27 | §13 加入 E2（ATT&CK v20.1 知識庫與對應）、E4（報告品質，LLM judge）、E5（成本） |
+| v1.2 | 2026-11-27 | §13 加入消融實驗；決定不做 E3（ExCyTIn），論文實驗重新編號 |

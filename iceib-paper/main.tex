@@ -108,9 +108,9 @@ model conflict, high-risk kill-chain patterns, or insufficient
 evidence.
 % [A2Z:E]
 We evaluate it on Microsoft GUIDE (707{,}108 analyst-labeled training
-incidents from 5{,}769 organizations) and ExCyTIn-Bench against
-majority-class, detector-rule, ML-only, and LLM-only baselines under
-leakage-free splits.
+incidents from 5{,}769 organizations) against majority-class,
+detector-rule, ML-only, and LLM-only baselines under leakage-free
+splits.
 % [A2Z:F]
 % Values: experiments/results/e1_results.json, e1e_rules_escalation.json, e1g_agent_eval.json
 We prove that raising the confidence threshold never increases the
@@ -213,9 +213,9 @@ knowledge base, and an LLM planner with tool use.
 rule-based sufficiency test, and an evidence-fusion algorithm with
 kill-chain risk rules and explicit escalation conditions, whose
 monotonicity and safety properties we prove.
-\item \textbf{Evaluation:} a leakage-aware protocol on two public
-datasets that reports the TP miss rate jointly with the escalation
-rate, with ablations of each module.
+\item \textbf{Evaluation:} a leakage-aware protocol on a public
+dataset of one million incidents that reports the TP miss rate jointly
+with the escalation rate, with ablations of each module.
 \end{itemize}
 
 % [A2Z:L]
@@ -304,7 +304,7 @@ Knowledge & Implicit in the LLM
 Escalation & Decided by a judge LLM
 & Checkable rules: confidence, conflict, risk, sufficiency \\
 Data & One data family (AIT-LDSv2)
-& GUIDE (6.1k orgs) and ExCyTIn-Bench \\
+& GUIDE: 1M incidents from 6.1k orgs \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -424,7 +424,7 @@ collects analyst feedback.
 \node[box, below=0.75cm of q] (d) {\textcircled{4} Retrieval\\Evidence / SQL};
 \node[box, right=0.35cm of d] (a) {\textcircled{5} Analytics\\GBDT + SHAP + $k$NN};
 \node[box, right=0.35cm of a] (k) {\textcircled{6} Knowledge\\ATT\&CK RAG + rules};
-\node[db, below=0.35cm of d] (ds) {GUIDE / ExCyTIn};
+\node[db, below=0.35cm of d] (ds) {Incident data / logs};
 \node[db, below=0.35cm of k] (kb) {STIX / SP 800-61};
 \node[box, below=2.1cm of u, fill=green!10] (r)
      {\textcircled{7} Evidence fusion\\Confidence \& escalation};
@@ -674,16 +674,17 @@ for automation.
 
 \subsection{Experiments and Metrics}
 % [A2Z:Q]
-Table~\ref{tab:exp} lists the five experiments and the ablation. The
+Table~\ref{tab:exp} lists the four experiments and the ablation. The
 primary metrics are the TP miss rate $\mathrm{MR}$ and the escalation
 rate $\mathrm{ER}$ defined in Section~\ref{sec:design}; we also report
 macro-F1, per-class precision and recall, technique- and tactic-level
 precision and recall for ATT\&CK mapping, rubric scores for report
 quality (correctness, evidence completeness, actionability; human and
-LLM-as-judge), and tokens, latency, and tool calls per incident.
-Because LLM calls are costly, LLM-dependent experiments use stratified
-samples of 1{,}000 incidents; five such runs cost at most about
-US\$550 at the per-alert cost reported in~\cite{tsegai2026}.
+LLM-as-judge), and tokens and latency per incident. Because LLM calls
+are paid, LLM-dependent experiments use fixed random samples of the
+test split, and the other methods are re-scored on the same sample.
+The planner's multi-step investigation on raw logs, for example on
+ExCyTIn-Bench~\cite{wu2025excytin}, is left to future work.
 
 \begin{table}[t]
 % [A2Z:Q]
@@ -698,9 +699,8 @@ US\$550 at the per-alert cost reported in~\cite{tsegai2026}.
 \midrule
 E1 Triage & GUIDE & Baselines (i)--(iv) & Macro-F1, P/R, MR, ER \\
 E2 ATT\&CK & GUIDE (annotated) & LLM vs.\ LLM+RAG & Technique/tactic P, R \\
-E3 Investigation & ExCyTIn-Bench & Published scores; single-turn LLM & Benchmark reward \\
-E4 Report & 50 sampled incidents & Without RAG & Rubric scores \\
-E5 Cost & E1--E4 & -- & Tokens, latency, tool calls \\
+E3 Report & 50 sampled incidents & Without RAG & Rubric scores \\
+E4 Cost & E1--E3 & -- & Tokens, latency \\
 Ablation & GUIDE & Remove \textcircled{5}, \textcircled{6}, or escalation rules & As E1 \\
 \bottomrule
 \end{tabular}
@@ -712,9 +712,9 @@ E1 compares the agent with (i) majority class, (ii) a per-detector
 historical-FP-rate rule, (iii) GBDT only, and (iv) LLM only without the
 knowledge base. E2 compares LLM mapping with and without retrieval,
 against two non-LLM references: the most frequent technique set of the
-alert's category and of its detector in the training data. E3
-compares against published ExCyTIn-Bench scores and a single-turn LLM
-without planning, and the ablation removes the classifier
+alert's category and of its detector in the training data, E3
+compares reports with and without retrieval, and the ablation removes
+the classifier
 (\textcircled{5}), the knowledge module (\textcircled{6}), or the
 escalation rules in turn.
 
@@ -725,9 +725,7 @@ million evidence rows, 1.6 million alerts, and 1 million incidents from
 6.1k organizations. Table~\ref{tab:guide} summarizes our own profile of
 the training file. \texttt{MitreTechniques} is filled in only 42.5\% of
 rows, so E2 uses annotated alerts only, and remediation labels are
-99.4\% missing, so recommendations are judged by rubric in E4.
-\textbf{ExCyTIn-Bench}~\cite{wu2025excytin} provides 57 log tables,
-eight attack chains, and 7{,}542 questions for E3.
+99.4\% missing, so recommendations are judged by rubric in E3.
 
 \begin{table}[t]
 % [A2Z:S]
@@ -787,8 +785,7 @@ E1 we search $w_{ml}\in\{0,0.1,\dots,1\}$, $\tau\in\{0\}\cup\{0.50,0.55,\dots,0.
 ($\tau=0$ escalates on conflicts and rules only), and whether all of
 R1--R5, only R2--R5, or no rule forces escalation, with
 $\tau_{safety}=0.3$ and the LLM confidence mapping
-$\{0.5,0.7,0.9\}$ fixed; the tool budget $B\in\{5,10,15\}$ is tuned
-for E3. The threshold
+$\{0.5,0.7,0.9\}$ fixed. The threshold
 $\tau$ is swept over $[0.50,0.95]$ in steps of 0.05; by
 Proposition~\ref{prop:mono} this traces a monotone
 $\mathrm{MR}$--$\mathrm{ER}$ curve, and we select the lowest-MR point
@@ -865,7 +862,7 @@ anonymized alerts retrieved candidates must not restrict the answer.
 
 % [A2Z:U]
 % Values: experiments/results/e4_report_quality.json, e4_scores.csv (writer gemini-3.8-flash, judge gemini-4-hydrogen)
-For E4 the agent wrote reports for 50 of the 150 E1 test incidents,
+For E3 the agent wrote reports for 50 of the 150 E1 test incidents,
 with and without the retrieved ATT\&CK technique texts and their linked
 mitigations; when an incident records no technique (34 of 50), the
 five most similar techniques are retrieved. A different model, Gemini
@@ -888,15 +885,47 @@ mappings (1.12 vs.\ 0.74 unsupported claims). Human scoring of the same
 
 % [A2Z:U]
 % Values: experiments/results/e5_cost.json (Gemini list prices checked 2026-11-27)
-In E5, the agent's LLM steps per incident, one reasoning call (754
+In E4, the agent's LLM steps per incident, one reasoning call (754
 input and 132 output tokens) and one RAG report (1{,}679 and 726),
 cost US\$0.005 at Gemini 3.8 Flash prices until December 2026
 (US\$0.010 from January 2027) and take 12.6~s; the GBDT, SHAP, and
 retrieval steps add little. No paid call needed a retry, and all
-1{,}368 calls of E1, E2, and E4, including the judge, cost US\$2.06.
-The planner's tool calls are measured in E3.
-\TBD{} Report E3 reward and the ablation, using values from
-\texttt{experiments/results/} only.
+1{,}368 calls of E1--E3, including the judge, cost US\$2.06.
+
+% [A2Z:U]
+% Values: experiments/results/e1h_ablation.json (150 test incidents; each variant tuned on the 50 validation incidents)
+Table~\ref{tab:abl} reports the ablation on the same 150 test
+incidents, with every variant re-tuned on validation. Removing the
+analytics module (\textcircled{5}) is the most damaging: without the
+GBDT, SHAP, and similar incidents, the LLM labels 132 of 150 incidents
+as TP and macro-F1 falls from 0.734 to 0.156. Removing the knowledge
+module (\textcircled{6}), whose rules the selected agent does not use
+for escalation, leaves the labels unchanged and raises ER only from
+8.0\% to 9.3\%. Removing escalation leaves the labels intact but raises
+MR from 18.9\% to 27.0\%. Removing the LLM reasoning step leaves the
+GBDT with confidence escalation, which reaches a similar MR (16.2\%)
+only at more than twice the ER (17.3\%).
+
+\begin{table}[t]
+% [A2Z:U]
+% Values: experiments/results/e1h_ablation.json
+\caption{Ablation on 150 GUIDE Test Incidents}
+\label{tab:abl}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Variant} & \textbf{Macro-F1} & \textbf{MR} & \textbf{ER} \\
+\midrule
+Full agent                          & 0.734 & 0.189 & 0.080 \\
+w/o analytics (\textcircled{5})     & 0.156 & 0.162 & 0.000 \\
+w/o knowledge (\textcircled{6})     & 0.734 & 0.189 & 0.093 \\
+w/o escalation                      & 0.734 & 0.270 & 0.000 \\
+w/o LLM reasoning (GBDT + $\tau$)   & 0.739 & 0.162 & 0.173 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \begin{table}[t]
 % [A2Z:U]
@@ -1036,21 +1065,23 @@ TP incidents on which the GBDT and the LLM agree on the same benign or
 false label; only a higher $\tau$ catches them.
 
 % [A2Z:V]
-E2 and E4 verify the knowledge module only in part. Retrieved
+E2 and E3 verify the knowledge module only in part. Retrieved
 knowledge makes most recommendations traceable to valid mitigation
 IDs, but on anonymized alerts it narrowed the mapping and diluted the
 advice. Retrieval should therefore enrich rather than
 restrict the LLM's answer, and remediation retrieval should depend on
 the decision, since containment steps fit TP incidents, not benign or
-false ones. \TBD{} Report which module the ablation shows matters most.
+false ones. The ablation confirms the division of labor: the
+classifier carries the labels, the LLM's disagreement makes escalation
+cheaper, and on GUIDE the kill-chain rules add nothing beyond them.
 
 % [A2Z:V]
 Several threats qualify these results. GUIDE is anonymized and comes
 from one vendor ecosystem, which limits LLM semantic reasoning and
-generalization; ExCyTIn-Bench and organization-held-out splits
-partially address this. LLMs may hallucinate mappings or actions;
+generalization; the organization-held-out split partially
+addresses this. LLMs may hallucinate mappings or actions;
 retrieval with citations, cross-checking with the ML output, and
-escalation on conflict reduce but do not remove this risk. E4 relies
+escalation on conflict reduce but do not remove this risk. E3 relies
 on an LLM judge until the human scores are in, and its rubric is
 partly subjective. Finally, an adversary may delete
 logs to induce early closure; R4 and condition C3 treat such gaps as
@@ -1087,7 +1118,8 @@ In ATT\&CK mapping, retrieval was the bottleneck: the retrieved
 techniques missed the true one for 48\% of alerts, and the LLM rarely
 looked beyond them. In reports, retrieval made recommendations
 traceable but less tailored, and the agent's LLM steps cost about
-US\$0.005 per incident. \TBD{} Add the investigation results.
+US\$0.005 per incident. The ablation shows that the classifier carries
+the labels: without it, macro-F1 falls from 0.734 to 0.156.
 
 % [A2Z:Z]
 In conclusion, turning SOC domain principles into checkable decision
@@ -1098,7 +1130,9 @@ low precision of category-based kill-chain rules on GUIDE. Future work
 will (1) calibrate each risk rule against an environment's labels before
 it may force escalation, (2) add queue prioritization, (3) extend the
 knowledge base to ATT\&CK for ICS for industrial IoT, and (4) study
-analyst trust and complacency in a live SOC deployment.
+analyst trust and complacency in a live SOC deployment. The
+planner's multi-step investigation on raw logs has not yet been
+evaluated and is the next step.
 
 % =====================================================================
 \begin{thebibliography}{00}

@@ -1,0 +1,104 @@
+{
+ "model": "gemini-3.8-flash",
+ "n": {
+  "val": 50,
+  "test": 150
+ },
+ "configs": {
+  "full": {
+   "macro_f1": 0.7339,
+   "tp_recall": 0.7297,
+   "mr": 0.1892,
+   "er": 0.08,
+   "mr_ci95": [
+    0.069,
+    0.3235
+   ],
+   "params": {
+    "w_ml": 0.9,
+    "tau": 0.0,
+    "rule_policy": "none",
+    "val_mr": 0.0,
+    "val_er": 0.12
+   }
+  },
+  "no_escalation": {
+   "macro_f1": 0.7339,
+   "tp_recall": 0.7297,
+   "mr": 0.2703,
+   "er": 0.0,
+   "mr_ci95": [
+    0.1282,
+    0.4167
+   ],
+   "params": {
+    "from": "full, escalation off"
+   }
+  },
+  "no_knowledge": {
+   "macro_f1": 0.7339,
+   "tp_recall": 0.7297,
+   "mr": 0.1892,
+   "er": 0.0933,
+   "mr_ci95": [
+    0.069,
+    0.3235
+   ],
+   "params": {
+    "w_ml": 0.9,
+    "tau": 0.0,
+    "rule_policy": "none",
+    "val_mr": 0.0,
+    "val_er": 0.06
+   }
+  },
+  "no_analytics": {
+   "macro_f1": 0.1556,
+   "tp_recall": 0.8378,
+   "mr": 0.1622,
+   "er": 0.0,
+   "mr_ci95": [
+    0.0541,
+    0.2917
+   ],
+   "params": {
+    "w_ml": 0.0,
+    "tau": 0.0,
+    "rule_policy": "none",
+    "val_mr": 0.25,
+    "val_er": 0.0
+   }
+  },
+  "no_llm": {
+   "macro_f1": 0.7389,
+   "tp_recall": 0.7297,
+   "mr": 0.1622,
+   "er": 0.1733,
+   "mr_ci95": [
+    0.0556,
+    0.2812
+   ],
+   "params": {
+    "tau": 0.5,
+    "note": "GBDT + confidence escalation (E1e operating point)"
+   }
+  }
+ },
+ "llm_only_label_counts": {
+  "ablate_no_analytics": {
+   "TP": 132,
+   "FP": 14,
+   "BP": 4
+  },
+  "ablate_no_knowledge": {
+   "BP": 69,
+   "TP": 43,
+   "FP": 38
+  },
+  "agent": {
+   "BP": 68,
+   "TP": 45,
+   "FP": 37
+  }
+ }
+}
