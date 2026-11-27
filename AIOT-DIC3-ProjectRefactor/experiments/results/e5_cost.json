@@ -1,0 +1,136 @@
+{
+ "prices_usd_per_1m_tokens": {
+  "gemini-3.8-flash": {
+   "until_2026-12-31": [
+    0.75,
+    3.75
+   ],
+   "from_2027-01-01": [
+    1.5,
+    7.5
+   ]
+  },
+  "gemini-4-hydrogen": {
+   "until_2026-12-31": [
+    1.5,
+    7.5
+   ],
+   "from_2027-01-01": [
+    1.5,
+    7.5
+   ]
+  }
+ },
+ "steps": [
+  {
+   "step": "E1 triage, LLM only",
+   "model": "gemini-3.8-flash",
+   "calls": 200,
+   "mean_tokens_in": 367,
+   "mean_tokens_out_incl_thinking": 116,
+   "mean_latency_s": 5.57,
+   "p95_latency_s": 11.01,
+   "mean_attempts": 1.0,
+   "usd_per_call_until_2026-12-31": 0.000711,
+   "usd_per_call_from_2027-01-01": 0.001423
+  },
+  {
+   "step": "E1 triage, agent reasoning step",
+   "model": "gemini-3.8-flash",
+   "calls": 200,
+   "mean_tokens_in": 754,
+   "mean_tokens_out_incl_thinking": 132,
+   "mean_latency_s": 4.88,
+   "p95_latency_s": 8.83,
+   "mean_attempts": 1.0,
+   "usd_per_call_until_2026-12-31": 0.00106,
+   "usd_per_call_from_2027-01-01": 0.002119
+  },
+  {
+   "step": "E2 ATT&CK mapping, LLM only",
+   "model": "gemini-3.8-flash",
+   "calls": 384,
+   "mean_tokens_in": 156,
+   "mean_tokens_out_incl_thinking": 110,
+   "mean_latency_s": 4.06,
+   "p95_latency_s": 6.48,
+   "mean_attempts": 1.0,
+   "usd_per_call_until_2026-12-31": 0.000529,
+   "usd_per_call_from_2027-01-01": 0.001058
+  },
+  {
+   "step": "E2 ATT&CK mapping, LLM + RAG",
+   "model": "gemini-3.8-flash",
+   "calls": 384,
+   "mean_tokens_in": 1015,
+   "mean_tokens_out_incl_thinking": 95,
+   "mean_latency_s": 4.04,
+   "p95_latency_s": 6.38,
+   "mean_attempts": 1.0,
+   "usd_per_call_until_2026-12-31": 0.001118,
+   "usd_per_call_from_2027-01-01": 0.002235
+  },
+  {
+   "step": "E4 report, without RAG",
+   "model": "gemini-3.8-flash",
+   "calls": 50,
+   "mean_tokens_in": 699,
+   "mean_tokens_out_incl_thinking": 699,
+   "mean_latency_s": 9.42,
+   "p95_latency_s": 10.79,
+   "mean_attempts": 1.0,
+   "usd_per_call_until_2026-12-31": 0.003145,
+   "usd_per_call_from_2027-01-01": 0.006291
+  },
+  {
+   "step": "E4 report, with RAG",
+   "model": "gemini-3.8-flash",
+   "calls": 50,
+   "mean_tokens_in": 1679,
+   "mean_tokens_out_incl_thinking": 726,
+   "mean_latency_s": 7.75,
+   "p95_latency_s": 10.13,
+   "mean_attempts": 1.0,
+   "usd_per_call_until_2026-12-31": 0.003983,
+   "usd_per_call_from_2027-01-01": 0.007965
+  },
+  {
+   "step": "E4 LLM judge, report without RAG (evaluation only)",
+   "model": "gemini-4-hydrogen",
+   "calls": 50,
+   "mean_tokens_in": 1819,
+   "mean_tokens_out_incl_thinking": 552,
+   "mean_latency_s": 4.83,
+   "p95_latency_s": 6.87,
+   "mean_attempts": 1.0,
+   "usd_per_call_until_2026-12-31": 0.006867,
+   "usd_per_call_from_2027-01-01": 0.006867
+  },
+  {
+   "step": "E4 LLM judge, report with RAG (evaluation only)",
+   "model": "gemini-4-hydrogen",
+   "calls": 50,
+   "mean_tokens_in": 1845,
+   "mean_tokens_out_incl_thinking": 635,
+   "mean_latency_s": 5.8,
+   "p95_latency_s": 8.53,
+   "mean_attempts": 1.0,
+   "usd_per_call_until_2026-12-31": 0.007527,
+   "usd_per_call_from_2027-01-01": 0.007527
+  }
+ ],
+ "totals": {
+  "agent_llm_usd_per_incident": {
+   "until_2026-12-31": 0.005043,
+   "from_2027-01-01": 0.010084
+  },
+  "agent_llm_latency_s_per_incident": 12.63,
+  "tool_calls_per_incident": 0,
+  "note": "The ReAct planner (tool calls) is not used in E1/E2/E4; E3 will add it.",
+  "all_calls": 1368,
+  "usd_spent_on_these_calls": {
+   "until_2026-12-31": 2.0625,
+   "from_2027-01-01": 3.4053
+  }
+ }
+}

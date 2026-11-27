@@ -1,0 +1,8332 @@
+# E4 human review (blind)
+
+Score each report 1-5 on correctness, evidence completeness and actionability in `e4_human_scores.csv`. The condition (with or without RAG) is hidden.
+
+
+---
+## Report 1
+
+True label: FP
+
+### Evidence
+```
+Incident test:11:401203: 1 alerts, 4 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: T1078, T1078.004.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: T1078, T1078.004; entities: User/Impacted, Ip/Related, CloudLogonSession/Related, CloudLogonRequest/Related (source: alert 857280, 4 evidence rows)
+
+Agent decision: FP (fused confidence 0.89); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.09, P(BP)=0.03, P(FP)=0.89
+Most influential features (SHAP):
+- AlertTitle_fp_mean = 0.811 (alert titles' historical FP rate): toward FP (SHAP +1.08)
+- DetectorId_fp_mean = 0.811 (detectors' historical FP rate): toward FP (SHAP +0.74)
+- AlertTitle_fp_max = 0.811 (incident feature): toward FP (SHAP +0.41)
+- DetectorId_fp_max = 0.811 (incident feature): toward FP (SHAP +0.30)
+- n_evidence = 4 (incident feature): toward FP (SHAP +0.15)
+Most similar past incidents:
+- train:222:11027: FP, distance 0.00
+- train:307:382975: FP, distance 0.00
+- train:2565:83053: FP, distance 0.00
+- train:465:395400: FP, distance 0.00
+- train:98:348110: FP, distance 0.00
+LLM reasoning step: FP (high): The incident consists of a single isolated Initial Access alert (T1078, T1078.004) without any subsequent suspicious kill-chain activity or risk rules triggered. The ML model shows an 89% probability of false positive supported by an alert title and detector historical FP rate of 0.811. Furthermore, all top five nearest historical incidents with identical features (distance 0.00) were verified as false positives.
+```
+### Report
+```json
+{
+ "summary": "Incident test:11:401203 contains a single Initial Access alert triggered on cloud logon activity involving valid cloud accounts. The incident was auto-triaged as a False Positive with 0.89 fused confidence based on high historical false positive rates for the detector and title. No follow-on anomalous activity or post-compromise behaviors were observed.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1078.004",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "857280"
+   ]
+  },
+  {
+   "technique_id": "T1078",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "857280"
+   ]
+  }
+ ],
+ "furthest_stage": "InitialAccess",
+ "evidence_chain": [
+  {
+   "finding": "Single isolated Initial Access alert for cloud logon activity involving User, IP, CloudLogonSession, and CloudLogonRequest entities.",
+   "source": "alert 857280"
+  },
+  {
+   "finding": "The ML model evaluated the incident with P(FP)=0.89, heavily driven by AlertTitle_fp_mean (0.811) and DetectorId_fp_mean (0.811).",
+   "source": "ML model"
+  },
+  {
+   "finding": "The top five most similar historical incidents (train:222:11027, train:307:382975, train:2565:83053, train:465:395400, train:98:348110) at distance 0.00 were all confirmed as False Positives.",
+   "source": "similar incident train:222:11027"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify user logon context and confirm no unexpected concurrent sessions or impossible travel occurred for the impacted account.",
+   "priority": "immediate",
+   "source": "NIST SP 800-61 Rev. 3"
+  },
+  {
+   "action": "Ensure multifactor authentication (MFA) remains actively enforced on the affected cloud identity.",
+   "priority": "short-term",
+   "source": "NIST SP 800-61 Rev. 3"
+  },
+  {
+   "action": "Review and tune detection thresholds for the associated detector ID and alert title to reduce recurring false positive cloud logon triggers.",
+   "priority": "long-term",
+   "source": "NIST SP 800-61 Rev. 3"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a False Positive without escalation due to high ML confidence (0.89), zero post-compromise activity across the 0.0-hour span, identical past FP matches, and historical detector FP rates exceeding 81%.",
+ "limitations": "Analysis is constrained by anonymized user and IP entities as well as a lack of detailed telemetry on session risk context beyond the 4 evidence rows provided in alert 857280."
+}
+```
+
+---
+## Report 2
+
+True label: BP
+
+### Evidence
+```
+Incident test:3:306735: 1 alerts, 5 evidence rows, time span 0.0 h.
+Alert categories: SuspiciousActivity x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [SuspiciousActivity] techniques: none; entities: Machine/Impacted, Ip/Related, Process/Related, User/Impacted, Url/Related; suspicion: Suspicious; last verdict: Suspicious (source: alert 731809, 5 evidence rows)
+
+Agent decision: BP (fused confidence 0.99); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=1.00, P(FP)=0.00
+Most influential features (SHAP):
+- AlertTitle_bp_max = 0.942 (incident feature): toward BP (SHAP +2.17)
+- AlertTitle_bp_mean = 0.942 (alert titles' historical BP rate): toward BP (SHAP +1.51)
+- n_files = 1 (incident feature): toward BP (SHAP +0.28)
+- AlertTitle_fp_mean = 0.0344 (alert titles' historical FP rate): toward BP (SHAP +0.21)
+- AlertTitle_tp_mean = 0.0233 (alert titles' historical TP rate): toward BP (SHAP +0.20)
+Most similar past incidents:
+- train:523:46134: BP, distance 0.15
+- train:3:302201: BP, distance 0.24
+- train:3:301291: BP, distance 0.26
+- train:523:59688: BP, distance 0.26
+- train:3:306915: BP, distance 0.32
+LLM reasoning step: BP (high): The single SuspiciousActivity alert has an overwhelming historical benign positive rate (AlertTitle_bp_max = 0.942) and no associated ATT&CK techniques or kill-chain risk rules fired. The ML triage model strongly indicates a benign positive (P(BP) = 1.00), corroborated by all nearest historical neighbors also being classified as BP.
+```
+### Report
+```json
+{
+ "summary": "Incident test:3:306735 contains a single SuspiciousActivity alert involving an impacted machine, user, and related process and network indicators. The incident was auto-triaged as a Benign Positive (BP) with a fused confidence of 0.99, supported by a 1.00 benign probability from the ML triage model and an absence of mapped adversary techniques. Multiple past similar incidents and historical title metrics strongly indicate standard benign business activity.",
+ "attack_mapping": [],
+ "furthest_stage": "None",
+ "evidence_chain": [
+  {
+   "finding": "Alert 731809 triggered under the SuspiciousActivity category involving 5 evidence rows across machine, IP, process, user, and URL entities with no ATT&CK techniques identified.",
+   "source": "alert 731809"
+  },
+  {
+   "finding": "The ML model evaluated the event with P(BP)=1.00 and P(TP)=0.00, heavily influenced by an AlertTitle_bp_max of 0.942 (SHAP +2.17) and AlertTitle_bp_mean of 0.942 (SHAP +1.51).",
+   "source": "ML model"
+  },
+  {
+   "finding": "The top five nearest historical incidents (train:523:46134 at distance 0.15, train:3:302201 at distance 0.24, train:3:301291 at distance 0.26, train:523:59688 at distance 0.26, and train:3:306915 at distance 0.32) were all closed as Benign Positives.",
+   "source": "similar incident train:523:46134"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Close the incident as Benign Positive and preserve evidence artifacts in alignment with NIST SP 800-61 Rev. 3 standard logging procedures.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Review the detection logic for this SuspiciousActivity alert title to assess tuning opportunities or baseline allowlisting given the 94.2% historical benign rate.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Periodically audit machine and process entity baselines to maintain accurate benign profile modeling for repeated operational tasks.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) without escalation because the ML triage model returned a BP probability of 1.00 (fused confidence 0.99), the detection title historically resolves as benign 94.2% of the time, and no known ATT&CK techniques or active threats were present.",
+ "limitations": "Alert titles, hosts, user accounts, and network IOCs are fully anonymized, precluding specific payload inspections or external threat intelligence lookups."
+}
+```
+
+---
+## Report 3
+
+True label: TP
+
+### Evidence
+```
+Incident test:76:25705: 1 alerts, 4 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: none; entities: CloudLogonRequest/Related, User/Impacted, Ip/Related (source: alert 399822, 4 evidence rows)
+
+Agent decision: FP (fused confidence 0.58); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.41, P(BP)=0.03, P(FP)=0.57
+Most influential features (SHAP):
+- AlertTitle_fp_mean = 0.605 (alert titles' historical FP rate): toward FP (SHAP +0.92)
+- DetectorId_fp_mean = 0.605 (detectors' historical FP rate): toward FP (SHAP +0.89)
+- AlertTitle_tp_max = 0.321 (incident feature): against FP (SHAP -0.35)
+- AlertTitle_fp_max = 0.605 (incident feature): toward FP (SHAP +0.32)
+- DetectorId_fp_max = 0.605 (incident feature): toward FP (SHAP +0.29)
+Most similar past incidents:
+- train:11:411707: FP, distance 0.00
+- train:234:155221: TP, distance 0.00
+- train:619:372598: FP, distance 0.00
+- train:98:350418: FP, distance 0.00
+- train:284:357449: TP, distance 0.00
+LLM reasoning step: FP (medium): The incident consists of a single isolated InitialAccess cloud logon alert with no subsequent malicious activity or kill-chain progression observed. Both the ML triage model (P(FP) = 0.57) and historical baseline metrics indicate a high false positive rate for this detector, aligned with the majority of nearest neighbor incidents.
+```
+### Report
+```json
+{
+ "summary": "Incident test:76:25705 comprises a single isolated InitialAccess cloud logon event involving an impacted user and related IP address. No lateral movement, persistence, or secondary suspicious activities were observed across the 4 evidence rows. The incident has been classified as a false positive based on ML detector historical patterns and lack of kill-chain advancement.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1078.004",
+   "tactic": "Initial Access",
+   "alerts": [
+    "399822"
+   ]
+  }
+ ],
+ "furthest_stage": "Initial Access",
+ "evidence_chain": [
+  {
+   "finding": "Cloud logon event recorded with no subsequent malicious activity or lateral progression across 4 evidence rows.",
+   "source": "alert 399822"
+  },
+  {
+   "finding": "ML triage model calculated P(FP) = 0.57 and fused confidence of 0.58, heavily driven by the high historical false positive rate (AlertTitle_fp_mean = 0.605, DetectorId_fp_mean = 0.605).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Past similar incident matching with distance 0.00 confirmed as false positive.",
+   "source": "similar incident train:11:411707"
+  },
+  {
+   "finding": "Past similar incident matching with distance 0.00 confirmed as false positive.",
+   "source": "similar incident train:619:372598"
+  },
+  {
+   "finding": "Past similar incident matching with distance 0.00 confirmed as false positive.",
+   "source": "similar incident train:98:350418"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Enforce Multi-Factor Authentication (MFA) across all cloud accounts and disable legacy authentication protocols to mitigate potential unauthorized cloud logons.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1032"
+  },
+  {
+   "action": "Disable legacy authentication mechanisms that bypass modern MFA validation.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1015"
+  },
+  {
+   "action": "Audit and review privileged cloud account permission levels and ensure high-complexity password policies.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1026"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a False Positive because it was an isolated CloudLogonRequest alert without kill-chain progression, supported by an ML triage model P(FP) of 0.57 and consistent historical false positive rates from identical baseline incidents.",
+ "limitations": "Alert context lacks granular identity telemetry such as user agent, anomalous geo-location metrics, and MFA challenge results."
+}
+```
+
+---
+## Report 4
+
+True label: BP
+
+### Evidence
+```
+Incident test:150:41987: 1 alerts, 11 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: T1566.001.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: T1566.001; entities: User/Impacted, File/Related, Mailbox/Impacted, MailCluster/Related, MailMessage/Related; last verdict: NoThreatsFound, Malicious; mail: Inbound (source: alert 240978, 11 evidence rows)
+
+Agent decision: TP (fused confidence 0.52); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.50, P(BP)=0.45, P(FP)=0.05
+Most influential features (SHAP):
+- DetectorId_tp_mean = 0.269 (detectors' historical TP rate (mean over the incident's alerts)): toward TP (SHAP +0.52)
+- AlertTitle_tp_mean = 0.269 (alert titles' historical TP rate): toward TP (SHAP +0.50)
+- DetectorId_tp_max = 0.269 (incident feature): toward TP (SHAP +0.31)
+- DetectorId_fp_max = 0.0372 (incident feature): toward TP (SHAP +0.12)
+- ent_Ip = 0 (incident feature): toward TP (SHAP +0.12)
+Most similar past incidents:
+- train:36:181675: BP, distance 0.02
+- train:29:52224: BP, distance 0.02
+- train:473:93260: TP, distance 0.02
+- train:172:80984: TP, distance 0.02
+- train:112:176225: BP, distance 0.04
+LLM reasoning step: TP (medium): The incident involves an inbound email detected under T1566.001 (Spearphishing Attachment) with an explicit Malicious verdict on the associated entities. Although similar past incidents show a mix of TP and BP, the ML model strongly leans away from FP (P(FP) = 0.05) and points towards malicious intent. Following SOC principles that prioritize potential breach over false alarms, this represents real malicious initial access activity.
+```
+### Report
+```json
+{
+ "summary": "Incident test:150:41987 represents a confirmed true positive spearphishing attempt delivering an attachment to an internal recipient. The alert captures an inbound email triggering ATT&CK technique T1566.001 with related file and mail entities designated with a Malicious verdict. Automated triage classified this incident as a True Positive given the malicious entity verdicts and a low false-positive probability.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1566.001",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "240978"
+   ]
+  }
+ ],
+ "furthest_stage": "InitialAccess",
+ "evidence_chain": [
+  {
+   "finding": "Inbound email containing an attachment was flagged under Spearphishing Attachment with 11 evidence rows and an associated Malicious verdict on the related file and mail entities.",
+   "source": "alert 240978"
+  },
+  {
+   "finding": "The ML model evaluated the probability of True Positive at 0.50 and Benign Positive at 0.45, with a very low False Positive probability of 0.05, driven by historical detector and alert title TP rates.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Prior similar incidents show matched malicious patterns across comparable alert structures (e.g., train:473:93260, train:172:80984).",
+   "source": "similar incident train:473:93260"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Quarantine the malicious email message and associated attachment across the impacted mailbox and any related mail clusters to prevent execution.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1049"
+  },
+  {
+   "action": "Block the sender address, sending domain, and any malicious attachment file hashes on network intrusion prevention and email filtering gateways.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1031"
+  },
+  {
+   "action": "Audit mailbox and endpoint logs to confirm whether the recipient accessed, downloaded, or executed the malicious attachment.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1047"
+  },
+  {
+   "action": "Review user account permissions and apply least privilege controls to prevent execution of unauthorized email attachments on endpoints.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1018"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a True Positive because inbound spearphishing with a verified malicious attachment was identified, supported by an ML model evaluation indicating a 95% likelihood of true or benign malicious activity (P(FP)=0.05) and positive historical detector weights.",
+ "limitations": "The alert data does not confirm whether the recipient opened or executed the file attachment on their endpoint, necessitating follow-up endpoint artifact auditing."
+}
+```
+
+---
+## Report 5
+
+True label: TP
+
+### Evidence
+```
+Incident test:467:30104: 1 alerts, 10 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: T1566.001.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: T1566.001; entities: Mailbox/Impacted, File/Related, User/Impacted, MailCluster/Related, MailMessage/Related; last verdict: NoThreatsFound, Malicious; mail: Inbound (source: alert 300556, 10 evidence rows)
+
+Agent decision: TP (fused confidence 0.51); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.49, P(BP)=0.42, P(FP)=0.08
+Most influential features (SHAP):
+- DetectorId_tp_mean = 0.269 (detectors' historical TP rate (mean over the incident's alerts)): toward TP (SHAP +0.50)
+- AlertTitle_tp_mean = 0.269 (alert titles' historical TP rate): toward TP (SHAP +0.49)
+- DetectorId_tp_max = 0.269 (incident feature): toward TP (SHAP +0.32)
+- DetectorId_fp_max = 0.0372 (incident feature): toward TP (SHAP +0.14)
+- ent_Ip = 0 (incident feature): toward TP (SHAP +0.12)
+Most similar past incidents:
+- train:467:28101: TP, distance 0.02
+- train:428:11826: BP, distance 0.02
+- train:256:33992: TP, distance 0.02
+- train:154:26544: BP, distance 0.04
+- train:1735:11500: BP, distance 0.04
+LLM reasoning step: TP (medium): The incident flags an inbound phishing attempt with malicious attachments (T1566.001) that contains an explicit 'Malicious' verdict on the mail message and associated file. The ML model predicts TP as the most probable outcome (P(TP) = 0.49) with high-similarity historical incidents corroborating malicious intent. Given the 'assume breach' principle and the presence of a malicious attachment, it is treated as a true positive delivery attempt.
+```
+### Report
+```json
+{
+ "summary": "Incident test:467:30104 involves an inbound spearphishing attachment attempt targeting an internal user mailbox. Alert 300556 flagged related email message entities and attachments, with an explicit 'Malicious' verdict recorded against the payload. The triage agent auto-triaged the incident as a True Positive based on detector confidence and supporting historical incidents.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1566.001",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "300556"
+   ]
+  }
+ ],
+ "furthest_stage": "InitialAccess",
+ "evidence_chain": [
+  {
+   "finding": "Inbound email flagged with malicious attachment targeting user mailbox",
+   "source": "alert 300556"
+  },
+  {
+   "finding": "File and MailMessage entities marked with verdict 'Malicious'",
+   "source": "alert 300556"
+  },
+  {
+   "finding": "Machine learning model prioritized True Positive classification (P(TP)=0.49, P(BP)=0.42) driven by historical detector and alert title true positive rates",
+   "source": "ML model"
+  },
+  {
+   "finding": "Closest historical incidents train:467:28101 and train:256:33992 confirmed True Positive classifications at distance 0.02",
+   "source": "similar incident train:467:28101"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Purge and quarantine the malicious email message and associated attachment from the recipient mailbox and any related mail clusters",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Block the sender domain, address, and attachment file hashes at the secure email gateway (SEG) and perimeter defenses",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Audit endpoint logs for the impacted user to verify whether the attachment was opened or executed",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Submit malicious indicators into threat intelligence feeds and conduct user phishing awareness follow-up",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a True Positive (fused confidence 0.51) due to confirmation of an inbound email with a 'Malicious' verdict on the message and attachment entities, corroborated by ML model TP probabilities and matching past TP incidents.",
+ "limitations": "Endpoint execution data and host-level process creation telemetry are not provided in the alert evidence, leaving post-delivery user interaction status unverified."
+}
+```
+
+---
+## Report 6
+
+True label: FP
+
+### Evidence
+```
+Incident test:136:225420: 1 alerts, 4 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: none; entities: User/Impacted, Ip/Related, CloudLogonRequest/Related (source: alert 951736, 4 evidence rows)
+
+Agent decision: TP (fused confidence 0.59); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.58, P(BP)=0.04, P(FP)=0.38
+Most influential features (SHAP):
+- DetectorId_tp_mean = 0.321 (detectors' historical TP rate (mean over the incident's alerts)): toward TP (SHAP +0.52)
+- AlertTitle_tp_mean = 0.321 (alert titles' historical TP rate): toward TP (SHAP +0.50)
+- n_countries = 2 (incident feature): toward TP (SHAP +0.46)
+- DetectorId_tp_max = 0.321 (incident feature): toward TP (SHAP +0.40)
+- AlertTitle_tp_max = 0.321 (incident feature): toward TP (SHAP +0.20)
+Most similar past incidents:
+- train:11:435531: FP, distance 0.00
+- train:136:96048: BP, distance 0.00
+- train:136:369199: FP, distance 0.00
+- train:71:384807: FP, distance 0.00
+- train:1150:357191: TP, distance 0.00
+LLM reasoning step: TP (medium): The incident flags an InitialAccess event involving multi-country logon activity (n_countries = 2), indicating potentially compromised credentials or impossible travel. Although past similar incidents show a high rate of false positives, the ML model leans towards TP (P(TP) = 0.58) driven by detector history and multi-country anomalies, warranting a breach-assumption classification.
+```
+### Report
+```json
+{
+ "summary": "Incident test:136:225420 involves anomalous initial access authentication activity originating across multiple countries. The alert triggers on potentially compromised credentials or impossible travel involving a user account and associated cloud logon requests. Given the multi-country pattern and high detector-associated true positive weight, the incident has been classified as a True Positive (TP).",
+ "attack_mapping": [
+  {
+   "technique_id": "T1078",
+   "tactic": "Initial Access",
+   "alerts": [
+    "951736"
+   ]
+  }
+ ],
+ "furthest_stage": "Initial Access",
+ "evidence_chain": [
+  {
+   "finding": "Alert 951736 triggered under the InitialAccess category involving an impacted user and cloud logon activity.",
+   "source": "alert 951736"
+  },
+  {
+   "finding": "Logon requests originated from multiple countries (n_countries = 2), heavily influencing the model toward a True Positive.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Historical detector performance and alert title true positive rates (DetectorId_tp_mean = 0.321, AlertTitle_tp_mean = 0.321) supported the ML model TP probability of 0.58.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Prior identical incidents feature mixed resolutions including FP, BP, and confirmed TP outcomes (train:1150:357191).",
+   "source": "similar incident train:1150:357191"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Revoke active session tokens and force a password reset for the impacted user account.",
+   "priority": "immediate",
+   "source": "NIST SP 800-61 Rev. 3"
+  },
+  {
+   "action": "Block the anomalous source IP addresses identified in the cloud logon requests at the identity provider/firewall level.",
+   "priority": "immediate",
+   "source": "NIST SP 800-61 Rev. 3"
+  },
+  {
+   "action": "Review multi-factor authentication (MFA) logs and subsequent user activity for post-authentication lateral movement or exfiltration.",
+   "priority": "short-term",
+   "source": "NIST SP 800-61 Rev. 3"
+  },
+  {
+   "action": "Implement or refine conditional access policies to restrict logins from unexpected geographical locations.",
+   "priority": "long-term",
+   "source": "NIST SP 800-61 Rev. 3"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as True Positive (fused confidence 0.59) based on the ML triage model (P(TP)=0.58) driven primarily by the presence of logins from multiple distinct countries (n_countries = 2) and elevated detector true positive weights, indicating potential credential compromise.",
+ "limitations": "Lack of specific ATT&CK technique IDs and detailed telemetry payloads (such as exact IP geolocation or MFA response data) limits full verification of impossible travel versus authorized VPN/proxy usage."
+}
+```
+
+---
+## Report 7
+
+True label: BP
+
+### Evidence
+```
+Incident test:164:52127: 1 alerts, 9 evidence rows, time span 0.0 h.
+Alert categories: Discovery x1.
+ATT&CK techniques: T1046.
+Alerts (time order; source = AlertId):
+- +0 min [Discovery] techniques: T1046; entities: Machine/Impacted, Ip/Related (source: alert 370233, 9 evidence rows)
+
+Agent decision: BP (fused confidence 0.99); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=1.00, P(FP)=0.00
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.962 (alert titles' historical BP rate): toward BP (SHAP +1.22)
+- AlertTitle_bp_max = 0.962 (incident feature): toward BP (SHAP +1.14)
+- DetectorId_bp_mean = 0.948 (detectors' historical BP rate): toward BP (SHAP +0.67)
+- DetectorId_bp_max = 0.948 (incident feature): toward BP (SHAP +0.64)
+- ent_Ip = 8 (incident feature): toward BP (SHAP +0.18)
+Most similar past incidents:
+- train:164:60841: BP, distance 0.45
+- train:164:52122: BP, distance 0.75
+- train:164:38904: BP, distance 0.75
+- train:164:43881: BP, distance 0.75
+- train:164:42511: BP, distance 0.79
+LLM reasoning step: BP (high): The incident consists of an isolated Discovery alert (T1046: Network Service Discovery) involving standard internal network scanning activity without subsequent suspicious lateral movement or malicious kill-chain stages. Historical alerts from this detector and title are overwhelmingly classified as benign positive (BP rate ~96%), which is consistent across all nearest neighbor incidents. Given the lack of malicious progression or high-risk contextual alerts, the behavior corresponds to authorized administrative or routine network discovery.
+```
+### Report
+```json
+{
+ "summary": "Incident test:164:52127 comprises a single isolated Discovery alert mapped to Network Service Discovery (T1046). The triage agent determined the activity to be a Benign Positive (BP) with 0.99 fused confidence, consistent with expected network scanning and administrative discovery behavior. Historical telemetry shows an extremely high benign positive rate for this alert type, and no subsequent lateral movement or exploitation was detected.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1046",
+   "tactic": "discovery",
+   "alerts": [
+    "370233"
+   ]
+  }
+ ],
+ "furthest_stage": "discovery",
+ "evidence_chain": [
+  {
+   "finding": "Network Service Discovery activity detected involving Machine/Impacted and Ip/Related entities across 9 evidence rows within a 0.0 hour timeframe.",
+   "source": "alert 370233"
+  },
+  {
+   "finding": "ML model evaluated incident as P(BP)=1.00, P(TP)=0.00, P(FP)=0.00 driven heavily by high historical BP rates (AlertTitle_bp_mean = 0.962, DetectorId_bp_mean = 0.948).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Five nearest neighboring historical incidents (including train:164:60841 at distance 0.45 and train:164:52122 at distance 0.75) were all determined to be BP.",
+   "source": "similar incident train:164:60841"
+  },
+  {
+   "finding": "Network Service Discovery adversaries scan for vulnerable remote services, but routine internal port and service discovery matches administrative profiling in the absence of secondary activity.",
+   "source": "ATT&CK v20.1 T1046"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify that the scanning host and associated IP entities correspond to an authorized administrative scanning or inventory tool.",
+   "priority": "immediate",
+   "source": "alert 370233"
+  },
+  {
+   "action": "Ensure network intrusion prevention systems are properly tuned to detect and block unauthorized remote service scans while permitting legitimate scanners.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1031"
+  },
+  {
+   "action": "Disable or remove unnecessary ports, protocols, and services across targeted endpoints to limit exposed attack surfaces.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1042"
+  },
+  {
+   "action": "Enforce network segmentation to protect critical internal servers and devices from cross-segment discovery scans.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1030"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) without escalation because the fused model confidence reached 0.99, reinforced by the ML model's P(BP)=1.00 and strong alignment across similar past incidents. No escalation triggers or follow-up malicious tactics were observed.",
+ "limitations": "Analysis is constrained by anonymized hostnames and IP addresses, as well as the absence of full command-line arguments or process execution context on Machine/Impacted to independently confirm the specific scanning tool."
+}
+```
+
+---
+## Report 8
+
+True label: FP
+
+### Evidence
+```
+Incident test:1264:161976: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: SuspiciousActivity x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [SuspiciousActivity] techniques: none; entities: CloudApplication/Impacted, User/Impacted, Ip/Related (source: alert 555104, 3 evidence rows)
+
+Agent decision: FP (fused confidence 0.45); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.39, P(BP)=0.17, P(FP)=0.44
+Most influential features (SHAP):
+- AlertTitle_fp_mean = 0.349 (alert titles' historical FP rate): toward FP (SHAP +1.17)
+- AlertTitle_fp_max = 0.349 (incident feature): toward FP (SHAP +0.41)
+- AlertTitle_tp_max = 0.248 (incident feature): against FP (SHAP -0.38)
+- AlertTitle_bp_max = 0.403 (incident feature): toward FP (SHAP +0.08)
+- DetectorId_tp_mean = 0.432 (detectors' historical TP rate (mean over the incident's alerts)): against FP (SHAP -0.06)
+Most similar past incidents:
+- train:1378:153876: TP, distance 0.17
+- train:198:5322: BP, distance 0.17
+- train:453:22042: TP, distance 0.17
+- train:745:150783: FP, distance 0.18
+- train:3349:149484: FP, distance 0.18
+LLM reasoning step: FP (low): The incident consists of a single isolated SuspiciousActivity alert on a CloudApplication with no recorded MITRE ATT&CK techniques or kill-chain progression. The ML triage model points towards a false positive with P(FP) = 0.44 and strong SHAP weights for historically benign/FP alert patterns. However, confidence remains low due to mixed outcomes among close historical neighbors and non-negligible TP probability.
+```
+### Report
+```json
+{
+ "summary": "Incident test:1264:161976 involves a single SuspiciousActivity alert associated with an impacted CloudApplication and User originating from an external IP address. The triage agent auto-triaged the alert as a False Positive (FP) with a fused confidence of 0.45. The event lacked secondary indicators of compromise, showing no progression along the cyber kill chain.",
+ "attack_mapping": [],
+ "furthest_stage": "none",
+ "evidence_chain": [
+  {
+   "finding": "A single SuspiciousActivity alert was generated regarding an impacted CloudApplication and User with zero duration.",
+   "source": "alert 555104"
+  },
+  {
+   "finding": "The ML model assessed the alert as FP with P(FP)=0.44, influenced primarily by the historical false positive rate of the alert title (SHAP +1.17).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Historically similar incidents exhibited mixed outcomes including FP (train:745:150783, train:3349:149484) and TP (train:1378:153876), supporting a low-confidence FP classification.",
+   "source": "similar incident train:745:150783"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify that Multi-factor Authentication (MFA) is actively enforced and legacy authentication is disabled for the impacted cloud account.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1032"
+  },
+  {
+   "action": "Enforce strong password rotation policies and ensure access keys are updated across cloud accounts to mitigate potential exposure.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1027"
+  },
+  {
+   "action": "Conduct a routine audit of privileged cloud account permission levels to ensure least privilege and limit unauthorized discovery access.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1026"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a False Positive because it was an isolated alert with no mapped ATT&CK techniques, no lateral movement or persistence observed, and the ML triage model favored FP driven by historical alert title statistics.",
+ "limitations": "Alert descriptions, account identifiers, and host/IP details are anonymized. Furthermore, the fused confidence score is low (0.45) with close historical incidents exhibiting true positive outcomes, meaning underlying benign telemetry cannot be definitively verified without full cloud audit logs."
+}
+```
+
+---
+## Report 9
+
+True label: FP
+
+### Evidence
+```
+Incident test:98:347417: 1 alerts, 4 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: T1078, T1078.004.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: T1078, T1078.004; entities: CloudLogonSession/Related, CloudLogonRequest/Related, User/Impacted, Ip/Related (source: alert 983045, 4 evidence rows)
+
+Agent decision: FP (fused confidence 0.93); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.05, P(BP)=0.02, P(FP)=0.93
+Most influential features (SHAP):
+- AlertTitle_fp_mean = 0.811 (alert titles' historical FP rate): toward FP (SHAP +1.12)
+- DetectorId_fp_mean = 0.811 (detectors' historical FP rate): toward FP (SHAP +0.81)
+- AlertTitle_fp_max = 0.811 (incident feature): toward FP (SHAP +0.39)
+- DetectorId_fp_max = 0.811 (incident feature): toward FP (SHAP +0.31)
+- n_evidence = 4 (incident feature): toward FP (SHAP +0.15)
+Most similar past incidents:
+- train:323:115995: FP, distance 0.00
+- train:11:434267: FP, distance 0.00
+- train:11:413756: FP, distance 0.00
+- train:1196:85158: FP, distance 0.00
+- train:11:414735: FP, distance 0.00
+LLM reasoning step: FP (high): The incident consists of a single isolated InitialAccess alert regarding valid cloud logon credentials (T1078, T1078.004) with no downstream malicious kill-chain progression or secondary alerts. Both the detector and alert title have a high historical false positive rate of 81.1%, leading the ML model to evaluate P(FP) at 0.93. Furthermore, all nearest past matching incidents were classified as false positives.
+```
+### Report
+```json
+{
+ "summary": "Incident test:98:347417 consists of a single Initial Access alert flagging potential cloud account credential abuse. Due to high historical false positive rates for both the detector and alert title, along with an absence of post-logon malicious activity, the incident has been auto-triaged as a False Positive. The ML model assigns a 0.93 probability to FP, consistent with identical past incidents.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1078.004",
+   "tactic": "Initial Access",
+   "alerts": [
+    "983045"
+   ]
+  },
+  {
+   "technique_id": "T1078",
+   "tactic": "Initial Access",
+   "alerts": [
+    "983045"
+   ]
+  }
+ ],
+ "furthest_stage": "Initial Access",
+ "evidence_chain": [
+  {
+   "finding": "Alert 983045 recorded a cloud logon session using valid credentials mapped to T1078 and T1078.004 without secondary adversarial actions.",
+   "source": "alert 983045"
+  },
+  {
+   "finding": "The detector ID and alert title both show an elevated historical false positive rate of 81.1%, driving SHAP values strongly towards false positive.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Nearest historic incidents train:323:115995, train:11:434267, train:11:413756, train:1196:85158, and train:11:414735 with distance 0.00 were all confirmed False Positives.",
+   "source": "similar incident train:323:115995"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify user logon context and enforce Multi-factor Authentication (MFA) to prevent unauthorized access via compromised credentials.",
+   "priority": "immediate",
+   "source": "source: ATT&CK v20.1 M1032"
+  },
+  {
+   "action": "Audit the impacted user cloud account for anomalous activity and ensure legacy authentication protocols are disabled.",
+   "priority": "short-term",
+   "source": "source: ATT&CK v20.1 M1015"
+  },
+  {
+   "action": "Regularly audit cloud account privileges and enforce complex, unique passwords to minimize lateral expansion risk.",
+   "priority": "long-term",
+   "source": "source: ATT&CK v20.1 M1026"
+  }
+ ],
+ "escalation_explanation": "Auto-triaged as a False Positive without escalation due to high ML model confidence (P(FP)=0.93), driven by historically benign detector telemetry (81.1% FP baseline), exact matching past false positive incidents, and the complete lack of secondary compromise indicators.",
+ "limitations": "Telemetry is limited to an isolated cloud logon request and session with anonymized IP and entity identifiers, preventing contextual verification of external user origin or location anomalies."
+}
+```
+
+---
+## Report 10
+
+True label: TP
+
+### Evidence
+```
+Incident test:1096:153853: 1 alerts, 4 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: T1078, T1078.004.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: T1078, T1078.004; entities: Ip/Related, CloudLogonRequest/Related, User/Impacted, CloudLogonSession/Related (source: alert 182434, 4 evidence rows)
+
+Agent decision: FP (fused confidence 0.77); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.19, P(BP)=0.06, P(FP)=0.76
+Most influential features (SHAP):
+- AlertTitle_fp_mean = 0.811 (alert titles' historical FP rate): toward FP (SHAP +1.01)
+- DetectorId_fp_mean = 0.811 (detectors' historical FP rate): toward FP (SHAP +0.81)
+- AlertTitle_fp_max = 0.811 (incident feature): toward FP (SHAP +0.38)
+- first_dow = 7 (incident feature): against FP (SHAP -0.35)
+- DetectorId_fp_max = 0.811 (incident feature): toward FP (SHAP +0.29)
+Most similar past incidents:
+- train:369:369671: FP, distance 0.00
+- train:465:395706: FP, distance 0.00
+- train:654:119554: FP, distance 0.00
+- train:465:395310: FP, distance 0.00
+- train:195:35227: TP, distance 0.00
+LLM reasoning step: FP (high): The single initial access alert regarding cloud logon activity (T1078.004) has high historical false positive rates (over 81%) for both the alert title and detector. Machine learning predicts a 76% probability of FP, strongly reinforced by four of the five nearest historical neighbors labeled as false positives with no kill-chain progression observed.
+```
+### Report
+```json
+{
+ "summary": "Incident test:1096:153853 involves a single InitialAccess alert triggered by cloud logon activity mapped to ATT&CK T1078 and T1078.004. The incident was automatically triaged as a False Positive with a fused confidence of 0.77. The classification is supported by an ML false positive probability of 76% and strong alignment with past false positive cases exhibiting high detector false positive rates.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1078.004",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "182434"
+   ]
+  },
+  {
+   "technique_id": "T1078",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "182434"
+   ]
+  }
+ ],
+ "furthest_stage": "InitialAccess",
+ "evidence_chain": [
+  {
+   "finding": "Cloud logon event recorded involving Ip/Related, CloudLogonRequest/Related, User/Impacted, and CloudLogonSession/Related entities with no subsequent malicious progression.",
+   "source": "alert 182434"
+  },
+  {
+   "finding": "ML model evaluated incident with P(FP)=0.76, P(TP)=0.19, and P(BP)=0.06.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Historical detector and alert title false positive rate of 81.1% contributed significantly to FP assessment (SHAP values +1.01 and +0.81).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Four identical historical incidents (train:369:369671, train:465:395706, train:654:119554, and train:465:395310 at distance 0.00) were verified as false positives.",
+   "source": "similar incident train:369:369671"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Close the incident as a False Positive and document the automated triage validation based on high historical FP rates.",
+   "priority": "immediate",
+   "source": "ML model"
+  },
+  {
+   "action": "Perform a periodic spot check on cloud logon patterns for User/Impacted to verify standard expected behavior.",
+   "priority": "short-term",
+   "source": "alert 182434"
+  },
+  {
+   "action": "Tune the detection logic for detector associated with alert 182434 to reduce benign logon noise given the 81.1% historical FP baseline.",
+   "priority": "long-term",
+   "source": "ML model"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged and not escalated because the fused confidence reached 0.77 for False Positive, supported by an ML FP score of 0.76, lack of follow-on malicious activity beyond the initial logon alert, and strong match against past false positive incidents.",
+ "limitations": "Entities including User, IP, and Cloud session tokens are anonymized, preventing deep verification of contextual geo-location or user baseline travel anomalies directly within this dataset."
+}
+```
+
+---
+## Report 11
+
+True label: BP
+
+### Evidence
+```
+Incident test:36:37234: 3 alerts, 45 evidence rows, time span 1.7 h.
+Alert categories: InitialAccess x3.
+ATT&CK techniques: T1566.002.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: T1566.002; entities: Url/Related, User/Impacted, Mailbox/Impacted, MailCluster/Related, MailMessage/Related; last verdict: Malicious, NoThreatsFound; mail: Inbound (source: alert 140076, 15 evidence rows)
+- +46 min [InitialAccess] techniques: T1566.002; entities: Mailbox/Impacted, User/Impacted, MailMessage/Related, Url/Related, MailCluster/Related; last verdict: Malicious, NoThreatsFound; mail: Inbound (source: alert 41017, 15 evidence rows)
+- +105 min [InitialAccess] techniques: T1566.002; entities: Url/Related, MailMessage/Related, User/Impacted, Mailbox/Impacted, MailCluster/Related; last verdict: NoThreatsFound, Malicious; mail: Inbound (source: alert 41018, 15 evidence rows)
+
+Agent decision: TP (fused confidence 0.49); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.44, P(BP)=0.39, P(FP)=0.17
+Most influential features (SHAP):
+- AlertTitle_tp_mean = 0.342 (alert titles' historical TP rate): toward TP (SHAP +0.72)
+- DetectorId_tp_mean = 0.342 (detectors' historical TP rate (mean over the incident's alerts)): toward TP (SHAP +0.60)
+- DetectorId_tp_max = 0.342 (incident feature): toward TP (SHAP +0.38)
+- n_urls = 9 (incident feature): against TP (SHAP -0.29)
+- AlertTitle_tp_max = 0.342 (incident feature): toward TP (SHAP +0.27)
+Most similar past incidents:
+- train:374:16837: TP, distance 0.73
+- train:172:20525: TP, distance 0.86
+- train:395:19136: FP, distance 1.22
+- train:451:9284: BP, distance 1.23
+- train:78:33281: BP, distance 1.31
+LLM reasoning step: TP (high): The incident consists of multiple inbound email alerts involving spearphishing links (T1566.002) with a confirmed malicious verdict across several impacted mailboxes and mail clusters over a 1.7-hour span. The closest historical incidents are strongly aligned with confirmed True Positives, and the ML model assigns its highest probability to TP. Following the assume-breach principle, repetitive inbound phishing attempts with verified malicious indicators represent genuine threat activity requiring remediation.
+```
+### Report
+```json
+{
+ "summary": "Incident test:36:37234 involves a coordinated inbound spearphishing campaign spanning 1.7 hours targeting multiple organizational mailboxes with malicious URLs. Three correlated alerts confirmed the presence of malicious links within associated mail clusters. The triage agent classified the incident as a True Positive, supported by close similarity to past True Positive incidents and the ML model's dominant probability.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1566.002",
+   "tactic": "initial-access",
+   "alerts": [
+    "140076",
+    "41017",
+    "41018"
+   ]
+  }
+ ],
+ "furthest_stage": "initial-access",
+ "evidence_chain": [
+  {
+   "finding": "Inbound spearphishing email delivered containing a Malicious verdict URL targeting a mailbox and user.",
+   "source": "alert 140076"
+  },
+  {
+   "finding": "Second inbound spearphishing email with Malicious verdict URL detected 46 minutes later associated with related mail cluster.",
+   "source": "alert 41017"
+  },
+  {
+   "finding": "Third inbound spearphishing email detected at +105 minutes exhibiting Malicious indicators within the mail cluster.",
+   "source": "alert 41018"
+  },
+  {
+   "finding": "Incident evaluated with P(TP)=0.44 against P(BP)=0.39 and P(FP)=0.17, driven primarily by historical detector and alert title TP rates.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Strongest historical incident matches correspond to confirmed True Positives (train:374:16837 at distance 0.73 and train:172:20525 at distance 0.86).",
+   "source": "similar incident train:374:16837"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Purge all identified phishing messages across affected mailboxes and mail clusters, and block the malicious URLs at the perimeter web proxy and DNS levels.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1021"
+  },
+  {
+   "action": "Verify whether any impacted users clicked the phishing links, and revoke active sessions and reset credentials for any users who interacted with the links.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1018"
+  },
+  {
+   "action": "Verify and enforce anti-spoofing and email authentication controls including SPF, DKIM, and DMARC enforcement on inbound gateways to prevent sender spoofing.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1054"
+  },
+  {
+   "action": "Audit third-party application permissions and consent grants to ensure no unauthorized OAuth applications were authorized by impacted users.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1047"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a True Positive (fused confidence 0.49) because repetitive inbound spearphishing messages containing confirmed malicious links were directed at users across multiple clusters, closely resembling past confirmed True Positive incidents train:374:16837 and train:172:20525 without requiring Tier-2 manual escalation.",
+ "limitations": "Specific user click logs, network proxy egress records, and exact URL strings were not detailed in the alert telemetry, preventing confirmation of endpoint compromise."
+}
+```
+
+---
+## Report 12
+
+True label: BP
+
+### Evidence
+```
+Incident test:791:98711: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: none; entities: User/Impacted, Mailbox/Impacted, MailMessage/Related (source: alert 1481763, 3 evidence rows)
+
+Agent decision: BP (fused confidence 0.56); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.19, P(BP)=0.54, P(FP)=0.26
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.681 (alert titles' historical BP rate): toward BP (SHAP +0.63)
+- AlertTitle_bp_max = 0.681 (incident feature): toward BP (SHAP +0.34)
+- DetectorId_bp_max = 0.681 (incident feature): against BP (SHAP -0.30)
+- DetectorId_bp_mean = 0.681 (detectors' historical BP rate): toward BP (SHAP +0.17)
+- ent_Ip = 0 (incident feature): against BP (SHAP -0.13)
+Most similar past incidents:
+- train:142:439960: FP, distance 0.01
+- train:13:114023: BP, distance 0.01
+- train:1388:58578: TP, distance 0.01
+- train:56:530500: BP, distance 0.01
+- train:1149:63919: BP, distance 0.01
+LLM reasoning step: BP (medium): The incident consists of a single isolated InitialAccess mail-related alert without any secondary execution, lateral movement, or fired risk rules. Both the ML model (P(BP) = 0.54) and similar historical incidents heavily favor a benign positive classification, indicating benign or authorized email activity.
+```
+### Report
+```json
+{
+ "summary": "Incident test:791:98711 consists of an isolated InitialAccess alert involving a user mailbox and a specific email message. There is no evidence of subsequent compromise, lateral movement, execution, or persistence. The incident has been auto-triaged as a Benign Positive (BP) representing expected or non-malicious email operations.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1566",
+   "tactic": "initial-access",
+   "alerts": [
+    "1481763"
+   ]
+  }
+ ],
+ "furthest_stage": "initial-access",
+ "evidence_chain": [
+  {
+   "finding": "Alert 1481763 triggered an InitialAccess category event involving User, Mailbox, and MailMessage entities.",
+   "source": "alert 1481763"
+  },
+  {
+   "finding": "The ML model evaluated the event with P(BP)=0.54, heavily driven by historical benign positive rates of the alert title (SHAP +0.63).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Nearest historical incidents (such as train:13:114023, train:56:530500, and train:1149:63919 at distance 0.01) predominantly resolved as Benign Positive.",
+   "source": "similar incident train:13:114023"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify the status of the flagged mail message to confirm it was benign or properly handled by protective mail gateways.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1031"
+  },
+  {
+   "action": "Ensure anti-spoofing and email authentication mechanisms (SPF, DKIM, DMARC) are continuously verified for incoming mail streams.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1054"
+  },
+  {
+   "action": "Audit mailbox forwarding and inbox rules periodically using administrative cmdlets to ensure no unauthorized persistence rules are present.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1047"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) with fused confidence of 0.56 due to high historical benign positive rates for this alert type, supported by ML classification (P(BP)=0.54), nearest neighbor outcomes, and an absence of downstream malicious activity or escalation indicators.",
+ "limitations": "Entities, alert titles, and email body contents are anonymized; deeper message header analysis and sender reputation checks could not be verified directly from the telemetry."
+}
+```
+
+---
+## Report 13
+
+True label: TP
+
+### Evidence
+```
+Incident test:859:30599: 4 alerts, 12 evidence rows, time span 13.8 h.
+Alert categories: SuspiciousActivity x4.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [SuspiciousActivity] techniques: none; entities: CloudApplication/Impacted, Ip/Related, User/Impacted (source: alert 1401641, 3 evidence rows)
+- +298 min [SuspiciousActivity] techniques: none; entities: User/Impacted, Ip/Related, CloudApplication/Impacted (source: alert 583987, 3 evidence rows)
+- +641 min [SuspiciousActivity] techniques: none; entities: CloudApplication/Impacted, Ip/Related, User/Impacted (source: alert 583985, 3 evidence rows)
+- +829 min [SuspiciousActivity] techniques: none; entities: User/Impacted, Ip/Related, CloudApplication/Impacted (source: alert 583986, 3 evidence rows)
+
+Agent decision: FP (fused confidence 0.39); status NEEDS_HUMAN_REVIEW.
+Escalation reasons: ML and LLM disagree: ML says FP (p=0.40); LLM says BP (low confidence): The incident consists of four identical SuspiciousActivity alerts across a 13.8-hour span involving consistent user, IP, and cloud application entities, characteristic of routine or benign user behavior. Historical similar incidents overwhelmingly lean towards BP (with the nearest neighbors at distances 0.81 and 0.86 labeled BP), diverging from the ML model's slight leaning toward FP..
+ML triage model: P(TP)=0.33, P(BP)=0.27, P(FP)=0.40
+Most influential features (SHAP):
+- AlertTitle_fp_mean = 0.321 (alert titles' historical FP rate): toward FP (SHAP +1.01)
+- AlertTitle_tp_max = 0.268 (incident feature): against FP (SHAP -0.15)
+- duration_s = 4.97e+04 (incident feature): against FP (SHAP -0.11)
+- DetectorId_tp_mean = 0.432 (detectors' historical TP rate (mean over the incident's alerts)): against FP (SHAP -0.10)
+- ent_User = 4 (incident feature): against FP (SHAP -0.09)
+Most similar past incidents:
+- train:1620:32317: BP, distance 0.81
+- train:296:27976: BP, distance 0.86
+- train:216:62858: TP, distance 0.89
+- train:483:70284: BP, distance 0.94
+- train:875:8398: FP, distance 0.98
+LLM reasoning step: BP (low): The incident consists of four identical SuspiciousActivity alerts across a 13.8-hour span involving consistent user, IP, and cloud application entities, characteristic of routine or benign user behavior. Historical similar incidents overwhelmingly lean towards BP (with the nearest neighbors at distances 0.81 and 0.86 labeled BP), diverging from the ML model's slight leaning toward FP.
+```
+### Report
+```json
+{
+ "summary": "Incident test:859:30599 involves four recurring SuspiciousActivity alerts across a 13.8-hour window impacting the same User and CloudApplication from a consistent IP address. The automated triage system designated this incident as a False Positive (FP) with low confidence (0.39) and flagged it for human review due to classification discrepancies. The patterns match recurring benign user or application activity commonly observed in historical baselines.",
+ "attack_mapping": [],
+ "furthest_stage": "Initial Access",
+ "evidence_chain": [
+  {
+   "finding": "First SuspiciousActivity alert observed involving User, IP, and CloudApplication entities.",
+   "source": "alert 1401641"
+  },
+  {
+   "finding": "Second recurring SuspiciousActivity alert observed involving the same User, IP, and CloudApplication entities at +298 min.",
+   "source": "alert 583987"
+  },
+  {
+   "finding": "Third recurring SuspiciousActivity alert recorded at +641 min across identical entities.",
+   "source": "alert 583985"
+  },
+  {
+   "finding": "Fourth recurring SuspiciousActivity alert recorded at +829 min across identical entities.",
+   "source": "alert 583986"
+  },
+  {
+   "finding": "Historical alert titles skew toward False Positive classification with AlertTitle_fp_mean SHAP value contributing +1.01.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Closest historical incidents train:1620:32317 (distance 0.81) and train:296:27976 (distance 0.86) were resolved as Benign Positive (BP).",
+   "source": "similar incident train:1620:32317"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Review the specific activity logs and session context for the impacted User accessing the CloudApplication from the related IP to confirm non-malicious business operations.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Validate with the user or application owner whether the 13.8-hour automated or repetitive access pattern represents an approved integration or routine workflow.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Tune the detection logic for this CloudApplication detector to accommodate recurring, authorized interactions to prevent repetitive FP/BP alerting.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident status was set to NEEDS_HUMAN_REVIEW due to a conflict between the ML model and the LLM agent; the ML model favored FP (p=0.40, driven heavily by AlertTitle_fp_mean) while the LLM assessed the recurring pattern as Benign Positive (BP) based on strong alignment with nearest past incidents train:1620:32317 and train:296:27976.",
+ "limitations": "Alerts provide generic SuspiciousActivity titles with no mapped MITRE ATT&CK techniques, and all entity identifiers (User, IP, CloudApplication) are anonymized, preventing deep verification of specific operational context."
+}
+```
+
+---
+## Report 14
+
+True label: TP
+
+### Evidence
+```
+Incident test:8:137611: 1 alerts, 5 evidence rows, time span 0.0 h.
+Alert categories: CommandAndControl x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [CommandAndControl] techniques: none; entities: Machine/Impacted, Process/Related, User/Impacted, Url/Related; suspicion: Suspicious; last verdict: Suspicious (source: alert 759718, 5 evidence rows)
+
+Agent decision: BP (fused confidence 0.52); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.35, P(BP)=0.50, P(FP)=0.16
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.747 (alert titles' historical BP rate): toward BP (SHAP +0.78)
+- AlertTitle_bp_max = 0.747 (incident feature): toward BP (SHAP +0.41)
+- DetectorId_bp_max = 0.747 (incident feature): against BP (SHAP -0.32)
+- ent_Ip = 0 (incident feature): against BP (SHAP -0.13)
+- n_ips = 0 (incident feature): toward BP (SHAP +0.10)
+Most similar past incidents:
+- train:173:19352: TP, distance 0.00
+- train:144:120603: BP, distance 0.00
+- train:40:272571: BP, distance 0.00
+- train:225:1677: TP, distance 0.00
+- train:34:331740: BP, distance 0.00
+LLM reasoning step: BP (medium): The single CommandAndControl alert involves suspicious process and URL activity, but historical title analysis demonstrates a strong tendency toward benign positives (AlertTitle_bp_mean = 0.747). The ML model predicts BP as the most probable outcome (P(BP) = 0.50), supported by the majority of identically matched historical incidents labeled BP. No kill-chain risk rules fired, indicating low progression risk consistent with sanctioned or benign operational traffic.
+```
+### Report
+```json
+{
+ "summary": "Incident test:8:137611 consists of a single CommandAndControl category alert flagged for suspicious process and URL activity involving an impacted machine and user. Automated triage categorized the incident as Benign Positive (BP) with a fused confidence of 0.52. This outcome is strongly supported by historical patterns where the alert title predominantly resolves to benign administrative or expected operational activity.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1071",
+   "tactic": "Command and Control",
+   "alerts": [
+    "759718"
+   ]
+  }
+ ],
+ "furthest_stage": "Command and Control",
+ "evidence_chain": [
+  {
+   "finding": "Alert 759718 triggered under the CommandAndControl category involving an impacted host, user, process, and external URL.",
+   "source": "alert 759718"
+  },
+  {
+   "finding": "Historical alert title statistics exhibit a high benign rate (AlertTitle_bp_mean = 0.747, AlertTitle_bp_max = 0.747), strongly influencing the triage decision toward BP.",
+   "source": "ML model"
+  },
+  {
+   "finding": "The ML model assessed the most likely outcome to be Benign Positive with P(BP)=0.50 compared to P(TP)=0.35 and P(FP)=0.16.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Historical incidents with identical feature distance (train:144:120603, train:40:272571, train:34:331740) were confirmed as Benign Positives.",
+   "source": "similar incident train:144:120603"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Inspect the specific process and URL in alert 759718 to confirm whether the outbound activity aligns with approved enterprise software updates or administrative tools.",
+   "priority": "immediate",
+   "source": "alert 759718"
+  },
+  {
+   "action": "Verify user and workstation context to confirm no unauthorized process execution or abnormal persistence mechanisms exist on the impacted machine.",
+   "priority": "short-term",
+   "source": "NIST SP 800-61 Rev. 3"
+  },
+  {
+   "action": "Tune detection rule logic for DetectorId_bp_max and the flagged alert title to reduce recurring false alerts for documented benign traffic.",
+   "priority": "long-term",
+   "source": "ML model"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) without escalation because the fused model confidence reached 0.52, supported by strong historical benign title rates and a majority of matched historical incidents resolving as BP without high-risk kill chain progression.",
+ "limitations": "Specific process names, command-line arguments, hostnames, and destination URLs were anonymized in the telemetry, limiting granular signature-level verification."
+}
+```
+
+---
+## Report 15
+
+True label: FP
+
+### Evidence
+```
+Incident test:30:245331: 1 alerts, 7 evidence rows, time span 0.0 h.
+Alert categories: Exfiltration x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [Exfiltration] techniques: none; entities: MailMessage/Impacted, User/Impacted (source: alert 479110, 7 evidence rows)
+
+Agent decision: FP (fused confidence 0.98); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=0.01, P(FP)=0.99
+Most influential features (SHAP):
+- DetectorId_fp_mean = 0.86 (detectors' historical FP rate): toward FP (SHAP +1.69)
+- AlertTitle_fp_mean = 0.304 (alert titles' historical FP rate): toward FP (SHAP +0.66)
+- DetectorId_fp_max = 0.86 (incident feature): toward FP (SHAP +0.63)
+- AlertTitle_fp_max = 0.304 (incident feature): toward FP (SHAP +0.23)
+- n_mails = 2 (incident feature): toward FP (SHAP +0.21)
+Most similar past incidents:
+- train:30:245330: FP, distance 0.16
+- train:30:245322: FP, distance 0.62
+- train:30:245493: FP, distance 0.64
+- train:30:245497: FP, distance 0.64
+- train:30:245512: FP, distance 0.67
+LLM reasoning step: FP (high): The single exfiltration alert involving MailMessage entities exhibits a 0.99 false positive probability according to the ML triage model, driven by historically high false-positive detector rates (DetectorId_fp_mean = 0.86). All highly similar past incidents (e.g., train:30:245330 at distance 0.16) were closed as false positives. Despite firing late kill-chain rule R1, there is no corroborating malicious activity across the incident.
+```
+### Report
+```json
+{
+ "summary": "Incident test:30:245331 consists of a single Exfiltration alert regarding MailMessage and User entities that was auto-triaged as a False Positive with a fused confidence of 0.98. Machine learning evaluation demonstrates a 0.99 probability of false positive driven by a high historical detector false-positive rate of 0.86. Historical precedents including train:30:245330 confirm consistent false-positive classifications for identical detection patterns, and no corroborating malicious activity was identified.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1048",
+   "tactic": "exfiltration",
+   "alerts": [
+    "479110"
+   ]
+  }
+ ],
+ "furthest_stage": "exfiltration",
+ "evidence_chain": [
+  {
+   "finding": "Alert 479110 triggered under the Exfiltration category targeting MailMessage and User entities across 7 evidence rows.",
+   "source": "alert 479110"
+  },
+  {
+   "finding": "The ML triage model evaluated the incident with P(FP)=0.99, P(TP)=0.00, and P(BP)=0.01, primarily driven by a high historical detector FP rate (DetectorId_fp_mean = 0.86, SHAP +1.69).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Past similar incident train:30:245330 (distance 0.16) and multiple other near matches (e.g., train:30:245322) were resolved as false positives.",
+   "source": "similar incident train:30:245330"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Close the alert as a verified False Positive and maintain existing host monitoring without active containment.",
+   "priority": "immediate",
+   "source": "alert 479110"
+  },
+  {
+   "action": "Audit mailbox forwarding and transport rules using Get-InboxRule or Get-TransportRule to verify no unauthorized exfiltration mechanisms were configured.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1047"
+  },
+  {
+   "action": "Tune the detection logic for this specific detector to account for its high baseline false-positive rate (DetectorId_fp_mean = 0.86).",
+   "priority": "long-term",
+   "source": "ML model"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a False Positive due to an overwhelming model confidence score (0.98), strong feature alignment indicating known benign detector noise (SHAP +1.69), high similarity to previously verified false positives (train:30:245330), and an absence of any secondary or preceding malicious kill-chain activity.",
+ "limitations": "Analysis is constrained by anonymized entity and host metadata, as well as the absence of full raw message content or specific network payload details within the alert evidence."
+}
+```
+
+---
+## Report 16
+
+True label: FP
+
+### Evidence
+```
+Incident test:98:347417: 1 alerts, 4 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: T1078, T1078.004.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: T1078, T1078.004; entities: CloudLogonSession/Related, CloudLogonRequest/Related, User/Impacted, Ip/Related (source: alert 983045, 4 evidence rows)
+
+Agent decision: FP (fused confidence 0.93); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.05, P(BP)=0.02, P(FP)=0.93
+Most influential features (SHAP):
+- AlertTitle_fp_mean = 0.811 (alert titles' historical FP rate): toward FP (SHAP +1.12)
+- DetectorId_fp_mean = 0.811 (detectors' historical FP rate): toward FP (SHAP +0.81)
+- AlertTitle_fp_max = 0.811 (incident feature): toward FP (SHAP +0.39)
+- DetectorId_fp_max = 0.811 (incident feature): toward FP (SHAP +0.31)
+- n_evidence = 4 (incident feature): toward FP (SHAP +0.15)
+Most similar past incidents:
+- train:323:115995: FP, distance 0.00
+- train:11:434267: FP, distance 0.00
+- train:11:413756: FP, distance 0.00
+- train:1196:85158: FP, distance 0.00
+- train:11:414735: FP, distance 0.00
+LLM reasoning step: FP (high): The incident consists of a single isolated InitialAccess alert regarding valid cloud logon credentials (T1078, T1078.004) with no downstream malicious kill-chain progression or secondary alerts. Both the detector and alert title have a high historical false positive rate of 81.1%, leading the ML model to evaluate P(FP) at 0.93. Furthermore, all nearest past matching incidents were classified as false positives.
+```
+### Report
+```json
+{
+ "summary": "Incident test:98:347417 consists of a single InitialAccess alert involving valid cloud credentials across four evidence rows spanning 0.0 hours. There is no evidence of post-compromise activity, lateral movement, or execution following the logon event. Based on a strong ML false positive probability of 0.93 and identical past false positive incidents, the incident was designated as a False Positive and auto-triaged.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1078.004",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "983045"
+   ]
+  },
+  {
+   "technique_id": "T1078",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "983045"
+   ]
+  }
+ ],
+ "furthest_stage": "InitialAccess",
+ "evidence_chain": [
+  {
+   "finding": "Alert 983045 flagged cloud logon activity associated with techniques T1078 and T1078.004 with 4 evidence rows involving CloudLogonSession, CloudLogonRequest, User, and Ip entities.",
+   "source": "alert 983045"
+  },
+  {
+   "finding": "The ML model evaluated the incident with P(FP)=0.93, driven strongly by historical detector and alert title false-positive rates of 81.1% (SHAP +1.12 and +0.81).",
+   "source": "ML model"
+  },
+  {
+   "finding": "All five top historically similar incidents (train:323:115995, train:11:434267, train:11:413756, train:1196:85158, train:11:414735) with distance 0.00 were resolved as False Positives.",
+   "source": "similar incident train:323:115995"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify no anomalous interactive or programmatic sessions were established under the impacted user account during the timestamp of alert 983045.",
+   "priority": "immediate",
+   "source": "alert 983045"
+  },
+  {
+   "action": "Ensure Multi-Factor Authentication (MFA) and conditional access policies are strictly enforced for the impacted user account.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Tune DetectorId and AlertTitle thresholds to suppress benign recurring cloud logon patterns that contribute to the 81.1% historical false positive rate.",
+   "priority": "long-term",
+   "source": "ML model"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a False Positive with a fused confidence of 0.93 because it represents an isolated initial access alert with no subsequent malicious activity, corroborated by identical historical false positive cases and an 81.1% baseline false positive rate for the alert detector.",
+ "limitations": "Entity values such as IP addresses, usernames, and hostnames are anonymized, preventing contextual verification of user location, known corporate IP space, or ISP reputation."
+}
+```
+
+---
+## Report 17
+
+True label: BP
+
+### Evidence
+```
+Incident test:12:145581: 1 alerts, 7 evidence rows, time span 0.0 h.
+Alert categories: CommandAndControl x1.
+ATT&CK techniques: T1048, T1071.
+Alerts (time order; source = AlertId):
+- +0 min [CommandAndControl] techniques: T1071, T1048; entities: Url/Related, Ip/Related (source: alert 152149, 7 evidence rows)
+
+Agent decision: BP (fused confidence 0.99); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=1.00, P(FP)=0.00
+Most influential features (SHAP):
+- DetectorId_bp_max = 0.993 (incident feature): toward BP (SHAP +2.34)
+- AlertTitle_bp_mean = 0.993 (alert titles' historical BP rate): toward BP (SHAP +1.24)
+- AlertTitle_bp_max = 0.993 (incident feature): toward BP (SHAP +1.02)
+- DetectorId_bp_mean = 0.993 (detectors' historical BP rate): toward BP (SHAP +0.72)
+- AlertTitle_tp_mean = 0.00273 (alert titles' historical TP rate): toward BP (SHAP +0.19)
+Most similar past incidents:
+- train:12:195788: BP, distance 0.01
+- train:12:246142: BP, distance 0.01
+- train:12:113462: BP, distance 0.01
+- train:12:246139: BP, distance 0.02
+- train:12:246116: BP, distance 0.02
+LLM reasoning step: BP (high): The incident features a single CommandAndControl alert that historically resolves to benign positive activity with over a 99% baseline rate. Both the ML model (P(BP) = 1.00) and the nearest historical incidents consistently classify this detector and alert pattern as benign positive. There are no escalating kill-chain risk rules or secondary attack indicators detected.
+```
+### Report
+```json
+{
+ "summary": "Incident test:12:145581 was automatically triaged as Benign Positive (BP) with a fused confidence of 0.99. It consists of a single Command and Control alert spanning 0.0 hours involving application layer protocols and alternative protocol exfiltration telemetry. The pattern matches benign baseline activity with high historical frequency and exhibits no malicious persistence or lateral movement.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1071",
+   "tactic": "command-and-control",
+   "alerts": [
+    "152149"
+   ]
+  },
+  {
+   "technique_id": "T1048",
+   "tactic": "exfiltration",
+   "alerts": [
+    "152149"
+   ]
+  }
+ ],
+ "furthest_stage": "exfiltration",
+ "evidence_chain": [
+  {
+   "finding": "Telemetry triggered an alert for CommandAndControl mapped to T1071 and T1048 across 7 evidence rows associating related Url and Ip entities.",
+   "source": "alert 152149"
+  },
+  {
+   "finding": "Machine learning model evaluated probability of Benign Positive at P(BP)=1.00 driven by high detector and alert title historical BP rates (DetectorId_bp_max = 0.993, AlertTitle_bp_mean = 0.993).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Strong historical incident similarity indicating benign business activity (nearest incidents train:12:195788 and train:12:246142 both resolving to BP at distance 0.01).",
+   "source": "similar incident train:12:195788"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify traffic destination URL and IP against business-approved proxy allowances to confirm benign operational origin.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1037"
+  },
+  {
+   "action": "Maintain network intrusion prevention signatures and monitor baseline egress flows to identify anomalous shifts.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1031"
+  },
+  {
+   "action": "Ensure appropriate network segmentation and firewall configurations restrict non-essential outbound communication channels.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1030"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive because the machine learning model scored P(BP) = 1.00, supported by SHAP values indicating a historical 99.3% BP rate for the detector and alert title, matching multiple historical BP incidents with no escalation triggers or secondary malicious indicators present.",
+ "limitations": "Alert titles, entity identities, hostnames, and IP addresses are anonymized, preventing deep-packet or specific destination asset verification."
+}
+```
+
+---
+## Report 18
+
+True label: FP
+
+### Evidence
+```
+Incident test:11:414633: 1 alerts, 4 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: T1078, T1078.004.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: T1078, T1078.004; entities: CloudLogonSession/Related, Ip/Related, CloudLogonRequest/Related, User/Impacted (source: alert 822997, 4 evidence rows)
+
+Agent decision: FP (fused confidence 0.93); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.05, P(BP)=0.02, P(FP)=0.93
+Most influential features (SHAP):
+- AlertTitle_fp_mean = 0.811 (alert titles' historical FP rate): toward FP (SHAP +1.12)
+- DetectorId_fp_mean = 0.811 (detectors' historical FP rate): toward FP (SHAP +0.81)
+- AlertTitle_fp_max = 0.811 (incident feature): toward FP (SHAP +0.40)
+- DetectorId_fp_max = 0.811 (incident feature): toward FP (SHAP +0.31)
+- n_evidence = 4 (incident feature): toward FP (SHAP +0.15)
+Most similar past incidents:
+- train:98:347414: FP, distance 0.00
+- train:11:414070: FP, distance 0.00
+- train:11:412684: FP, distance 0.00
+- train:11:413234: FP, distance 0.00
+- train:11:413978: FP, distance 0.00
+LLM reasoning step: FP (high): The incident consists of a single isolated InitialAccess alert regarding cloud logon activity (T1078, T1078.004) with no downstream kill-chain progression. Historical data and ML triage show a 0.93 probability of false positive with an 81.1% historical detector FP rate. All identical historical incidents (distance 0.00) were confirmed as false positives.
+```
+### Report
+```json
+{
+ "summary": "Incident test:11:414633 involves a single Initial Access alert triggered on cloud logon activity via techniques T1078 and T1078.004. The triage agent classified the incident as a False Positive with a confidence of 0.93 based on historical patterns and an isolated event profile. No post-access progression or suspicious secondary activity was observed across the session.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1078.004",
+   "tactic": "Initial Access",
+   "alerts": [
+    "822997"
+   ]
+  }
+ ],
+ "furthest_stage": "Initial Access",
+ "evidence_chain": [
+  {
+   "finding": "Cloud logon session activity flagged as potential unauthorized access via valid cloud account credentials.",
+   "source": "alert 822997"
+  },
+  {
+   "finding": "Detector and alert title exhibit an 81.1% historical false positive rate (AlertTitle_fp_mean = 0.811, DetectorId_fp_mean = 0.811), heavily weighting the model towards FP (P(FP) = 0.93).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Multiple identical historical incidents with distance 0.00 were confirmed as false positives (e.g., train:98:347414, train:11:414070).",
+   "source": "similar incident train:98:347414"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Enforce and verify multi-factor authentication (MFA) requirements across all cloud user accounts and disable legacy authentication protocols.",
+   "priority": "immediate",
+   "source": "source: ATT&CK v20.1 M1032"
+  },
+  {
+   "action": "Disable legacy authentication protocols that do not support modern MFA controls.",
+   "priority": "short-term",
+   "source": "source: ATT&CK v20.1 M1015"
+  },
+  {
+   "action": "Perform regular audits of user and privileged cloud accounts to ensure adherence to minimum required permissions.",
+   "priority": "long-term",
+   "source": "source: ATT&CK v20.1 M1018"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a False Positive due to high ML model confidence (P(FP)=0.93) driven by the high historical detector false positive rate (0.811), a 0.00 distance match to known false positive incidents, and the absence of any lateral movement or malicious follow-on actions.",
+ "limitations": "Entities such as IP addresses, user accounts, and session IDs are anonymized, limiting external threat intelligence enrichment and validation against historical user baseline behavior."
+}
+```
+
+---
+## Report 19
+
+True label: TP
+
+### Evidence
+```
+Incident test:49:291400: 1 alerts, 5 evidence rows, time span 0.0 h.
+Alert categories: CommandAndControl x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [CommandAndControl] techniques: none; entities: Url/Related, Process/Related, User/Impacted, Machine/Impacted; suspicion: Suspicious; last verdict: Suspicious (source: alert 688673, 5 evidence rows)
+
+Agent decision: BP (fused confidence 0.56); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.31, P(BP)=0.54, P(FP)=0.14
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.747 (alert titles' historical BP rate): toward BP (SHAP +0.78)
+- AlertTitle_bp_max = 0.747 (incident feature): toward BP (SHAP +0.40)
+- DetectorId_bp_max = 0.747 (incident feature): against BP (SHAP -0.33)
+- ent_Ip = 0 (incident feature): against BP (SHAP -0.13)
+- n_ips = 0 (incident feature): toward BP (SHAP +0.10)
+Most similar past incidents:
+- train:87:294605: FP, distance 0.00
+- train:38:288398: BP, distance 0.00
+- train:34:156759: BP, distance 0.00
+- train:34:331722: BP, distance 0.00
+- train:49:292595: TP, distance 0.00
+LLM reasoning step: BP (medium): The single CommandAndControl alert involves standard URL and process activity with no accompanying kill-chain progression or secondary alerts. The machine learning model strongly favors benign positive (P(BP) = 0.54) driven by a high historical BP rate (0.747) for this alert title, aligning with the majority of identical past incidents.
+```
+### Report
+```json
+{
+ "summary": "Incident test:49:291400 consists of a single CommandAndControl category alert generated for suspicious URL and process activity on an impacted endpoint and user. The activity was triaged as Benign Positive (BP) with a fused confidence of 0.56, indicating legitimate operational behavior triggering detection signatures. No lateral movement or secondary attack stages were observed, and past identical incidents predominantly resolved as BP.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1071.001",
+   "tactic": "command-and-control",
+   "alerts": [
+    "688673"
+   ]
+  }
+ ],
+ "furthest_stage": "command-and-control",
+ "evidence_chain": [
+  {
+   "finding": "Alert 688673 flagged suspicious CommandAndControl activity involving an impacted machine, user, process, and related URL.",
+   "source": "alert 688673"
+  },
+  {
+   "finding": "The machine learning model scored P(BP) at 0.54 and P(TP) at 0.31, with AlertTitle_bp_mean (0.747) heavily influencing the BP outcome (SHAP +0.78).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Multiple identical past incidents (train:38:288398, train:34:156759, train:34:331722) were resolved as Benign Positive.",
+   "source": "similar incident train:38:288398"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Inspect the related URL and process context on the impacted machine to verify benign business authorization.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 T1071.001"
+  },
+  {
+   "action": "Ensure network intrusion prevention signatures and outbound web filtering are updated to block unauthorized traffic while tuning out verified benign operational tools.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1031"
+  },
+  {
+   "action": "Implement web traffic restrictions to limit outbound HTTP/HTTPS connections from endpoints to unapproved destinations.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1037"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) without manual escalation due to a fused confidence score of 0.56, support from past similar incidents, a 0.747 historical BP baseline for the alert title, and the absence of secondary kill-chain progression.",
+ "limitations": "Alert details, hostnames, user identities, process paths, and destination URLs are anonymized, preventing deep verification of specific payload attributes or business purpose."
+}
+```
+
+---
+## Report 20
+
+True label: BP
+
+### Evidence
+```
+Incident test:791:98711: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: none; entities: User/Impacted, Mailbox/Impacted, MailMessage/Related (source: alert 1481763, 3 evidence rows)
+
+Agent decision: BP (fused confidence 0.56); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.19, P(BP)=0.54, P(FP)=0.26
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.681 (alert titles' historical BP rate): toward BP (SHAP +0.63)
+- AlertTitle_bp_max = 0.681 (incident feature): toward BP (SHAP +0.34)
+- DetectorId_bp_max = 0.681 (incident feature): against BP (SHAP -0.30)
+- DetectorId_bp_mean = 0.681 (detectors' historical BP rate): toward BP (SHAP +0.17)
+- ent_Ip = 0 (incident feature): against BP (SHAP -0.13)
+Most similar past incidents:
+- train:142:439960: FP, distance 0.01
+- train:13:114023: BP, distance 0.01
+- train:1388:58578: TP, distance 0.01
+- train:56:530500: BP, distance 0.01
+- train:1149:63919: BP, distance 0.01
+LLM reasoning step: BP (medium): The incident consists of a single isolated InitialAccess mail-related alert without any secondary execution, lateral movement, or fired risk rules. Both the ML model (P(BP) = 0.54) and similar historical incidents heavily favor a benign positive classification, indicating benign or authorized email activity.
+```
+### Report
+```json
+{
+ "summary": "Incident test:791:98711 consists of an isolated InitialAccess alert involving a single email message, user, and mailbox. No malicious execution or subsequent lateral movement was detected, consistent with benign administrative or routine inbound email activity. The incident was automatically triaged as Benign Positive (BP) with a fused confidence of 0.56.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1566",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "1481763"
+   ]
+  }
+ ],
+ "furthest_stage": "InitialAccess",
+ "evidence_chain": [
+  {
+   "finding": "A single InitialAccess alert triggered involving User/Impacted, Mailbox/Impacted, and MailMessage/Related with no subsequent attack stages observed.",
+   "source": "alert 1481763"
+  },
+  {
+   "finding": "The machine learning triage model scored the incident as P(BP)=0.54, heavily driven by high historical Benign Positive rates for the alert title (SHAP +0.63).",
+   "source": "ML model"
+  },
+  {
+   "finding": "The majority of nearest historical incidents (train:13:114023, train:56:530500, train:1149:63919) at distance 0.01 resolved as Benign Positive.",
+   "source": "similar incident train:13:114023"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify that the identified email message in Mailbox/Impacted is legitimate business communication or a sanctioned campaign.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Ensure no anomalous inbox rules or suspicious authentication events occurred around the alert timestamp for the impacted account.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Fine-tune mail detector sensitivity and update benign email delivery filters to reduce recurring benign positive alerts.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive because it presented an isolated email event with no secondary execution, supported by an ML BP probability of 0.54 and predominantly BP historical matches.",
+ "limitations": "Entities, alert titles, and detector details are anonymized, and specific email headers or body contents were unavailable for direct content inspection."
+}
+```
+
+---
+## Report 21
+
+True label: BP
+
+### Evidence
+```
+Incident test:16:240919: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: Exfiltration x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [Exfiltration] techniques: none; entities: MailMessage/Impacted, User/Impacted (source: alert 1440680, 3 evidence rows)
+
+Agent decision: BP (fused confidence 0.99); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=1.00, P(FP)=0.00
+Most influential features (SHAP):
+- DetectorId_bp_max = 0.998 (incident feature): toward BP (SHAP +2.48)
+- AlertTitle_bp_mean = 0.998 (alert titles' historical BP rate): toward BP (SHAP +1.18)
+- DetectorId_bp_mean = 0.998 (detectors' historical BP rate): toward BP (SHAP +0.84)
+- AlertTitle_bp_max = 0.998 (incident feature): toward BP (SHAP +0.82)
+- first_dow = 1 (incident feature): against BP (SHAP -0.73)
+Most similar past incidents:
+- train:16:261266: BP, distance 0.00
+- train:16:240821: BP, distance 0.00
+- train:16:48252: BP, distance 0.00
+- train:16:105358: BP, distance 0.00
+- train:16:240852: BP, distance 0.00
+LLM reasoning step: BP (high): Although Rule R1 flagged the late kill-chain stage for Exfiltration involving MailMessage and User entities, the historical detector and alert title profiles overwhelmingly indicate harmless authorized activity with a BP rate of 99.8%. Furthermore, the ML model yields P(BP) = 1.00 and all identical historical incidents were triaged as Benign Positive.
+```
+### Report
+```json
+{
+ "summary": "Incident test:16:240919 involves a single alert categorizing potential Exfiltration targeting MailMessage and User entities. The incident was auto-triaged as a Benign Positive (BP) with fused confidence of 0.99, supported by an ML triage model score of P(BP)=1.00 and an extensive history of identical benign alerts. Historical metrics and detector profiles indicate standard business email activity rather than unauthorized data theft.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1048",
+   "tactic": "Exfiltration",
+   "alerts": [
+    "1440680"
+   ]
+  }
+ ],
+ "furthest_stage": "Exfiltration",
+ "evidence_chain": [
+  {
+   "finding": "Exfiltration category alert detected involving MailMessage and User impacted entities.",
+   "source": "alert 1440680"
+  },
+  {
+   "finding": "Machine learning model classified the incident as Benign Positive with P(BP)=1.00, driven by DetectorId_bp_max and AlertTitle_bp_mean values of 0.998.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Five identical historical incidents (distance 0.00) were all resolved as Benign Positive.",
+   "source": "similar incident train:16:261266"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Validate that the MailMessage recipient and content align with expected business communications and policy.",
+   "priority": "immediate",
+   "source": "alert 1440680"
+  },
+  {
+   "action": "Close the incident ticket as Benign Positive per automated triage assessment without host isolation or credential revocation.",
+   "priority": "short-term",
+   "source": "ML model"
+  },
+  {
+   "action": "Review detection rule thresholds for this detector to reduce recurring benign alerts on normal email traffic.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) with 0.99 fused confidence. Although the alert represents a late kill-chain stage (Exfiltration), the detector and alert title historically show a 99.8% benign positive rate, identical nearest neighbors are all BP, and ML model confidence is P(BP)=1.00, satisfying criteria for automated non-escalation.",
+ "limitations": "Specific details regarding email contents, recipients, attachment types, and DLP rule identifiers were anonymized or omitted from the provided alert context."
+}
+```
+
+---
+## Report 22
+
+True label: BP
+
+### Evidence
+```
+Incident test:427:251326: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: none; entities: MailMessage/Related, User/Impacted, Mailbox/Impacted (source: alert 1515672, 3 evidence rows)
+
+Agent decision: BP (fused confidence 0.44); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.36, P(BP)=0.41, P(FP)=0.23
+Most influential features (SHAP):
+- AlertTitle_bp_max = 0.481 (incident feature): toward BP (SHAP +0.28)
+- AlertTitle_bp_mean = 0.481 (alert titles' historical BP rate): toward BP (SHAP +0.27)
+- DetectorId_bp_max = 0.481 (incident feature): against BP (SHAP -0.26)
+- DetectorId_bp_mean = 0.481 (detectors' historical BP rate): toward BP (SHAP +0.16)
+- AlertTitle_tp_mean = 0.278 (alert titles' historical TP rate): against BP (SHAP -0.12)
+Most similar past incidents:
+- train:67:321441: BP, distance 0.01
+- train:184:46251: FP, distance 0.01
+- train:2199:54040: BP, distance 0.01
+- train:36:526330: BP, distance 0.01
+- train:56:530764: BP, distance 0.01
+LLM reasoning step: BP (medium): The incident consists of a single InitialAccess email alert with no associated kill-chain progression or secondary alerts. The machine learning model leans toward BP (P(BP) = 0.41), and the vast majority of historical matching incidents (4 out of 5) were triaged as benign positive, indicating typical harmless or sanctioned email activity.
+```
+### Report
+```json
+{
+ "summary": "Incident test:427:251326 consists of an isolated InitialAccess alert involving an email message and impacted user mailbox. The triage agent auto-triaged the incident as Benign Positive (BP) with fused confidence of 0.44 due to lack of subsequent attack stages and strong historical benign patterns. No evidence of execution, persistence, or credential harvesting was identified.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1566",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "1515672"
+   ]
+  }
+ ],
+ "furthest_stage": "InitialAccess",
+ "evidence_chain": [
+  {
+   "finding": "An InitialAccess email detection was generated involving MailMessage, User, and Mailbox entities without subsequent lateral or execution activity.",
+   "source": "alert 1515672"
+  },
+  {
+   "finding": "The machine learning model predicted Benign Positive as the most probable outcome (P(BP)=0.41, P(TP)=0.36, P(FP)=0.23), driven primarily by the historical benign positive rate of the alert title.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Four out of five nearest past incidents (train:67:321441, train:2199:54040, train:36:526330, train:56:530764 at distance 0.01) were resolved as Benign Positive.",
+   "source": "similar incident train:67:321441"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Ensure the suspicious or triggering message in the user mailbox is quarantined or verified safe via email security controls.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1031"
+  },
+  {
+   "action": "Audit mailbox configurations and inbox rules for the impacted user to verify no unauthorized forwarding or hiding rules were applied.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1047"
+  },
+  {
+   "action": "Maintain and enforce SPF and DKIM anti-spoofing and domain authentication controls to minimize benign triggering of phishing alarms.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1054"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive without escalation because the detection was isolated to a single benign-leaning email alert, exhibited no post-delivery exploitation, and matched predominantly benign positive historical precedents.",
+ "limitations": "Alert entity metadata is anonymized, and full message payload, URLs, and attachment characteristics could not be directly inspected."
+}
+```
+
+---
+## Report 23
+
+True label: BP
+
+### Evidence
+```
+Incident test:36:84310: 2 alerts, 24 evidence rows, time span 3.3 h.
+Alert categories: InitialAccess x2.
+ATT&CK techniques: T1566.002.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: T1566.002; entities: Mailbox/Impacted, MailCluster/Related, Url/Related, User/Impacted, MailMessage/Related; last verdict: Malicious, NoThreatsFound; mail: Inbound (source: alert 58704, 12 evidence rows)
+- +199 min [InitialAccess] techniques: T1566.002; entities: Mailbox/Impacted, Url/Related, User/Impacted, MailMessage/Related, MailCluster/Related; last verdict: Malicious, NoThreatsFound; mail: Inbound (source: alert 218137, 12 evidence rows)
+
+Agent decision: BP (fused confidence 0.47); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.40, P(BP)=0.45, P(FP)=0.15
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.583 (alert titles' historical BP rate): toward BP (SHAP +0.51)
+- DetectorId_bp_max = 0.583 (incident feature): against BP (SHAP -0.31)
+- AlertTitle_bp_max = 0.583 (incident feature): toward BP (SHAP +0.27)
+- AlertTitle_tp_mean = 0.342 (alert titles' historical TP rate): against BP (SHAP -0.22)
+- AlertTitle_fp_mean = 0.0748 (alert titles' historical FP rate): toward BP (SHAP +0.10)
+Most similar past incidents:
+- train:40:91867: BP, distance 1.04
+- train:150:43268: BP, distance 1.07
+- train:576:35075: BP, distance 1.10
+- train:65:91350: FP, distance 1.10
+- train:36:88315: BP, distance 1.46
+LLM reasoning step: BP (medium): The incident involves repeated inbound spearphishing link detections (T1566.002) with conflicting verdicts ('Malicious' and 'NoThreatsFound'), indicating typical email filtering analysis rather than execution or breach. Both the ML model (P(BP)=0.45) and the nearest historical incidents strongly lean toward Benign Positive, consistent with benign or authorized simulation/marketing traffic handled at the gateway.
+```
+### Report
+```json
+{
+ "summary": "Incident test:36:84310 comprises two inbound spearphishing link alerts recorded across a 3.3-hour window targeting user mailboxes. Both alerts received mixed evaluations ('Malicious' alongside 'NoThreatsFound'), reflecting standard gateway-level inspection and benign filtering noise rather than successful compromise. In line with historical patterns and the ML evaluation, the incident was auto-triaged as Benign Positive (BP).",
+ "attack_mapping": [
+  {
+   "technique_id": "T1566.002",
+   "tactic": "Initial Access",
+   "alerts": [
+    "alert 58704",
+    "alert 218137"
+   ]
+  }
+ ],
+ "furthest_stage": "Initial Access",
+ "evidence_chain": [
+  {
+   "finding": "Inbound email containing a detected link generated an Initial Access alert with verdicts Malicious and NoThreatsFound.",
+   "source": "alert 58704"
+  },
+  {
+   "finding": "A second inbound email associated with a similar mail cluster and link generated another Initial Access alert with mixed verdicts.",
+   "source": "alert 218137"
+  },
+  {
+   "finding": "ML model classified the incident with P(BP)=0.45 driven heavily by historical alert title baseline features (AlertTitle_bp_mean SHAP +0.51).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Closest historical incidents (train:40:91867 at distance 1.04, train:150:43268 at distance 1.07, and train:576:35075 at distance 1.10) were consistently resolved as BP.",
+   "source": "similar incident train:40:91867"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Ensure the referenced inbound URLs are blocked or restricted across web proxies to prevent potential interaction if messages bypass gateway filtering.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1021"
+  },
+  {
+   "action": "Review and enforce sender verification controls, including SPF and DKIM anti-spoofing configurations, to strengthen perimeter email defense.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1054"
+  },
+  {
+   "action": "Audit mailbox-level rules and OAuth third-party app consent settings to prevent unauthorized persistence via phishing workflows.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1018"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as BP with no escalation required because the alerts represent routine inbound gateway filtering with dual verdicts ('Malicious' and 'NoThreatsFound'), reinforced by an ML BP probability of 0.45 and high similarity to resolved BP incidents (e.g., train:40:91867).",
+ "limitations": "The report relies solely on anonymized metadata and gateway verdicts without post-delivery click tracking or full endpoint execution telemetry for the targeted user."
+}
+```
+
+---
+## Report 24
+
+True label: FP
+
+### Evidence
+```
+Incident test:87:294011: 1 alerts, 5 evidence rows, time span 0.0 h.
+Alert categories: CommandAndControl x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [CommandAndControl] techniques: none; entities: Machine/Impacted, User/Impacted, Url/Related, Process/Related; suspicion: Suspicious; last verdict: Suspicious (source: alert 285580, 5 evidence rows)
+
+Agent decision: BP (fused confidence 0.57); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.31, P(BP)=0.55, P(FP)=0.14
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.747 (alert titles' historical BP rate): toward BP (SHAP +0.78)
+- AlertTitle_bp_max = 0.747 (incident feature): toward BP (SHAP +0.40)
+- DetectorId_bp_max = 0.747 (incident feature): against BP (SHAP -0.32)
+- ent_Ip = 0 (incident feature): against BP (SHAP -0.13)
+- n_ips = 0 (incident feature): toward BP (SHAP +0.10)
+Most similar past incidents:
+- train:3:298773: BP, distance 0.00
+- train:87:293963: FP, distance 0.00
+- train:3:304113: BP, distance 0.00
+- train:106:141757: BP, distance 0.00
+- train:49:292683: TP, distance 0.00
+LLM reasoning step: BP (medium): The single CommandAndControl alert involves standard entity interactions with no additional ATT&CK techniques or kill-chain rules triggered. The ML model strongly favors a benign positive with P(BP) = 0.55 supported by a high historical BP rate (0.747) for this alert title. Furthermore, the vast majority of nearest historical incidents with zero distance were resolved as benign positive.
+```
+### Report
+```json
+{
+ "summary": "Incident test:87:294011 involves a single CommandAndControl category alert generated across five evidence rows within a brief time frame. Analysis of historical trends and nearest neighbor incidents indicates consistent correlation with Benign Positive behavior. Consequently, the triage agent resolved the incident as Benign Positive (BP) with a fused confidence of 0.57.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1071",
+   "tactic": "Command and Control",
+   "alerts": [
+    "285580"
+   ]
+  }
+ ],
+ "furthest_stage": "Command and Control",
+ "evidence_chain": [
+  {
+   "finding": "Alert flagged as CommandAndControl with suspicion rated as Suspicious across impacted Machine, User, Process, and Url entities.",
+   "source": "alert 285580"
+  },
+  {
+   "finding": "The ML model classified the incident as predominantly Benign Positive with P(BP)=0.55, driven by a high historical Benign Positive rate for the alert title (SHAP +0.78).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Nearest matching historical incidents (e.g., train:3:298773, train:3:304113, and train:106:141757 at distance 0.00) were predominantly resolved as Benign Positive.",
+   "source": "similar incident train:3:298773"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify process execution and the destination URL against internal approved software/communication baselines to validate benign operation.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Maintain monitoring on the impacted host machine and user account for anomalous external connections or post-exploitation activity.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Tune detection rules for the specific DetectorId and AlertTitle to suppress repetitive benign network interactions and reduce alert fatigue.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) without escalation due to high alignment with historically benign operational alerts, low probability of true threat (P(TP)=0.31 vs P(BP)=0.55), and no evidence of further kill-chain advancement.",
+ "limitations": "Specific process names, URLs, IP addresses, and command-line arguments were anonymized or absent, preventing granular verification of the network communication payload."
+}
+```
+
+---
+## Report 25
+
+True label: BP
+
+### Evidence
+```
+Incident test:136:509173: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: CredentialAccess x1.
+ATT&CK techniques: T1110, T1110.001, T1110.003.
+Alerts (time order; source = AlertId):
+- +0 min [CredentialAccess] techniques: T1110, T1110.003, T1110.001; entities: User/Impacted, Ip/Related, CloudLogonRequest/Related (source: alert 1257763, 3 evidence rows)
+
+Agent decision: TP (fused confidence 0.72); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.70, P(BP)=0.07, P(FP)=0.23
+Most influential features (SHAP):
+- DetectorId_tp_mean = 0.67 (detectors' historical TP rate (mean over the incident's alerts)): toward TP (SHAP +0.82)
+- DetectorId_tp_max = 0.67 (incident feature): toward TP (SHAP +0.80)
+- AlertTitle_tp_mean = 0.67 (alert titles' historical TP rate): toward TP (SHAP +0.47)
+- AlertTitle_tp_max = 0.67 (incident feature): toward TP (SHAP +0.17)
+- ent_CloudLogonSession = 0 (incident feature): toward TP (SHAP +0.05)
+Most similar past incidents:
+- train:1344:283702: TP, distance 0.01
+- train:387:114697: TP, distance 0.01
+- train:665:104655: TP, distance 0.01
+- train:38:458092: TP, distance 0.01
+- train:11:544482: TP, distance 0.01
+LLM reasoning step: TP (high): The incident indicates active credential access behavior (T1110, T1110.001, T1110.003) involving cloud logon requests against a user account. The ML triage model strongly favors a true positive with P(TP) = 0.70, reinforced by high historical detector precision and all nearest past incidents being verified TPs.
+```
+### Report
+```json
+{
+ "summary": "Incident test:136:509173 was auto-triaged as a True Positive following detected brute force and password guessing activity against an impacted user account via cloud logon requests. The alert captured multiple unauthorized credential access attempts originating from a related IP address within a short timeframe. The classification is reinforced by strong ML model confidence and high historical detector precision across similar past incidents.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1110",
+   "tactic": "Credential Access",
+   "alerts": [
+    "1257763"
+   ]
+  },
+  {
+   "technique_id": "T1110.001",
+   "tactic": "Credential Access",
+   "alerts": [
+    "1257763"
+   ]
+  },
+  {
+   "technique_id": "T1110.003",
+   "tactic": "Credential Access",
+   "alerts": [
+    "1257763"
+   ]
+  }
+ ],
+ "furthest_stage": "Credential Access",
+ "evidence_chain": [
+  {
+   "finding": "Observed brute force, password guessing, and potential password spraying attempts against an impacted user account via cloud logon requests.",
+   "source": "alert 1257763"
+  },
+  {
+   "finding": "ML triage model classified the incident with P(TP)=0.70, influenced significantly by DetectorId_tp_mean (SHAP +0.82) and DetectorId_tp_max (SHAP +0.80).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Multiple highly similar past incidents (train:1344:283702, train:387:114697, train:665:104655, train:38:458092, train:11:544482) were all confirmed as True Positives at distance 0.01.",
+   "source": "similar incident train:1344:283702"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Initiate proactive password reset and terminate any active sessions for the impacted user account.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1018"
+  },
+  {
+   "action": "Enforce or verify multi-factor authentication (MFA) requirements on all externally facing services and cloud logon endpoints.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1032"
+  },
+  {
+   "action": "Evaluate and apply account lockout policies after a threshold of failed login attempts to mitigate persistent brute force attacks without causing denial of service.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1036"
+  },
+  {
+   "action": "Review password policies and ensure management services enforce strong complexity rules aligned with NIST guidelines.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1027"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a True Positive (fused confidence 0.72) based on automated correlation showing credential access activity (T1110, T1110.001, T1110.003) alongside ML model prediction P(TP)=0.70 and unanimous True Positive classifications among the nearest historical neighbors.",
+ "limitations": "Alert entity information is anonymized, and no subsequent successful logon session (ent_CloudLogonSession = 0) was recorded in the telemetry to confirm whether credentials were fully compromised."
+}
+```
+
+---
+## Report 26
+
+True label: FP
+
+### Evidence
+```
+Incident test:30:245331: 1 alerts, 7 evidence rows, time span 0.0 h.
+Alert categories: Exfiltration x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [Exfiltration] techniques: none; entities: MailMessage/Impacted, User/Impacted (source: alert 479110, 7 evidence rows)
+
+Agent decision: FP (fused confidence 0.98); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=0.01, P(FP)=0.99
+Most influential features (SHAP):
+- DetectorId_fp_mean = 0.86 (detectors' historical FP rate): toward FP (SHAP +1.69)
+- AlertTitle_fp_mean = 0.304 (alert titles' historical FP rate): toward FP (SHAP +0.66)
+- DetectorId_fp_max = 0.86 (incident feature): toward FP (SHAP +0.63)
+- AlertTitle_fp_max = 0.304 (incident feature): toward FP (SHAP +0.23)
+- n_mails = 2 (incident feature): toward FP (SHAP +0.21)
+Most similar past incidents:
+- train:30:245330: FP, distance 0.16
+- train:30:245322: FP, distance 0.62
+- train:30:245493: FP, distance 0.64
+- train:30:245497: FP, distance 0.64
+- train:30:245512: FP, distance 0.67
+LLM reasoning step: FP (high): The single exfiltration alert involving MailMessage entities exhibits a 0.99 false positive probability according to the ML triage model, driven by historically high false-positive detector rates (DetectorId_fp_mean = 0.86). All highly similar past incidents (e.g., train:30:245330 at distance 0.16) were closed as false positives. Despite firing late kill-chain rule R1, there is no corroborating malicious activity across the incident.
+```
+### Report
+```json
+{
+ "summary": "Incident test:30:245331 consists of a single Exfiltration alert involving MailMessage and User entities, spanning 0.0 hours. The automated triage system determined this incident to be a False Positive with a fused confidence of 0.98. The classification is strongly supported by high detector false-positive rates and identical historical incidents resolved as non-malicious.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1048",
+   "tactic": "Exfiltration",
+   "alerts": [
+    "479110"
+   ]
+  }
+ ],
+ "furthest_stage": "Exfiltration",
+ "evidence_chain": [
+  {
+   "finding": "Alert 479110 triggered under category Exfiltration affecting MailMessage and User entities.",
+   "source": "alert 479110"
+  },
+  {
+   "finding": "ML triage model calculated P(FP)=0.99, heavily influenced by DetectorId_fp_mean of 0.86 and AlertTitle_fp_mean of 0.304.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Top similar incidents (e.g., train:30:245330 at distance 0.16 and train:30:245322 at distance 0.62) were all triaged and closed as False Positives.",
+   "source": "similar incident train:30:245330"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Close the incident as a False Positive and document the automated triage outcome in the tracking system.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Perform a periodic review of the impacted MailMessage and User entity logs to confirm no anomalous outbound email patterns or account compromise occurred.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Review and tune detection logic for the alerting rule associated with alert 479110 to reduce the high baseline false-positive rate (DetectorId_fp_mean = 0.86).",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a False Positive due to a fused confidence score of 0.98, driven by high ML model certainty (P(FP)=0.99), high detector historical FP rates, strong similarity to known FP incidents, and a complete absence of corroborating malicious signals.",
+ "limitations": "Alert titles, entity names, IP addresses, and hostnames are anonymized, preventing deep content or contextual analysis of the affected mail messages."
+}
+```
+
+---
+## Report 27
+
+True label: TP
+
+### Evidence
+```
+Incident test:63:532678: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: T1078, T1078.004.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: T1078, T1078.004; entities: Ip/Related, CloudLogonRequest/Related, User/Impacted (source: alert 122850, 3 evidence rows)
+
+Agent decision: TP (fused confidence 0.69); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.71, P(BP)=0.09, P(FP)=0.20
+Most influential features (SHAP):
+- DetectorId_tp_mean = 0.123 (detectors' historical TP rate (mean over the incident's alerts)): toward TP (SHAP +0.54)
+- ent_CloudLogonSession = 0 (incident feature): toward TP (SHAP +0.30)
+- DetectorId_tp_max = 0.123 (incident feature): toward TP (SHAP +0.29)
+- AlertTitle_tp_mean = 0.123 (alert titles' historical TP rate): toward TP (SHAP +0.28)
+- DetectorId_fp_max = 0.811 (incident feature): toward TP (SHAP +0.22)
+Most similar past incidents:
+- train:276:27726: FP, distance 0.00
+- train:136:42840: BP, distance 0.00
+- train:130:292760: BP, distance 0.00
+- train:259:169841: BP, distance 0.00
+- train:5:501516: TP, distance 0.00
+LLM reasoning step: TP (low): The alert flags suspicious cloud credential usage under InitialAccess (T1078.004), which the ML model heavily weights as a true positive (P(TP) = 0.71). Although the nearest historical incidents lean predominantly toward benign positive (BP), the principle of assuming breach warrants treating this unverified access attempt as a true positive until authorization is confirmed.
+```
+### Report
+```json
+{
+ "summary": "Incident test:63:532678 involves potential unauthorized initial access via compromised valid cloud credentials. Alert 122850 identified anomalous cloud logon activity impacting a cloud user account from an external IP address. The triage agent auto-triaged the incident as a True Positive with a fused confidence of 0.69 based on high model confidence.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1078.004",
+   "tactic": "Initial Access",
+   "alerts": [
+    "122850"
+   ]
+  },
+  {
+   "technique_id": "T1078",
+   "tactic": "Initial Access",
+   "alerts": [
+    "122850"
+   ]
+  }
+ ],
+ "furthest_stage": "Initial Access",
+ "evidence_chain": [
+  {
+   "finding": "Alert 122850 flagged suspicious Initial Access activity involving related entities Ip, CloudLogonRequest, and impacted User.",
+   "source": "alert 122850"
+  },
+  {
+   "finding": "Machine learning model evaluated incident with P(TP)=0.71, heavily influenced by detector historical TP rate and missing standard logon session entities.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Past incident comparison identified similar activity, including true positive incident train:5:501516 at distance 0.00.",
+   "source": "similar incident train:5:501516"
+  },
+  {
+   "finding": "Adversaries abuse valid cloud accounts to establish initial access and evade detection controls in enterprise cloud environments.",
+   "source": "ATT&CK v20.1 T1078.004"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Revoke active sessions for the impacted user account and force a secure password reset to immediately contain potential access.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1027"
+  },
+  {
+   "action": "Enforce Multi-Factor Authentication (MFA) and block legacy authentication protocols for the affected cloud user account.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1032"
+  },
+  {
+   "action": "Audit recent activity and sign-in logs originating from the flagged IP and cloud logon request for persistence or lateral movement.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1018"
+  },
+  {
+   "action": "Conduct a comprehensive review of privileged cloud account permission levels and ensure least privilege enforcement across administrative roles.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1026"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a True Positive (fused confidence 0.69) driven by the ML model's high probability assessment (P(TP)=0.71) regarding valid cloud credential abuse, despite mixed historical incident classifications.",
+ "limitations": "Specific user identity, IP geolocation, authentication telemetry details, and downstream activity logs are masked or absent from the evidence, limiting the confirmation of post-compromise actions."
+}
+```
+
+---
+## Report 28
+
+True label: FP
+
+### Evidence
+```
+Incident test:293:172414: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: none; entities: MailMessage/Related, User/Impacted, Mailbox/Impacted (source: alert 1525069, 3 evidence rows)
+
+Agent decision: BP (fused confidence 0.51); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.26, P(BP)=0.49, P(FP)=0.24
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.681 (alert titles' historical BP rate): toward BP (SHAP +0.63)
+- AlertTitle_bp_max = 0.681 (incident feature): toward BP (SHAP +0.35)
+- DetectorId_bp_max = 0.681 (incident feature): against BP (SHAP -0.29)
+- DetectorId_bp_mean = 0.681 (detectors' historical BP rate): toward BP (SHAP +0.17)
+- ent_Ip = 0 (incident feature): against BP (SHAP -0.13)
+Most similar past incidents:
+- train:317:511606: BP, distance 0.01
+- train:480:239157: BP, distance 0.01
+- train:317:511742: BP, distance 0.01
+- train:1220:23325: FP, distance 0.01
+- train:205:76855: BP, distance 0.01
+LLM reasoning step: BP (medium): The single InitialAccess alert involves mailbox and mail message entities with no downstream attack chain progression or fired risk rules. Both the ML triage model (P(BP) = 0.49) and historical similar incidents overwhelmingly point to benign positive outcomes (4 of 5 nearest neighbors are BP), driven by high historical BP rates for this detector and alert type. Missing signs of further lateral movement or execution reinforce that the detected activity was benign or sanctioned.
+```
+### Report
+```json
+{
+ "summary": "Incident test:293:172414 consists of a single InitialAccess alert involving a mail message, user, and mailbox entity. The activity was triaged as Benign Positive (BP) with no observed post-exploitation, execution, or lateral movement. Both model predictions and historical precedent confirm the alert was triggered by authorized or expected business email operations.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1566",
+   "tactic": "initial-access",
+   "alerts": [
+    "1525069"
+   ]
+  }
+ ],
+ "furthest_stage": "initial-access",
+ "evidence_chain": [
+  {
+   "finding": "Alert 1525069 flagged InitialAccess activity associated with MailMessage, User, and Mailbox entities.",
+   "source": "alert 1525069"
+  },
+  {
+   "finding": "The ML triage model evaluated the activity with P(BP) = 0.49, heavily driven by high historical BP rates for the alert title and detector (AlertTitle_bp_mean = 0.681).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Nearest historical incidents strongly reflect Benign Positive outcomes (train:317:511606, train:480:239157, train:317:511742, and train:205:76855).",
+   "source": "similar incident train:317:511606"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify email sender authenticity and ensure SPF, DKIM, and DMARC configurations are properly enforcing policies for the affected mail flow.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1054"
+  },
+  {
+   "action": "Ensure network and mail gateway intrusion prevention mechanisms remain active to scan and filter suspicious attachments and URLs.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1031"
+  },
+  {
+   "action": "Perform periodic audits of mailbox configurations and forwarding rules to identify potential anomalies or weaknesses.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1047"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) with a fused confidence of 0.51 because the alert involved routine mail activity without any secondary indicators of compromise, supported by historical BP incident patterns and ML feature influence.",
+ "limitations": "Analysis was limited to a single InitialAccess alert without access to specific email body content, headers, or recipient telemetry."
+}
+```
+
+---
+## Report 29
+
+True label: BP
+
+### Evidence
+```
+Incident test:164:52127: 1 alerts, 9 evidence rows, time span 0.0 h.
+Alert categories: Discovery x1.
+ATT&CK techniques: T1046.
+Alerts (time order; source = AlertId):
+- +0 min [Discovery] techniques: T1046; entities: Machine/Impacted, Ip/Related (source: alert 370233, 9 evidence rows)
+
+Agent decision: BP (fused confidence 0.99); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=1.00, P(FP)=0.00
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.962 (alert titles' historical BP rate): toward BP (SHAP +1.22)
+- AlertTitle_bp_max = 0.962 (incident feature): toward BP (SHAP +1.14)
+- DetectorId_bp_mean = 0.948 (detectors' historical BP rate): toward BP (SHAP +0.67)
+- DetectorId_bp_max = 0.948 (incident feature): toward BP (SHAP +0.64)
+- ent_Ip = 8 (incident feature): toward BP (SHAP +0.18)
+Most similar past incidents:
+- train:164:60841: BP, distance 0.45
+- train:164:52122: BP, distance 0.75
+- train:164:38904: BP, distance 0.75
+- train:164:43881: BP, distance 0.75
+- train:164:42511: BP, distance 0.79
+LLM reasoning step: BP (high): The incident consists of an isolated Discovery alert (T1046: Network Service Discovery) involving standard internal network scanning activity without subsequent suspicious lateral movement or malicious kill-chain stages. Historical alerts from this detector and title are overwhelmingly classified as benign positive (BP rate ~96%), which is consistent across all nearest neighbor incidents. Given the lack of malicious progression or high-risk contextual alerts, the behavior corresponds to authorized administrative or routine network discovery.
+```
+### Report
+```json
+{
+ "summary": "Incident test:164:52127 consists of a single network service discovery alert involving an impacted machine and related IP entities. The activity shows no progression to execution, lateral movement, or persistence, matching standard benign administrative or scanning tasks. Automated classification identified this event as a Benign Positive with 0.99 fused confidence, aligned with historical incident baselines.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1046",
+   "tactic": "Discovery",
+   "alerts": [
+    "370233"
+   ]
+  }
+ ],
+ "furthest_stage": "Discovery",
+ "evidence_chain": [
+  {
+   "finding": "Network Service Discovery activity detected involving 1 impacted machine and 8 associated IP entities over a 0.0 hour span.",
+   "source": "alert 370233"
+  },
+  {
+   "finding": "Historical analysis indicates detector and alert title have high benign positive rates (DetectorId_bp_mean = 0.948, AlertTitle_bp_mean = 0.962).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Strongest historical matches (e.g., train:164:60841 at distance 0.45, train:164:52122 at distance 0.75) were classified as Benign Positive.",
+   "source": "similar incident train:164:60841"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify that the impacted machine is an authorized vulnerability scanner, asset management tool, or administrative host.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Ensure the observed scan activity corresponds with scheduled operational discovery windows.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Tune detection rules or configure scanning exclusions for authorized assets to reduce benign positive alert volume.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) with 0.99 fused confidence based on ML model predictions (P(BP)=1.00), highly consistent historical BP rates for the alert title and detector, and lack of any secondary malicious kill-chain activity.",
+ "limitations": "Entities, alert titles, and host details are anonymized in the telemetry, preventing verification against specific known asset inventories or scanner schedules."
+}
+```
+
+---
+## Report 30
+
+True label: BP
+
+### Evidence
+```
+Incident test:83:175974: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: Exfiltration x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [Exfiltration] techniques: none; entities: User/Impacted, MailMessage/Impacted (source: alert 1450392, 3 evidence rows)
+
+Agent decision: BP (fused confidence 0.99); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=1.00, P(FP)=0.00
+Most influential features (SHAP):
+- DetectorId_bp_max = 0.996 (incident feature): toward BP (SHAP +2.80)
+- DetectorId_bp_mean = 0.996 (detectors' historical BP rate): toward BP (SHAP +1.21)
+- AlertTitle_bp_mean = 0.49 (alert titles' historical BP rate): toward BP (SHAP +0.71)
+- AlertTitle_bp_max = 0.49 (incident feature): toward BP (SHAP +0.42)
+- first_dow = 5 (incident feature): toward BP (SHAP +0.25)
+Most similar past incidents:
+- train:83:502978: BP, distance 0.01
+- train:16:160372: BP, distance 0.01
+- train:83:61108: BP, distance 0.05
+- train:83:244046: BP, distance 0.05
+- train:83:144203: BP, distance 0.05
+LLM reasoning step: BP (high): Although Rule R1 flagged the event for late kill-chain exfiltration risk involving a MailMessage entity, historical context shows the detector has a near-perfect benign positive rate (DetectorId_bp_max = 0.996). All top nearest neighbor incidents were classified as benign positives, and the ML model assigns a 1.00 probability to BP. The detected activity reflects authorized email operations triggering exfiltration heuristics rather than malicious data loss.
+```
+### Report
+```json
+{
+ "summary": "The incident consists of a single Exfiltration alert regarding user mail operations, involving Impacted User and MailMessage entities. The automated triage system classified the incident as a Benign Positive (BP) with a confidence of 0.99. Analysis indicates legitimate business email activity that triggered exfiltration heuristics, supported by a 1.00 BP machine learning probability and matching benign historical incidents.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1048",
+   "tactic": "exfiltration",
+   "alerts": [
+    "1450392"
+   ]
+  }
+ ],
+ "furthest_stage": "exfiltration",
+ "evidence_chain": [
+  {
+   "finding": "Alert 1450392 flagged potential exfiltration activity involving MailMessage and User entities.",
+   "source": "alert 1450392"
+  },
+  {
+   "finding": "The ML model evaluated the event with P(BP)=1.00, driven strongly by high detector benign positive history (DetectorId_bp_max = 0.996).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Historical incidents with identical profiles were consistently resolved as benign positives (train:83:502978, train:16:160372 at distance 0.01).",
+   "source": "similar incident train:83:502978"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Close the alert as Benign Positive and preserve the record for baseline calibration.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Audit mailbox transport and forwarding rules to confirm that outbound message handling remains authorized.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1047"
+  },
+  {
+   "action": "Tune Data Loss Prevention (DLP) and exfiltration detection heuristics on the triggering detector to decrease benign positive alert volume on standard business mail flows.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1057"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged and resolved as Benign Positive (BP) because the detector historically exhibits a near-perfect benign positive rate (DetectorId_bp_max = 0.996), the ML triage model produced a BP probability of 1.00, and nearest neighbor historical cases were all resolved as benign operations without adversary compromise.",
+ "limitations": "Specific message headers, body contents, recipient details, and exact DLP rule triggers were not provided in the alert evidence."
+}
+```
+
+---
+## Report 31
+
+True label: BP
+
+### Evidence
+```
+Incident test:16:74676: 1 alerts, 23 evidence rows, time span 0.0 h.
+Alert categories: Exfiltration x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [Exfiltration] techniques: none; entities: User/Impacted, MailMessage/Impacted (source: alert 62391, 23 evidence rows)
+
+Agent decision: BP (fused confidence 0.99); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=1.00, P(FP)=0.00
+Most influential features (SHAP):
+- DetectorId_bp_max = 0.999 (incident feature): toward BP (SHAP +2.43)
+- AlertTitle_bp_mean = 0.983 (alert titles' historical BP rate): toward BP (SHAP +1.16)
+- AlertTitle_bp_max = 0.983 (incident feature): toward BP (SHAP +0.96)
+- DetectorId_bp_mean = 0.999 (detectors' historical BP rate): toward BP (SHAP +0.80)
+- AlertTitle_tp_mean = 0.00688 (alert titles' historical TP rate): toward BP (SHAP +0.28)
+Most similar past incidents:
+- train:16:39860: BP, distance 0.27
+- train:16:58018: BP, distance 0.71
+- train:16:51753: BP, distance 0.80
+- train:16:41034: BP, distance 0.80
+- train:16:60383: BP, distance 0.80
+LLM reasoning step: BP (high): The single exfiltration alert involving MailMessage entities corresponds to detector patterns with an overwhelmingly high historical benign-positive rate (DetectorId_bp_max = 0.999, AlertTitle_bp_mean = 0.983). Past incidents matching this profile are consistently classified as BP, indicating routine or authorized business email activity triggered the rule. Despite the late kill-chain stage triggered by category rules, there is no evidence of unauthorized malicious exfiltration.
+```
+### Report
+```json
+{
+ "summary": "Incident test:16:74676 consists of a single Exfiltration alert involving a User and MailMessage entity, spanning 0.0 hours. The alert was evaluated as a Benign Positive (BP) with fused confidence of 0.99 by the automated triage agent. The detection pattern matches authorized business email activity with no indicators of malicious data exfiltration.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1048",
+   "tactic": "Exfiltration",
+   "alerts": [
+    "62391"
+   ]
+  }
+ ],
+ "furthest_stage": "Exfiltration",
+ "evidence_chain": [
+  {
+   "finding": "Alert 62391 flagged 23 evidence rows for Exfiltration involving User/Impacted and MailMessage/Impacted entities.",
+   "source": "alert 62391"
+  },
+  {
+   "finding": "ML triage model calculated P(BP)=1.00 and P(TP)=0.00, heavily influenced by detector historical BP rates (DetectorId_bp_max = 0.999, SHAP +2.43).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Historical incidents with similar features (train:16:39860 distance 0.27, train:16:58018 distance 0.71) were verified as Benign Positives.",
+   "source": "similar incident train:16:39860"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify MailMessage sender, recipient, and payload context in alert 62391 to confirm legitimate business process compliance under NIST SP 800-61 Rev. 3.",
+   "priority": "immediate",
+   "source": "alert 62391"
+  },
+  {
+   "action": "Close the incident as Benign Positive (BP) in accordance with the auto-triaged recommendation.",
+   "priority": "short-term",
+   "source": "ML model"
+  },
+  {
+   "action": "Tune detection rule thresholds and detector filters for legitimate outbound MailMessage workflows to minimize recurring benign exfiltration alerts.",
+   "priority": "long-term",
+   "source": "ML model"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged and closed as a Benign Positive without escalation due to high fused confidence (0.99), an ML model P(BP) score of 1.00, and alignment with multiple historically benign past incidents demonstrating standard business email operations.",
+ "limitations": "Specific payload contents, recipient domains, and anonymized user details were not accessible in the alert telemetry, constraining manual verification to model metrics and aggregated behavioral history."
+}
+```
+
+---
+## Report 32
+
+True label: TP
+
+### Evidence
+```
+Incident test:654:136557: 2 alerts, 8 evidence rows, time span 11.6 h.
+Alert categories: InitialAccess x2.
+ATT&CK techniques: T1078, T1078.004.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: T1078, T1078.004; entities: CloudLogonRequest/Related, User/Impacted, CloudLogonSession/Related, Ip/Related (source: alert 844171, 4 evidence rows)
+- +696 min [InitialAccess] techniques: T1078, T1078.004; entities: CloudLogonRequest/Related, CloudLogonSession/Related, User/Impacted, Ip/Related (source: alert 378661, 4 evidence rows)
+
+Agent decision: TP (fused confidence 0.36); status NEEDS_HUMAN_REVIEW.
+Escalation reasons: ML and LLM disagree: ML says TP (p=0.38); LLM says FP (medium confidence): The incident consists solely of two Initial Access alerts (T1078, T1078.004) across nearly 12 hours with no downstream malicious activity or kill-chain progression observed. The most similar historical incidents were predominantly triaged as false positives, consistent with low detector TP rates (0.123). In the absence of corroborating lateral movement or persistence, the detection logic appears to reflect anomalous but benign cloud logon requests..
+ML triage model: P(TP)=0.38, P(BP)=0.38, P(FP)=0.24
+Most influential features (SHAP):
+- DetectorId_tp_mean = 0.123 (detectors' historical TP rate (mean over the incident's alerts)): toward TP (SHAP +0.46)
+- ent_CloudLogonSession = 2 (incident feature): against TP (SHAP -0.30)
+- AlertTitle_tp_mean = 0.123 (alert titles' historical TP rate): toward TP (SHAP +0.28)
+- DetectorId_tp_max = 0.123 (incident feature): toward TP (SHAP +0.28)
+- n_evidence = 8 (incident feature): toward TP (SHAP +0.26)
+Most similar past incidents:
+- train:506:70003: FP, distance 0.28
+- train:228:12259: FP, distance 0.49
+- train:569:171558: BP, distance 0.57
+- train:147:222395: FP, distance 0.64
+- train:569:171556: BP, distance 0.74
+LLM reasoning step: FP (medium): The incident consists solely of two Initial Access alerts (T1078, T1078.004) across nearly 12 hours with no downstream malicious activity or kill-chain progression observed. The most similar historical incidents were predominantly triaged as false positives, consistent with low detector TP rates (0.123). In the absence of corroborating lateral movement or persistence, the detection logic appears to reflect anomalous but benign cloud logon requests.
+```
+### Report
+```json
+{
+ "summary": "Incident test:654:136557 consists of two Initial Access alerts involving valid cloud account abuse spanning 11.6 hours. The alerts triggered on anomalous cloud logon requests and sessions associated with an impacted user account. The incident has been classified as a True Positive requiring human review due to model ambiguity and lack of observed downstream actions.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1078.004",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "844171",
+    "378661"
+   ]
+  }
+ ],
+ "furthest_stage": "InitialAccess",
+ "evidence_chain": [
+  {
+   "finding": "Anomalous cloud logon request and session initiated for impacted user account.",
+   "source": "alert 844171"
+  },
+  {
+   "finding": "Secondary anomalous cloud logon request and session observed approximately 11.6 hours later.",
+   "source": "alert 378661"
+  },
+  {
+   "finding": "Historical detector TP rate of 0.123 and evidence count of 8 strongly influenced the machine learning model toward a TP verdict (P(TP)=0.38).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Most similar past incidents (train:506:70003, train:228:12259) were resolved as false positives, indicating potential benign anomaly patterns.",
+   "source": "similar incident train:506:70003"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Revoke active cloud logon sessions for the impacted user account and force a credential reset.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1027"
+  },
+  {
+   "action": "Enforce and verify multi-factor authentication (MFA) prompts for all upcoming logon requests on the affected account.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1032"
+  },
+  {
+   "action": "Audit recent activity from the associated IP and user sessions for unauthorized persistence or resource enumeration.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1018"
+  },
+  {
+   "action": "Disable legacy authentication protocols across the cloud environment to prevent MFA bypass.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1015"
+  }
+ ],
+ "escalation_explanation": "The incident was marked as NEEDS_HUMAN_REVIEW because the ML triage model evaluated a probability of TP (0.38) and BP (0.38) exceeding FP (0.24), while the LLM rule-step assessed the alerts as a False Positive due to the absence of progression past Initial Access and historical FP similarities. Human analyst verification is required to confirm legitimate user travel/VPN versus credential abuse.",
+ "limitations": "Alert data is anonymized and lacks raw IP geolocation, device compliance state, and specific failed/successful logon telemetry, limiting definitive confirmation of unauthorized access without additional audit log inspection."
+}
+```
+
+---
+## Report 33
+
+True label: BP
+
+### Evidence
+```
+Incident test:24:469834: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: SuspiciousActivity x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [SuspiciousActivity] techniques: none; entities: User/Impacted, CloudApplication/Impacted, Ip/Related (source: alert 1395058, 3 evidence rows)
+
+Agent decision: BP (fused confidence 0.71); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.22, P(BP)=0.69, P(FP)=0.10
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.764 (alert titles' historical BP rate): toward BP (SHAP +0.78)
+- AlertTitle_bp_max = 0.764 (incident feature): toward BP (SHAP +0.48)
+- DetectorId_bp_max = 0.406 (incident feature): against BP (SHAP -0.34)
+- DetectorId_bp_mean = 0.406 (detectors' historical BP rate): against BP (SHAP -0.16)
+- AlertTitle_tp_mean = 0.128 (alert titles' historical TP rate): toward BP (SHAP +0.13)
+Most similar past incidents:
+- train:24:469831: BP, distance 0.01
+- train:24:459927: BP, distance 0.01
+- train:24:459697: BP, distance 0.01
+- train:24:460671: BP, distance 0.01
+- train:24:459784: BP, distance 0.01
+LLM reasoning step: BP (high): The single SuspiciousActivity alert aligns strongly with benign activity patterns, reflected in the ML model's 0.69 BP probability and a high historical BP rate (0.764). All nearest neighbor incidents were triaged as BP at distance 0.01, with no kill-chain rules or ATT&CK techniques triggered.
+```
+### Report
+```json
+{
+ "summary": "Incident test:24:469834 comprises a single SuspiciousActivity alert involving a user, cloud application, and IP address. The automated triage classified this activity as Benign Positive (BP) with a fused confidence of 0.71. Historical analysis and nearest-neighbor matches indicate that the activity aligns with expected benign operational patterns rather than malicious exploitation.",
+ "attack_mapping": [],
+ "furthest_stage": "none",
+ "evidence_chain": [
+  {
+   "finding": "Alert 1395058 triggered under the SuspiciousActivity category across user and cloud application entities without explicit ATT&CK technique tags.",
+   "source": "alert 1395058"
+  },
+  {
+   "finding": "The ML model evaluated the event with P(BP)=0.69 and P(TP)=0.22, driven positively by AlertTitle_bp_mean (0.764) and AlertTitle_bp_max (0.764).",
+   "source": "ML model"
+  },
+  {
+   "finding": "The five nearest historical incidents (train:24:469831, train:24:459927, train:24:459697, train:24:460671, train:24:459784) were all triaged as BP at distance 0.01.",
+   "source": "similar incident train:24:469831"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify the benign context of the session associated with alert 1395058 to ensure no unexpected privilege or role changes occurred.",
+   "priority": "immediate",
+   "source": "alert 1395058"
+  },
+  {
+   "action": "Ensure multi-factor authentication (MFA) remains enforced for the affected user and cloud application access.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1032"
+  },
+  {
+   "action": "Conduct regular audits of cloud role assignments and account permissions to maintain least-privilege access across cloud identities.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1026"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) because the ML model predicted a BP probability of 0.69, supported by a historical title BP rate of 0.764, and five identical nearest-neighbor cases were closed as BP with no escalation criteria or adversarial techniques identified.",
+ "limitations": "The incident record omits raw telemetry details, such as specific cloud API calls, command-line arguments, and identity attributes, and contains anonymized entity names."
+}
+```
+
+---
+## Report 34
+
+True label: FP
+
+### Evidence
+```
+Incident test:18:574009: 1 alerts, 2 evidence rows, time span 0.0 h.
+Alert categories: Execution x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [Execution] techniques: none; entities: CloudApplication/Impacted, File/Related (source: alert 1567875, 2 evidence rows)
+
+Agent decision: FP (fused confidence 0.99); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=0.00, P(FP)=1.00
+Most influential features (SHAP):
+- AlertTitle_fp_max = 0.998 (incident feature): toward FP (SHAP +2.61)
+- AlertTitle_fp_mean = 0.998 (alert titles' historical FP rate): toward FP (SHAP +1.86)
+- AlertTitle_bp_mean = 0.00172 (alert titles' historical BP rate): toward FP (SHAP +1.19)
+- first_hour = 1 (incident feature): toward FP (SHAP +0.63)
+- AlertTitle_tp_mean = 0.000724 (alert titles' historical TP rate): toward FP (SHAP +0.46)
+Most similar past incidents:
+- train:18:574164: FP, distance 0.00
+- train:18:567427: FP, distance 0.00
+- train:18:574248: FP, distance 0.00
+- train:18:567589: FP, distance 0.00
+- train:18:567523: FP, distance 0.00
+LLM reasoning step: FP (high): The single Execution alert exhibits an overwhelming historical false positive rate (AlertTitle_fp_max = 0.998) with zero associated ATT&CK techniques or suspicious kill-chain activity. Multiple identical historical incidents (distance 0.00) were consistently classified as FP by analysts. Therefore, the detection logic is determined to be a false positive.
+```
+### Report
+```json
+{
+ "summary": "Incident test:18:574009 comprises a single Execution category alert involving an impacted CloudApplication and related File entity. With no ATT&CK techniques identified and an overwhelming historical false-positive profile, the incident was resolved as a False Positive. The triage agent auto-triaged the incident based on a fused confidence of 0.99.",
+ "attack_mapping": [],
+ "furthest_stage": "Execution",
+ "evidence_chain": [
+  {
+   "finding": "Execution category alert triggered with no specific ATT&CK techniques associated.",
+   "source": "alert 1567875"
+  },
+  {
+   "finding": "High historical false positive rate (AlertTitle_fp_max = 0.998, AlertTitle_fp_mean = 0.998) yielding high model confidence toward FP (P(FP)=1.00).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Identical past incidents were uniformly resolved as False Positive with zero distance.",
+   "source": "similar incident train:18:574164"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Close the incident as a False Positive and prevent automated blocking or containment actions.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Review detection rule logic associated with alert 1567875 to tune out benign execution patterns from the impacted CloudApplication.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Audit historical performance of this alert category to identify whether alert suppression rules are warranted.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a False Positive due to a 0.99 fused confidence score, driven by an ML model FP probability of 1.00, strong SHAP feature support (AlertTitle_fp_max = 0.998), and multiple zero-distance identical prior FP incidents.",
+ "limitations": "Entities such as the CloudApplication and File names are anonymized, and no specific command-line or hash details are provided, precluding granular behavioral validation."
+}
+```
+
+---
+## Report 35
+
+True label: FP
+
+### Evidence
+```
+Incident test:11:414633: 1 alerts, 4 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: T1078, T1078.004.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: T1078, T1078.004; entities: CloudLogonSession/Related, Ip/Related, CloudLogonRequest/Related, User/Impacted (source: alert 822997, 4 evidence rows)
+
+Agent decision: FP (fused confidence 0.93); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.05, P(BP)=0.02, P(FP)=0.93
+Most influential features (SHAP):
+- AlertTitle_fp_mean = 0.811 (alert titles' historical FP rate): toward FP (SHAP +1.12)
+- DetectorId_fp_mean = 0.811 (detectors' historical FP rate): toward FP (SHAP +0.81)
+- AlertTitle_fp_max = 0.811 (incident feature): toward FP (SHAP +0.40)
+- DetectorId_fp_max = 0.811 (incident feature): toward FP (SHAP +0.31)
+- n_evidence = 4 (incident feature): toward FP (SHAP +0.15)
+Most similar past incidents:
+- train:98:347414: FP, distance 0.00
+- train:11:414070: FP, distance 0.00
+- train:11:412684: FP, distance 0.00
+- train:11:413234: FP, distance 0.00
+- train:11:413978: FP, distance 0.00
+LLM reasoning step: FP (high): The incident consists of a single isolated InitialAccess alert regarding cloud logon activity (T1078, T1078.004) with no downstream kill-chain progression. Historical data and ML triage show a 0.93 probability of false positive with an 81.1% historical detector FP rate. All identical historical incidents (distance 0.00) were confirmed as false positives.
+```
+### Report
+```json
+{
+ "summary": "Incident test:11:414633 involves a single InitialAccess alert triggered by cloud logon activity mapped to ATT&CK T1078 and T1078.004. No downstream suspicious activities or lateral movements were detected over the evaluated window. The incident was automatically triaged as a False Positive with a high fused confidence score of 0.93.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1078.004",
+   "tactic": "Initial Access",
+   "alerts": [
+    "822997"
+   ]
+  },
+  {
+   "technique_id": "T1078",
+   "tactic": "Initial Access",
+   "alerts": [
+    "822997"
+   ]
+  }
+ ],
+ "furthest_stage": "Initial Access",
+ "evidence_chain": [
+  {
+   "finding": "Cloud logon session activity triggered an Initial Access alert involving CloudLogonSession, CloudLogonRequest, User, and Ip entities.",
+   "source": "alert 822997"
+  },
+  {
+   "finding": "The ML model evaluated the probability of False Positive at 0.93, driven strongly by high historical FP rates for the detector and alert title.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Five identical past incidents (distance 0.00) including train:98:347414 and train:11:414070 were verified and closed as False Positives.",
+   "source": "similar incident train:98:347414"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Close the incident as a False Positive and dismiss alert 822997.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Review the detector sensitivity and threshold tuning for this CloudLogon alert title due to its 81.1% historical false positive rate.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Periodically assess recurring benign cloud logon patterns from trusted enterprise IP ranges to reduce alert volume.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a False Positive (P(FP)=0.93) without escalation due to the absence of subsequent malicious tactics, corroborated by a high detector FP baseline (81.1%) and five identical past incidents resolved as false positives.",
+ "limitations": "Entities such as the specific IP address, user name, and detector names are anonymized, preventing deep IP reputation checks or contextual identity verification outside the provided telemetry."
+}
+```
+
+---
+## Report 36
+
+True label: BP
+
+### Evidence
+```
+Incident test:51:26454: 1 alerts, 30 evidence rows, time span 0.0 h.
+Alert categories: Exfiltration x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [Exfiltration] techniques: none; entities: CloudApplication/Impacted, File/Impacted, User/Impacted (source: alert 38804, 30 evidence rows)
+
+Agent decision: BP (fused confidence 0.99); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=1.00, P(FP)=0.00
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.849 (alert titles' historical BP rate): toward BP (SHAP +1.22)
+- AlertTitle_bp_max = 0.849 (incident feature): toward BP (SHAP +0.50)
+- ent_File = 28 (incident feature): toward BP (SHAP +0.36)
+- AlertTitle_tp_mean = 0.0557 (alert titles' historical TP rate): toward BP (SHAP +0.28)
+- DetectorId_bp_mean = 0.751 (detectors' historical BP rate): toward BP (SHAP +0.23)
+Most similar past incidents:
+- train:777:10836: BP, distance 1.23
+- train:182:15310: BP, distance 1.38
+- train:777:7506: BP, distance 1.59
+- train:579:11762: BP, distance 1.63
+- train:182:25217: BP, distance 1.74
+LLM reasoning step: BP (high): The incident involves a single Exfiltration alert tied to CloudApplication, User, and File entities, which historically corresponds to authorized data transfers or sanctioned cloud file sync activities. The ML model evaluates P(BP) at 1.00, supported by an alert title BP historical rate of ~85% and unanimous BP classifications across the nearest similar incidents. Despite triggering the late kill-chain rule, there is no evidence of unauthorized access or malicious behavior.
+```
+### Report
+```json
+{
+ "summary": "Incident test:51:26454 was classified as a Benign Positive (BP) with fused confidence of 0.99 and auto-triaged without escalation. The incident consists of a single Exfiltration category alert involving cloud application and file access typical of normal business activity. Prior similar cases and statistical modeling strongly indicate expected, benign operational behavior.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1567",
+   "tactic": "Exfiltration",
+   "alerts": [
+    "38804"
+   ]
+  }
+ ],
+ "furthest_stage": "Exfiltration",
+ "evidence_chain": [
+  {
+   "finding": "Alert 38804 flagged potential Exfiltration involving CloudApplication, File, and User entities across 30 evidence records.",
+   "source": "alert 38804"
+  },
+  {
+   "finding": "ML triage model assigned P(BP)=1.00, P(TP)=0.00, driven strongly by high historical BP rates for the alert title (SHAP +1.22) and detector (SHAP +0.23).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Historical incidents with matching profiles (train:777:10836, train:182:15310, train:777:7506) were uniformly confirmed as Benign Positive.",
+   "source": "similar incident train:777:10836"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Close the incident as Benign Positive and confirm that the involved CloudApplication and User entities correspond to approved corporate workflows.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Review and tune detection thresholds for the file synchronization patterns to minimize false alerts on sanctioned cloud file interactions.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Implement enhanced context enrichment on cloud application telemetry to automatically differentiate approved enterprise accounts from external destinations.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive with fused confidence of 0.99 because ML model predictions, high historical BP rates for the detector, and identical historical precedents showed legitimate cloud activity with no indicators of malicious compromise.",
+ "limitations": "Entity names, file paths, and application details are anonymized, preventing direct validation against explicit corporate data policy or specific user job functions."
+}
+```
+
+---
+## Report 37
+
+True label: BP
+
+### Evidence
+```
+Incident test:26:158473: 1 alerts, 4 evidence rows, time span 0.0 h.
+Alert categories: SuspiciousActivity x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [SuspiciousActivity] techniques: none; entities: Machine/Impacted, Process/Related, User/Impacted (source: alert 1139552, 4 evidence rows)
+
+Agent decision: BP (fused confidence 0.97); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=0.98, P(FP)=0.01
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.815 (alert titles' historical BP rate): toward BP (SHAP +1.26)
+- AlertTitle_bp_max = 0.815 (incident feature): toward BP (SHAP +0.59)
+- AlertTitle_tp_mean = 0.0749 (alert titles' historical TP rate): toward BP (SHAP +0.29)
+- DetectorId_bp_mean = 0.815 (detectors' historical BP rate): toward BP (SHAP +0.22)
+- AlertTitle_tp_max = 0.0749 (incident feature): toward BP (SHAP +0.15)
+Most similar past incidents:
+- train:26:158472: BP, distance 0.46
+- train:828:274919: BP, distance 0.83
+- train:26:68235: BP, distance 0.96
+- train:26:55635: BP, distance 1.38
+- train:26:336548: BP, distance 1.39
+LLM reasoning step: BP (high): The single SuspiciousActivity alert has no mapped ATT&CK techniques or kill-chain risk rules triggered. The ML model strongly predicts a benign positive (P(BP) = 0.98), supported by high historical BP rates (AlertTitle_bp_mean = 0.815) and identical historical incidents labeled as BP.
+```
+### Report
+```json
+{
+ "summary": "Incident test:26:158473 comprises a single SuspiciousActivity alert involving standard machine, process, and user entities with no mapped MITRE ATT&CK techniques. The event was evaluated as a Benign Positive (BP) with high confidence (0.97) by the triage agent. This determination is heavily supported by ML scoring and historical incident matches demonstrating legitimate operational patterns.",
+ "attack_mapping": [],
+ "furthest_stage": "None",
+ "evidence_chain": [
+  {
+   "finding": "Alert 1139552 triggered under SuspiciousActivity across 4 evidence rows involving Machine, Process, and User entities without associated ATT&CK techniques.",
+   "source": "alert 1139552"
+  },
+  {
+   "finding": "The ML model evaluated the incident with P(BP)=0.98 and fused confidence 0.97, largely driven by high historical BP rates (AlertTitle_bp_mean = 0.815, SHAP +1.26).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Nearest historical incidents, led by train:26:158472 (distance 0.46) and train:828:274919 (distance 0.83), were conclusively resolved as Benign Positive.",
+   "source": "similar incident train:26:158472"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Close the incident as Benign Positive (BP) in accordance with automated triage assessment.",
+   "priority": "immediate",
+   "source": "ML model"
+  },
+  {
+   "action": "Validate the underlying process and user context to confirm expected business operations or administrative tooling.",
+   "priority": "short-term",
+   "source": "alert 1139552"
+  },
+  {
+   "action": "Review the detection rule threshold or baseline exclusions to reduce repeated benign alert noise for this specific detector and title.",
+   "priority": "long-term",
+   "source": "ML model"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged and not escalated because it exhibits zero risk indicators, lacks malicious kill-chain progression, and matches known benign positive behaviors with high statistical confidence (P(BP)=0.98).",
+ "limitations": "Entities, alert titles, and process names are anonymized, preventing contextual verification of the specific software or command line executed."
+}
+```
+
+---
+## Report 38
+
+True label: BP
+
+### Evidence
+```
+Incident test:333:437403: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: none; entities: MailMessage/Related, User/Impacted, Mailbox/Impacted (source: alert 1487088, 3 evidence rows)
+
+Agent decision: TP (fused confidence 0.39); status NEEDS_HUMAN_REVIEW.
+Escalation reasons: ML and LLM disagree: ML says BP (p=0.40); LLM says TP (low confidence): The single InitialAccess alert involves suspicious email delivery to an impacted mailbox and user, representing potential entry-vector activity. Given the 'assume breach' principle and the majority of the nearest neighbor incidents being verified as true positives (3 out of 5), the incident warrants investigation as a potential malicious campaign despite a balanced ML probability split..
+ML triage model: P(TP)=0.38, P(BP)=0.40, P(FP)=0.22
+Most influential features (SHAP):
+- AlertTitle_bp_max = 0.481 (incident feature): toward BP (SHAP +0.29)
+- AlertTitle_bp_mean = 0.481 (alert titles' historical BP rate): toward BP (SHAP +0.27)
+- DetectorId_bp_max = 0.481 (incident feature): against BP (SHAP -0.26)
+- DetectorId_bp_mean = 0.481 (detectors' historical BP rate): toward BP (SHAP +0.16)
+- first_dow = 4 (incident feature): toward BP (SHAP +0.12)
+Most similar past incidents:
+- train:36:526369: BP, distance 0.01
+- train:28:519843: TP, distance 0.01
+- train:20:15551: BP, distance 0.01
+- train:1238:15691: TP, distance 0.01
+- train:28:519823: TP, distance 0.01
+LLM reasoning step: TP (low): The single InitialAccess alert involves suspicious email delivery to an impacted mailbox and user, representing potential entry-vector activity. Given the 'assume breach' principle and the majority of the nearest neighbor incidents being verified as true positives (3 out of 5), the incident warrants investigation as a potential malicious campaign despite a balanced ML probability split.
+```
+### Report
+```json
+{
+ "summary": "Incident test:333:437403 involves a single InitialAccess alert triggered by a suspicious email delivered to an impacted user mailbox. The machine learning model leans marginally toward a benign positive (p=0.40) while the LLM agent assesses it as a true positive based on entry-vector risk and historical precedence. The incident has been designated as a true positive requiring human review to verify whether malicious content was accessed or executed.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1566",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "1487088"
+   ]
+  }
+ ],
+ "furthest_stage": "InitialAccess",
+ "evidence_chain": [
+  {
+   "finding": "Alert 1487088 flagged potential InitialAccess activity involving MailMessage, User, and Mailbox entities.",
+   "source": "alert 1487088"
+  },
+  {
+   "finding": "Three out of five nearest neighbor incidents (train:28:519843, train:1238:15691, train:28:519823) were determined to be True Positives.",
+   "source": "similar incidents"
+  },
+  {
+   "finding": "Statistical model output showed high uncertainty with P(TP)=0.38, P(BP)=0.40, and P(FP)=0.22, influenced primarily by AlertTitle_bp_max and AlertTitle_bp_mean.",
+   "source": "ML model"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Purge or quarantine the suspicious email message from the recipient mailbox and verify whether the message was opened or attachments/links were accessed.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Review sender information and block malicious indicators (domains, IPs, URLs) across email security gateways and network perimeter controls.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Audit mailbox rules, account sign-in logs, and endpoint telemetry for the impacted user to confirm no secondary compromise or credential harvesting occurred.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was marked for human review due to a disagreement between the ML model (predicting BP at 0.40) and the triage reasoning (predicting TP). Given that three of the top five nearest neighbors are confirmed true positives and the alert represents an initial access threat, Tier-2 escalation is necessary to confirm benign status before closure.",
+ "limitations": "Specific indicators such as email subject, sender address, attachment hashes, and targeted user identities were anonymized, restricting analysis to high-level metadata and historical telemetry."
+}
+```
+
+---
+## Report 39
+
+True label: TP
+
+### Evidence
+```
+Incident test:63:532678: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: T1078, T1078.004.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: T1078, T1078.004; entities: Ip/Related, CloudLogonRequest/Related, User/Impacted (source: alert 122850, 3 evidence rows)
+
+Agent decision: TP (fused confidence 0.69); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.71, P(BP)=0.09, P(FP)=0.20
+Most influential features (SHAP):
+- DetectorId_tp_mean = 0.123 (detectors' historical TP rate (mean over the incident's alerts)): toward TP (SHAP +0.54)
+- ent_CloudLogonSession = 0 (incident feature): toward TP (SHAP +0.30)
+- DetectorId_tp_max = 0.123 (incident feature): toward TP (SHAP +0.29)
+- AlertTitle_tp_mean = 0.123 (alert titles' historical TP rate): toward TP (SHAP +0.28)
+- DetectorId_fp_max = 0.811 (incident feature): toward TP (SHAP +0.22)
+Most similar past incidents:
+- train:276:27726: FP, distance 0.00
+- train:136:42840: BP, distance 0.00
+- train:130:292760: BP, distance 0.00
+- train:259:169841: BP, distance 0.00
+- train:5:501516: TP, distance 0.00
+LLM reasoning step: TP (low): The alert flags suspicious cloud credential usage under InitialAccess (T1078.004), which the ML model heavily weights as a true positive (P(TP) = 0.71). Although the nearest historical incidents lean predominantly toward benign positive (BP), the principle of assuming breach warrants treating this unverified access attempt as a true positive until authorization is confirmed.
+```
+### Report
+```json
+{
+ "summary": "Incident test:63:532678 consists of a single InitialAccess alert involving suspicious cloud logon activity and compromised cloud credentials (T1078.004). The ML triage model indicates a high probability of True Positive (P(TP)=0.71), reinforced by key detector features. Based on an assume-breach posture regarding unauthorized cloud logon requests, the incident was auto-triaged as a True Positive.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1078",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "122850"
+   ]
+  },
+  {
+   "technique_id": "T1078.004",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "122850"
+   ]
+  }
+ ],
+ "furthest_stage": "InitialAccess",
+ "evidence_chain": [
+  {
+   "finding": "Alert 122850 detected potential initial access utilizing valid cloud accounts with associated IP and CloudLogonRequest entities across 3 evidence records.",
+   "source": "alert 122850"
+  },
+  {
+   "finding": "Machine learning triage model scored the incident with P(TP)=0.71, heavily driven by historical detector TP rates and absent cloud logon session features.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Precedent incident train:5:501516 matches the feature vector with distance 0.00 as a confirmed TP, despite other similar incidents leaning toward BP/FP.",
+   "source": "similar incident train:5:501516"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Revoke active cloud sessions and reset credentials for the impacted user entity referenced in the cloud logon request.",
+   "priority": "immediate",
+   "source": "NIST SP 800-61 Rev. 3"
+  },
+  {
+   "action": "Block or restrict access from the suspicious source IP address associated with the CloudLogonRequest.",
+   "priority": "immediate",
+   "source": "NIST SP 800-61 Rev. 3"
+  },
+  {
+   "action": "Audit cloud activity logs generated by the impacted user around the timestamp of alert 122850 to confirm post-authentication activity and establish whether legitimate business travel occurred.",
+   "priority": "short-term",
+   "source": "NIST SP 800-61 Rev. 3"
+  },
+  {
+   "action": "Enforce strict conditional access policies, phishing-resistant multi-factor authentication (MFA), and trusted-device verification for cloud account logins.",
+   "priority": "long-term",
+   "source": "NIST SP 800-61 Rev. 3"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as True Positive (fused confidence 0.69) by the triage agent relying on the ML model's confidence P(TP)=0.71 and influential SHAP features, concluding that suspicious cloud credential usage poses sufficient risk under an assume-breach posture despite mixed past neighbor outcomes.",
+ "limitations": "Context is constrained by anonymized entity identifiers (User/Impacted, Ip/Related), absence of raw cloud provider logs, and a lack of user confirmation regarding whether the logon request was benign."
+}
+```
+
+---
+## Report 40
+
+True label: BP
+
+### Evidence
+```
+Incident test:333:437403: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: none; entities: MailMessage/Related, User/Impacted, Mailbox/Impacted (source: alert 1487088, 3 evidence rows)
+
+Agent decision: TP (fused confidence 0.39); status NEEDS_HUMAN_REVIEW.
+Escalation reasons: ML and LLM disagree: ML says BP (p=0.40); LLM says TP (low confidence): The single InitialAccess alert involves suspicious email delivery to an impacted mailbox and user, representing potential entry-vector activity. Given the 'assume breach' principle and the majority of the nearest neighbor incidents being verified as true positives (3 out of 5), the incident warrants investigation as a potential malicious campaign despite a balanced ML probability split..
+ML triage model: P(TP)=0.38, P(BP)=0.40, P(FP)=0.22
+Most influential features (SHAP):
+- AlertTitle_bp_max = 0.481 (incident feature): toward BP (SHAP +0.29)
+- AlertTitle_bp_mean = 0.481 (alert titles' historical BP rate): toward BP (SHAP +0.27)
+- DetectorId_bp_max = 0.481 (incident feature): against BP (SHAP -0.26)
+- DetectorId_bp_mean = 0.481 (detectors' historical BP rate): toward BP (SHAP +0.16)
+- first_dow = 4 (incident feature): toward BP (SHAP +0.12)
+Most similar past incidents:
+- train:36:526369: BP, distance 0.01
+- train:28:519843: TP, distance 0.01
+- train:20:15551: BP, distance 0.01
+- train:1238:15691: TP, distance 0.01
+- train:28:519823: TP, distance 0.01
+LLM reasoning step: TP (low): The single InitialAccess alert involves suspicious email delivery to an impacted mailbox and user, representing potential entry-vector activity. Given the 'assume breach' principle and the majority of the nearest neighbor incidents being verified as true positives (3 out of 5), the incident warrants investigation as a potential malicious campaign despite a balanced ML probability split.
+```
+### Report
+```json
+{
+ "summary": "Incident test:333:437403 involves a single InitialAccess alert indicating suspicious email activity impacting a user and mailbox. The agent classified the alert as a True Positive (TP) with a confidence score of 0.39, while escalating it for human review due to model disagreement. Three out of five historical nearest neighbors were confirmed true positives, supporting containment and mailbox remediation.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1566",
+   "tactic": "Initial Access",
+   "alerts": [
+    "1487088"
+   ]
+  }
+ ],
+ "furthest_stage": "Initial Access",
+ "evidence_chain": [
+  {
+   "finding": "Suspicious email delivery involving MailMessage, Impacted User, and Impacted Mailbox flagged under the InitialAccess category.",
+   "source": "alert 1487088"
+  },
+  {
+   "finding": "Historical baseline shows 3 of 5 closest nearest neighbor incidents (train:28:519843, train:1238:15691, train:28:519823) were validated as True Positives at distance 0.01.",
+   "source": "similar incident train:28:519843"
+  },
+  {
+   "finding": "ML model indicated competitive probabilities (P(BP)=0.40, P(TP)=0.38) driven by detector and title BP rates, prompting escalation for human review.",
+   "source": "ML model"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Quarantine the suspicious email message from the recipient's mailbox and search across tenant mailboxes for identical message indicators to purge.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1031"
+  },
+  {
+   "action": "Audit the impacted mailbox for unauthorized forwarding rules (e.g., Get-InboxRule) or suspicious mailbox delegate permissions.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1047"
+  },
+  {
+   "action": "Verify and enforce email authentication mechanisms, including SPF, DKIM, and DMARC policies, to block spoofed inbound emails.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1054"
+  },
+  {
+   "action": "Ensure Multi-Factor Authentication (MFA) is strictly enforced and review outbound email forwarding configuration tenant-wide.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1042"
+  }
+ ],
+ "escalation_explanation": "The incident was escalated to human review due to a model conflict: the ML model predicted Benign Positive (p=0.40 vs TP p=0.38), while the triage reasoning favored True Positive based on 'assume breach' principles and the majority of nearest neighbor incidents (3 of 5) being true positives.",
+ "limitations": "Alert 1487088 did not record explicit MITRE ATT&CK technique IDs, and email metadata (subject, sender domain, attachment details, click logs) was not provided in the alert payload."
+}
+```
+
+---
+## Report 41
+
+True label: FP
+
+### Evidence
+```
+Incident test:18:574009: 1 alerts, 2 evidence rows, time span 0.0 h.
+Alert categories: Execution x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [Execution] techniques: none; entities: CloudApplication/Impacted, File/Related (source: alert 1567875, 2 evidence rows)
+
+Agent decision: FP (fused confidence 0.99); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=0.00, P(FP)=1.00
+Most influential features (SHAP):
+- AlertTitle_fp_max = 0.998 (incident feature): toward FP (SHAP +2.61)
+- AlertTitle_fp_mean = 0.998 (alert titles' historical FP rate): toward FP (SHAP +1.86)
+- AlertTitle_bp_mean = 0.00172 (alert titles' historical BP rate): toward FP (SHAP +1.19)
+- first_hour = 1 (incident feature): toward FP (SHAP +0.63)
+- AlertTitle_tp_mean = 0.000724 (alert titles' historical TP rate): toward FP (SHAP +0.46)
+Most similar past incidents:
+- train:18:574164: FP, distance 0.00
+- train:18:567427: FP, distance 0.00
+- train:18:574248: FP, distance 0.00
+- train:18:567589: FP, distance 0.00
+- train:18:567523: FP, distance 0.00
+LLM reasoning step: FP (high): The single Execution alert exhibits an overwhelming historical false positive rate (AlertTitle_fp_max = 0.998) with zero associated ATT&CK techniques or suspicious kill-chain activity. Multiple identical historical incidents (distance 0.00) were consistently classified as FP by analysts. Therefore, the detection logic is determined to be a false positive.
+```
+### Report
+```json
+{
+ "summary": "Incident test:18:574009 comprises a single Execution category alert involving an impacted cloud application and a related file. The event was automatically triaged as a False Positive with a confidence score of 0.99. No malicious execution or subsequent attack stages were identified.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1059.009",
+   "tactic": "Execution",
+   "alerts": [
+    "1567875"
+   ]
+  }
+ ],
+ "furthest_stage": "Execution",
+ "evidence_chain": [
+  {
+   "finding": "Alert 1567875 triggered under the Execution category involving a CloudApplication and File entity with zero identified malicious activity.",
+   "source": "alert 1567875"
+  },
+  {
+   "finding": "The ML model evaluated the incident with P(FP)=1.00 and fused confidence of 0.99, primarily driven by a high historical false positive rate (AlertTitle_fp_max = 0.998, SHAP +2.61).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Historical incidents with identical signatures (distance 0.00) were confirmed and closed as false positives.",
+   "source": "similar incident train:18:574164"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Close alert 1567875 as a False Positive and verify that no unauthorized cloud application activity occurred.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Review detection rule logic for this Execution alert to suppress recurring benign cloud application interactions.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Maintain proper IAM role-based access control (RBAC) policies to limit administrative actions in cloud API environments.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1026"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a False Positive because the ML triage model yielded a FP probability of 1.00, supported by an extremely high historical alert false positive rate (AlertTitle_fp_max = 0.998) and multiple identical historical matches (distance 0.00) that were classified as false positives.",
+ "limitations": "Specific process command-line arguments, file hashes, and cloud tenant API call logs were unavailable in the alert details due to entity anonymization."
+}
+```
+
+---
+## Report 42
+
+True label: BP
+
+### Evidence
+```
+Incident test:81:499237: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: Exfiltration x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [Exfiltration] techniques: none; entities: User/Impacted, MailMessage/Impacted, File/Impacted (source: alert 1439953, 3 evidence rows)
+
+Agent decision: BP (fused confidence 0.99); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=1.00, P(FP)=0.00
+Most influential features (SHAP):
+- DetectorId_bp_max = 0.993 (incident feature): toward BP (SHAP +2.82)
+- DetectorId_bp_mean = 0.993 (detectors' historical BP rate): toward BP (SHAP +1.21)
+- AlertTitle_bp_mean = 0.49 (alert titles' historical BP rate): toward BP (SHAP +0.68)
+- AlertTitle_bp_max = 0.49 (incident feature): toward BP (SHAP +0.40)
+- first_dow = 6 (incident feature): toward BP (SHAP +0.21)
+Most similar past incidents:
+- train:54:529216: BP, distance 0.12
+- train:183:453480: BP, distance 0.12
+- train:183:94179: BP, distance 0.12
+- train:129:206674: BP, distance 0.13
+- train:13:84133: BP, distance 0.25
+LLM reasoning step: BP (high): The single exfiltration alert involving an email message and file matches patterns of authorized routine data sharing rather than malicious activity. The detector historically yields a 99.3% benign positive rate, and all nearest historical incidents were verified as BP. Despite triggering a late kill-chain rule, the high baseline BP probability strongly supports authorized behavior.
+```
+### Report
+```json
+{
+ "summary": "Incident test:81:499237 involves a single Exfiltration alert triggered by email and file interaction. The alert was evaluated by the ML triage model with a benign positive probability of 1.00 and high detector historical BP rates. Corroborated by identical historical incident profiles, the activity represents an authorized, routine business operation and has been auto-triaged as Benign Positive (BP).",
+ "attack_mapping": [
+  {
+   "technique_id": "T1048",
+   "tactic": "Exfiltration",
+   "alerts": [
+    "1439953"
+   ]
+  }
+ ],
+ "furthest_stage": "Exfiltration",
+ "evidence_chain": [
+  {
+   "finding": "A single Exfiltration alert was raised involving impacted User, MailMessage, and File entities.",
+   "source": "alert 1439953"
+  },
+  {
+   "finding": "The ML triage model evaluated the incident with P(BP)=1.00 and P(TP)=0.00, driven heavily by DetectorId_bp_max = 0.993 (SHAP +2.82).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Historical incidents with similar features (train:54:529216, train:183:453480, train:183:94179) were all closed as BP with near distances of 0.12.",
+   "source": "similar incident train:54:529216"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Close the incident as Benign Positive without taking host or user containment actions.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Perform a periodic review of the specific MailMessage and File content against standard data handling guidelines to ensure data privacy policy alignment.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Tune detection thresholds or add business-context exclusions for this specific detector to reduce repetitive benign alerts for standard email attachments.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (fused confidence 0.99) without escalation because the detector has a 99.3% historical benign positive rate, the ML model assigned a 1.00 probability to BP, and top similar past incidents were confirmed benign operations.",
+ "limitations": "The alert payload lacked explicit ATT&CK technique IDs, and entity details (hostnames, file hashes, recipient addresses) were anonymized, restricting deep file and email content verification."
+}
+```
+
+---
+## Report 43
+
+True label: BP
+
+### Evidence
+```
+Incident test:150:41987: 1 alerts, 11 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: T1566.001.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: T1566.001; entities: User/Impacted, File/Related, Mailbox/Impacted, MailCluster/Related, MailMessage/Related; last verdict: NoThreatsFound, Malicious; mail: Inbound (source: alert 240978, 11 evidence rows)
+
+Agent decision: TP (fused confidence 0.52); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.50, P(BP)=0.45, P(FP)=0.05
+Most influential features (SHAP):
+- DetectorId_tp_mean = 0.269 (detectors' historical TP rate (mean over the incident's alerts)): toward TP (SHAP +0.52)
+- AlertTitle_tp_mean = 0.269 (alert titles' historical TP rate): toward TP (SHAP +0.50)
+- DetectorId_tp_max = 0.269 (incident feature): toward TP (SHAP +0.31)
+- DetectorId_fp_max = 0.0372 (incident feature): toward TP (SHAP +0.12)
+- ent_Ip = 0 (incident feature): toward TP (SHAP +0.12)
+Most similar past incidents:
+- train:36:181675: BP, distance 0.02
+- train:29:52224: BP, distance 0.02
+- train:473:93260: TP, distance 0.02
+- train:172:80984: TP, distance 0.02
+- train:112:176225: BP, distance 0.04
+LLM reasoning step: TP (medium): The incident involves an inbound email detected under T1566.001 (Spearphishing Attachment) with an explicit Malicious verdict on the associated entities. Although similar past incidents show a mix of TP and BP, the ML model strongly leans away from FP (P(FP) = 0.05) and points towards malicious intent. Following SOC principles that prioritize potential breach over false alarms, this represents real malicious initial access activity.
+```
+### Report
+```json
+{
+ "summary": "Incident test:150:41987 represents a confirmed true positive initial access attempt involving an inbound spearphishing email with a malicious attachment mapped to ATT&CK technique T1566.001. The alert triggered on associated file and mailbox entities, receiving an explicit 'Malicious' verdict despite an earlier 'NoThreatsFound' status. The triage agent auto-triaged the incident as TP with a fused confidence of 0.52.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1566.001",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "240978"
+   ]
+  }
+ ],
+ "furthest_stage": "InitialAccess",
+ "evidence_chain": [
+  {
+   "finding": "Inbound spearphishing email detected impacting Mailbox, User, and MailMessage entities with related File and MailCluster entities",
+   "source": "alert 240978"
+  },
+  {
+   "finding": "Entities evaluated with a Malicious verdict (alongside NoThreatsFound) across 11 evidence rows",
+   "source": "alert 240978"
+  },
+  {
+   "finding": "ML model classified incident with P(TP)=0.50, P(BP)=0.45, and very low false positive likelihood P(FP)=0.05, heavily weighted by historical detector and alert title true positive rates",
+   "source": "ML model"
+  },
+  {
+   "finding": "Close alignment with historical incidents showing high likelihood of genuine attack behavior (e.g., train:473:93260 and train:172:80984)",
+   "source": "similar incident train:473:93260"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Purge the identified malicious inbound email and associated attachment from the recipient mailbox and any cluster-wide mailboxes.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Block the sender address, sending domain, and hash of the malicious file attachment across email gateways and endpoint detection systems.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Investigate whether the impacted user opened the attachment or executed any payload, isolating the endpoint if execution is confirmed.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Review email gateway filtering rules and implement additional mail cluster detection rules for spearphishing attachments.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a True Positive (TP) based on a fused confidence of 0.52 and an extremely low false-positive probability (P(FP) = 0.05) evaluated by the ML model. The detection of technique T1566.001 with explicit malicious verdicts on the file/mail entities justified confirming the threat without triggering manual escalation criteria.",
+ "limitations": "Alert titles, account names, hosts, and IP addresses are anonymized. The evidence does not provide logs confirming whether the malicious attachment was opened or executed on the host system."
+}
+```
+
+---
+## Report 44
+
+True label: BP
+
+### Evidence
+```
+Incident test:368:96217: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: Execution x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [Execution] techniques: none; entities: CloudApplication/Impacted, File/Related, User/Impacted (source: alert 1390162, 3 evidence rows)
+
+Agent decision: TP (fused confidence 0.43); status NEEDS_HUMAN_REVIEW.
+Escalation reasons: ML and LLM disagree: ML says TP (p=0.45); LLM says BP (low confidence): The incident involves an isolated single Execution alert affecting a file, user, and cloud application with no subsequent lateral movement or suspicious kill-chain rules triggered. Although the ML model leans slightly toward TP (0.45), the nearest historical incidents with minimal distance (0.06 and 0.33) were triaged as benign positive, suggesting routine or sanctioned cloud application execution. Given the low confidence and conflicting TP probabilities, deeper inspection of the executed file and user authorization is recommended..
+ML triage model: P(TP)=0.45, P(BP)=0.32, P(FP)=0.24
+Most influential features (SHAP):
+- AlertTitle_tp_mean = 0.328 (alert titles' historical TP rate): toward TP (SHAP +0.76)
+- AlertTitle_tp_max = 0.328 (incident feature): toward TP (SHAP +0.30)
+- DetectorId_tp_mean = 0.145 (detectors' historical TP rate (mean over the incident's alerts)): toward TP (SHAP +0.26)
+- DetectorId_tp_max = 0.145 (incident feature): toward TP (SHAP +0.23)
+- ent_Ip = 0 (incident feature): toward TP (SHAP +0.16)
+Most similar past incidents:
+- train:368:36072: BP, distance 0.06
+- train:1077:33961: BP, distance 0.33
+- train:908:103282: TP, distance 0.40
+- train:908:248844: TP, distance 0.55
+- train:442:116851: TP, distance 0.79
+LLM reasoning step: BP (low): The incident involves an isolated single Execution alert affecting a file, user, and cloud application with no subsequent lateral movement or suspicious kill-chain rules triggered. Although the ML model leans slightly toward TP (0.45), the nearest historical incidents with minimal distance (0.06 and 0.33) were triaged as benign positive, suggesting routine or sanctioned cloud application execution. Given the low confidence and conflicting TP probabilities, deeper inspection of the executed file and user authorization is recommended.
+```
+### Report
+```json
+{
+ "summary": "Incident test:368:96217 involves a single Execution alert (alert 1390162) affecting a file, user, and cloud application with no observed lateral movement. The ML triage model indicates a true positive with P(TP)=0.45, while initial analysis noted similarity to benign administrative activity. Escalation to human review is required to determine whether the execution represents unauthorized activity or sanctioned cloud application use.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1204.002",
+   "tactic": "execution",
+   "alerts": [
+    "1390162"
+   ]
+  }
+ ],
+ "furthest_stage": "execution",
+ "evidence_chain": [
+  {
+   "finding": "Alert 1390162 recorded an execution event involving CloudApplication, File, and User entities.",
+   "source": "alert 1390162"
+  },
+  {
+   "finding": "The ML model evaluated the incident with P(TP)=0.45, influenced heavily by AlertTitle_tp_mean (SHAP +0.76) and AlertTitle_tp_max (SHAP +0.30).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Historical incidents with the closest feature distances (train:368:36072 at distance 0.06 and train:1077:33961 at distance 0.33) were triaged as Benign Positive, showing resemblance to routine cloud operations.",
+   "source": "similar incident train:368:36072"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Quarantine the impacted file and temporarily restrict the affected user account pending authorization verification.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1049"
+  },
+  {
+   "action": "Deploy application control and execution prevention policies to block unauthorized script or binary execution in the cloud application environment.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1038"
+  },
+  {
+   "action": "Audit cloud user roles and apply principle-of-least-privilege account management to restrict serverless and application execution rights.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1018"
+  }
+ ],
+ "escalation_explanation": "The incident was escalated to NEEDS_HUMAN_REVIEW because of a disagreement between the ML model (leaning TP with P(TP)=0.45) and the LLM reasoning (leaning BP based on the closest historical incidents train:368:36072 and train:1077:33961), resulting in low fused confidence (0.43).",
+ "limitations": "Lack of specific command-line arguments, process tree lineage, and IP address entity telemetry restricts definitive confirmation of malice versus sanctioned cloud automation."
+}
+```
+
+---
+## Report 45
+
+True label: BP
+
+### Evidence
+```
+Incident test:3:306735: 1 alerts, 5 evidence rows, time span 0.0 h.
+Alert categories: SuspiciousActivity x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [SuspiciousActivity] techniques: none; entities: Machine/Impacted, Ip/Related, Process/Related, User/Impacted, Url/Related; suspicion: Suspicious; last verdict: Suspicious (source: alert 731809, 5 evidence rows)
+
+Agent decision: BP (fused confidence 0.99); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=1.00, P(FP)=0.00
+Most influential features (SHAP):
+- AlertTitle_bp_max = 0.942 (incident feature): toward BP (SHAP +2.17)
+- AlertTitle_bp_mean = 0.942 (alert titles' historical BP rate): toward BP (SHAP +1.51)
+- n_files = 1 (incident feature): toward BP (SHAP +0.28)
+- AlertTitle_fp_mean = 0.0344 (alert titles' historical FP rate): toward BP (SHAP +0.21)
+- AlertTitle_tp_mean = 0.0233 (alert titles' historical TP rate): toward BP (SHAP +0.20)
+Most similar past incidents:
+- train:523:46134: BP, distance 0.15
+- train:3:302201: BP, distance 0.24
+- train:3:301291: BP, distance 0.26
+- train:523:59688: BP, distance 0.26
+- train:3:306915: BP, distance 0.32
+LLM reasoning step: BP (high): The single SuspiciousActivity alert has an overwhelming historical benign positive rate (AlertTitle_bp_max = 0.942) and no associated ATT&CK techniques or kill-chain risk rules fired. The ML triage model strongly indicates a benign positive (P(BP) = 1.00), corroborated by all nearest historical neighbors also being classified as BP.
+```
+### Report
+```json
+{
+ "summary": "Incident test:3:306735 contains a single SuspiciousActivity alert involving standard machine, IP, process, user, and URL entities over a negligible time duration. The activity was determined to be a Benign Positive (BP) with fused confidence of 0.99, as the alert title exhibits an overwhelming historical benign positive rate. No malicious exploitation or persistence indicators were observed, allowing the incident to be auto-triaged.",
+ "attack_mapping": [],
+ "furthest_stage": "None",
+ "evidence_chain": [
+  {
+   "finding": "SuspiciousActivity alert triggered across 5 evidence rows involving Process/Related, Url/Related, and User/Impacted entities.",
+   "source": "alert 731809"
+  },
+  {
+   "finding": "Alert title strongly correlates with benign positive activity historically (AlertTitle_bp_max = 0.942, SHAP +2.17; AlertTitle_bp_mean = 0.942, SHAP +1.51).",
+   "source": "ML model"
+  },
+  {
+   "finding": "The machine learning classifier evaluated P(BP) = 1.00, P(TP) = 0.00, P(FP) = 0.00.",
+   "source": "ML model"
+  },
+  {
+   "finding": "High degree of similarity found with previously triaged benign positive incidents, including nearest match train:523:46134 at distance 0.15.",
+   "source": "similar incident train:523:46134"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify that the executed process and destination URL align with approved operational software to ensure closure as benign positive.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Ensure that network intrusion prevention and web filtering controls monitor and inspect outbound web traffic and user clicks.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1031"
+  },
+  {
+   "action": "Review detection rule tuning for the specific SuspiciousActivity signature to account for known benign business operations and reduce redundant alerts.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) without escalation because the ML model predicted BP with a confidence of 1.00 (fused confidence 0.99), heavily driven by the alert title's historical BP rate (0.942), supported by close matching with past benign incidents, and lacking any confirmed malicious MITRE ATT&CK techniques.",
+ "limitations": "Entities such as the exact process binary path, user identity, and URL domain were anonymized in the telemetry, preventing granular verification of the benign operational workflow."
+}
+```
+
+---
+## Report 46
+
+True label: TP
+
+### Evidence
+```
+Incident test:49:291400: 1 alerts, 5 evidence rows, time span 0.0 h.
+Alert categories: CommandAndControl x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [CommandAndControl] techniques: none; entities: Url/Related, Process/Related, User/Impacted, Machine/Impacted; suspicion: Suspicious; last verdict: Suspicious (source: alert 688673, 5 evidence rows)
+
+Agent decision: BP (fused confidence 0.56); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.31, P(BP)=0.54, P(FP)=0.14
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.747 (alert titles' historical BP rate): toward BP (SHAP +0.78)
+- AlertTitle_bp_max = 0.747 (incident feature): toward BP (SHAP +0.40)
+- DetectorId_bp_max = 0.747 (incident feature): against BP (SHAP -0.33)
+- ent_Ip = 0 (incident feature): against BP (SHAP -0.13)
+- n_ips = 0 (incident feature): toward BP (SHAP +0.10)
+Most similar past incidents:
+- train:87:294605: FP, distance 0.00
+- train:38:288398: BP, distance 0.00
+- train:34:156759: BP, distance 0.00
+- train:34:331722: BP, distance 0.00
+- train:49:292595: TP, distance 0.00
+LLM reasoning step: BP (medium): The single CommandAndControl alert involves standard URL and process activity with no accompanying kill-chain progression or secondary alerts. The machine learning model strongly favors benign positive (P(BP) = 0.54) driven by a high historical BP rate (0.747) for this alert title, aligning with the majority of identical past incidents.
+```
+### Report
+```json
+{
+ "summary": "Incident test:49:291400 consists of a single CommandAndControl category alert generated across five evidence rows within a zero-hour span. The activity involves a flagged URL and process execution on a monitored host and user profile, but lacks progression into subsequent attack stages. The incident was auto-triaged as Benign Positive (BP) with a fused confidence of 0.56, supported by ML predictions and matching historical benign activity.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1071",
+   "tactic": "Command and Control",
+   "alerts": [
+    "688673"
+   ]
+  }
+ ],
+ "furthest_stage": "Command and Control",
+ "evidence_chain": [
+  {
+   "finding": "A single CommandAndControl alert was triggered involving related URL and Process entities, alongside impacted User and Machine entities.",
+   "source": "alert 688673"
+  },
+  {
+   "finding": "The ML model evaluated the probability distribution as P(BP)=0.54, P(TP)=0.31, and P(FP)=0.14, heavily influenced toward BP by the alert title's high historical benign positive rate (AlertTitle_bp_mean = 0.747, SHAP +0.78).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Similar past incidents at distance 0.00 predominantly resolve to Benign Positive (train:38:288398, train:34:156759, train:34:331722).",
+   "source": "similar incident train:38:288398"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify that the process and URL identified in the alert correspond to legitimate enterprise software and business communications.",
+   "priority": "immediate",
+   "source": "alert 688673"
+  },
+  {
+   "action": "Review host endpoint telemetry for any unexpected secondary process spawning or persistence mechanisms tied to the impacted machine.",
+   "priority": "short-term",
+   "source": "alert 688673"
+  },
+  {
+   "action": "Update detector rules or establish exclusions for this verified benign software URL to decrease false benign positive alerts.",
+   "priority": "long-term",
+   "source": "ML model"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) because the single CommandAndControl detection lacked broader compromise indicators, the ML model strongly favored BP (P(BP)=0.54) due to high historical BP rates (AlertTitle_bp_mean = 0.747), and identical historical incidents primarily resolved as BP.",
+ "limitations": "Entities, alert titles, and network endpoints are anonymized, and no specific MITRE ATT&CK technique was recorded in the alert metadata, limiting granular context on the specific network protocol observed."
+}
+```
+
+---
+## Report 47
+
+True label: BP
+
+### Evidence
+```
+Incident test:136:509173: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: CredentialAccess x1.
+ATT&CK techniques: T1110, T1110.001, T1110.003.
+Alerts (time order; source = AlertId):
+- +0 min [CredentialAccess] techniques: T1110, T1110.003, T1110.001; entities: User/Impacted, Ip/Related, CloudLogonRequest/Related (source: alert 1257763, 3 evidence rows)
+
+Agent decision: TP (fused confidence 0.72); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.70, P(BP)=0.07, P(FP)=0.23
+Most influential features (SHAP):
+- DetectorId_tp_mean = 0.67 (detectors' historical TP rate (mean over the incident's alerts)): toward TP (SHAP +0.82)
+- DetectorId_tp_max = 0.67 (incident feature): toward TP (SHAP +0.80)
+- AlertTitle_tp_mean = 0.67 (alert titles' historical TP rate): toward TP (SHAP +0.47)
+- AlertTitle_tp_max = 0.67 (incident feature): toward TP (SHAP +0.17)
+- ent_CloudLogonSession = 0 (incident feature): toward TP (SHAP +0.05)
+Most similar past incidents:
+- train:1344:283702: TP, distance 0.01
+- train:387:114697: TP, distance 0.01
+- train:665:104655: TP, distance 0.01
+- train:38:458092: TP, distance 0.01
+- train:11:544482: TP, distance 0.01
+LLM reasoning step: TP (high): The incident indicates active credential access behavior (T1110, T1110.001, T1110.003) involving cloud logon requests against a user account. The ML triage model strongly favors a true positive with P(TP) = 0.70, reinforced by high historical detector precision and all nearest past incidents being verified TPs.
+```
+### Report
+```json
+{
+ "summary": "Incident test:136:509173 involves suspicious Credential Access activity detected via cloud logon requests targeting a user account. The behavior aligns with password guessing and spraying techniques (T1110, T1110.001, T1110.003). Based on strong model confidence and matching historical true positives, the incident was confirmed as a True Positive and auto-triaged.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1110",
+   "tactic": "Credential Access",
+   "alerts": [
+    "1257763"
+   ]
+  },
+  {
+   "technique_id": "T1110.001",
+   "tactic": "Credential Access",
+   "alerts": [
+    "1257763"
+   ]
+  },
+  {
+   "technique_id": "T1110.003",
+   "tactic": "Credential Access",
+   "alerts": [
+    "1257763"
+   ]
+  }
+ ],
+ "furthest_stage": "Credential Access",
+ "evidence_chain": [
+  {
+   "finding": "Cloud logon request detected triggering credential access alerts involving password guessing and password spraying.",
+   "source": "alert 1257763"
+  },
+  {
+   "finding": "High detector precision and historical alert performance driving high TP probability (P(TP)=0.70).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Multiple nearest historical incidents with minimal distance (0.01) were confirmed as True Positives.",
+   "source": "similar incident train:1344:283702"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Block the originating external IP address at the perimeter firewall/WAF and revoke any active sessions for the impacted user.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Enforce a credential reset for the impacted user account and verify Multi-Factor Authentication (MFA) registration status.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Review cloud authentication audit logs to confirm whether any logon attempts succeeded from the anomalous IP address.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Evaluate and adjust smart lockout policies and conditional access rules to mitigate future password spraying attacks.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a True Positive with a fused confidence of 0.72. The ML triage model assigned a 0.70 TP probability based on detector historical precision, which was corroborated by the top five most similar historical incidents all being confirmed TPs.",
+ "limitations": "Specific user identities, IP addresses, and logon status indicators are anonymized in the telemetry, preventing immediate determination of authentication success without raw log cross-referencing."
+}
+```
+
+---
+## Report 48
+
+True label: TP
+
+### Evidence
+```
+Incident test:5:360149: 1 alerts, 4 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: none; entities: Ip/Related, CloudLogonRequest/Related, User/Impacted (source: alert 184157, 4 evidence rows)
+
+Agent decision: TP (fused confidence 0.53); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.53, P(BP)=0.02, P(FP)=0.44
+Most influential features (SHAP):
+- DetectorId_tp_mean = 0.321 (detectors' historical TP rate (mean over the incident's alerts)): toward TP (SHAP +0.53)
+- AlertTitle_tp_mean = 0.321 (alert titles' historical TP rate): toward TP (SHAP +0.49)
+- n_countries = 2 (incident feature): toward TP (SHAP +0.41)
+- DetectorId_tp_max = 0.321 (incident feature): toward TP (SHAP +0.40)
+- AlertTitle_tp_max = 0.321 (incident feature): toward TP (SHAP +0.19)
+Most similar past incidents:
+- train:95:169699: FP, distance 0.00
+- train:147:353161: TP, distance 0.00
+- train:11:5186: FP, distance 0.00
+- train:38:340673: TP, distance 0.00
+- train:662:55050: FP, distance 0.00
+LLM reasoning step: TP (low): The incident involves an InitialAccess alert across two distinct countries within a very short timeframe, suggesting anomalous cloud logon activity. While historical similar incidents show mixed FP and TP resolutions and the ML confidence is borderline (P(TP)=0.53, P(FP)=0.44), the assume-breach principle dictates escalating this anomalous access as a true positive.
+```
+### Report
+```json
+{
+ "summary": "Incident test:5:360149 involves anomalous cloud logon activity categorized as InitialAccess. A single alert spans two distinct geographic locations within zero hours, signaling potential credential compromise or impossible travel. The triage agent auto-triaged this incident as a True Positive based on the geographic anomaly and historical true positive weightings.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1078.004",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "184157"
+   ]
+  }
+ ],
+ "furthest_stage": "InitialAccess",
+ "evidence_chain": [
+  {
+   "finding": "Cloud logon request observed involving impacted user account and IP entities across 2 different countries within a zero-hour window.",
+   "source": "alert 184157"
+  },
+  {
+   "finding": "ML model evaluated incident probability with P(TP)=0.53 and identified geographic anomaly (n_countries = 2) pushing strongly toward TP (SHAP +0.41).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Historical incidents with matching features exhibit mixed precedents (e.g., train:147:353161 and train:38:340673 confirmed as TP).",
+   "source": "similar incident train:147:353161"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Revoke active cloud sessions and reset credentials for the impacted user account.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Enforce and verify Multi-Factor Authentication (MFA) requirements, blocking the suspicious source IP.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Review cloud audit logs for the impacted user to identify any unauthorized resource access, configuration changes, or persistence creation.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Implement conditional access policies restricting logons from unapproved geographic regions or impossible travel patterns.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "Auto-triaged as a True Positive (fused confidence 0.53) because of suspicious InitialAccess cloud logon activity originating from two distinct countries simultaneously, consistent with potential credential access and impossible travel anomalies.",
+ "limitations": "Alert 184157 did not record specific ATT&CK technique IDs, and all specific IP addresses, cloud endpoints, and account identifiers were anonymized in the provided context."
+}
+```
+
+---
+## Report 49
+
+True label: BP
+
+### Evidence
+```
+Incident test:38:186862: 2 alerts, 10 evidence rows, time span 1.6 h.
+Alert categories: CommandAndControl x2.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [CommandAndControl] techniques: none; entities: User/Impacted, Machine/Impacted, Process/Related, Url/Related; suspicion: Suspicious; last verdict: Suspicious (source: alert 767330, 5 evidence rows)
+- +97 min [CommandAndControl] techniques: none; entities: Url/Related, Machine/Impacted, User/Impacted, Process/Related; suspicion: Suspicious; last verdict: Suspicious (source: alert 287227, 5 evidence rows)
+
+Agent decision: BP (fused confidence 0.67); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.29, P(BP)=0.67, P(FP)=0.05
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.747 (alert titles' historical BP rate): toward BP (SHAP +0.80)
+- AlertTitle_bp_max = 0.747 (incident feature): toward BP (SHAP +0.42)
+- DetectorId_bp_max = 0.747 (incident feature): against BP (SHAP -0.30)
+- ent_Ip = 0 (incident feature): against BP (SHAP -0.14)
+- n_ips = 0 (incident feature): toward BP (SHAP +0.10)
+Most similar past incidents:
+- train:49:75049: TP, distance 0.05
+- train:38:187319: BP, distance 0.05
+- train:13:19780: BP, distance 0.07
+- train:38:187284: BP, distance 0.08
+- train:165:93668: BP, distance 0.10
+LLM reasoning step: BP (medium): The incident consists of two CommandAndControl alerts triggered over a 1.6-hour window involving the same user, machine, process, and URL without advancing across the kill chain. The ML model strongly favors BP (P(BP) = 0.67), supported by a high historical BP rate (0.747) for these alerts and predominantly benign nearest neighbors. While the closest neighbor is a TP, the lack of broader malicious indicators or lateral movement suggests harmless or authorized network traffic.
+```
+### Report
+```json
+{
+ "summary": "Incident test:38:186862 involves two CommandAndControl alerts spanning 1.6 hours associated with the same user, machine, process, and external URL. The automated triage system determined the incident to be Benign Positive (BP) with a fused confidence of 0.67. The benign assessment is strongly supported by historical alert trends showing high benign true-positive rates and consistent similar incidents exhibiting benign enterprise network activity.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1071",
+   "tactic": "Command and Control",
+   "alerts": [
+    "767330",
+    "287227"
+   ]
+  }
+ ],
+ "furthest_stage": "Command and Control",
+ "evidence_chain": [
+  {
+   "finding": "Initial CommandAndControl alert flagged on the impacted host and user associated with a specific process and external URL.",
+   "source": "alert 767330"
+  },
+  {
+   "finding": "Subsequent CommandAndControl alert observed 97 minutes later involving identical machine, user, process, and URL entities, indicating recurring traffic without tactical advancement.",
+   "source": "alert 287227"
+  },
+  {
+   "finding": "The triage model predicted a 67% probability of Benign Positive (P(BP)=0.67, P(TP)=0.29), heavily weighted by historical alert title BP rate (SHAP +0.80).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Four out of five nearest historical incidents (train:38:187319, train:13:19780, train:38:187284, train:165:93668) were resolved as Benign Positive.",
+   "source": "similar incident train:38:187319"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Inspect the specific process and destination URL in alerts 767330 and 287227 to confirm legitimate business usage or benign software update behavior.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Review endpoint telemetry on the impacted machine to ensure no unrecognized child processes or persistence mechanisms were spawned.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Update threat detection tuning rules or allowlists for this specific application/URL pair if verified as standard authorized enterprise software.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) without escalation due to an automated confidence score of 0.67, driven by a high historical BP frequency (0.747) for these alert types, no progression beyond the initial C2 indicators across the 1.6-hour window, and predominantly benign historical matches.",
+ "limitations": "The closest similar incident (train:49:75049) was classified as a True Positive, and exact entity values (such as URLs, hostnames, and process names) are anonymized, preventing deep reputation and threat intelligence lookups."
+}
+```
+
+---
+## Report 50
+
+True label: FP
+
+### Evidence
+```
+Incident test:30:513003: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: Exfiltration x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [Exfiltration] techniques: none; entities: File/Impacted, User/Impacted, CloudApplication/Impacted (source: alert 1445451, 3 evidence rows)
+
+Agent decision: FP (fused confidence 0.96); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=0.04, P(FP)=0.96
+Most influential features (SHAP):
+- AlertTitle_fp_mean = 0.367 (alert titles' historical FP rate): toward FP (SHAP +1.07)
+- DetectorId_fp_mean = 0.663 (detectors' historical FP rate): toward FP (SHAP +0.85)
+- AlertTitle_fp_max = 0.367 (incident feature): toward FP (SHAP +0.53)
+- DetectorId_fp_max = 0.663 (incident feature): toward FP (SHAP +0.31)
+- n_countries = 0 (incident feature): toward FP (SHAP +0.15)
+Most similar past incidents:
+- train:30:513595: FP, distance 0.36
+- train:30:513610: FP, distance 0.42
+- train:30:512987: FP, distance 0.42
+- train:30:513652: FP, distance 0.48
+- train:30:513592: BP, distance 0.51
+LLM reasoning step: FP (high): Although a late kill-chain stage (Exfiltration) rule was triggered, the incident involves an isolated single alert with no recorded ATT&CK techniques or suspicious geographical spread. The ML model predicts an extremely high false positive probability (P(FP) = 0.96) supported by high historical detector FP rates, matching closely with nearest neighbor incidents all triaged as FP.
+```
+### Report
+```json
+{
+ "summary": "Incident test:30:513003 contains a single alert (1445451) flagged under the Exfiltration category involving a file, user, and cloud application. The automated triage system classified the incident as a False Positive with a confidence score of 0.96. The classification is primarily supported by high historical detector false-positive rates, lack of anomalous geographic dispersion, and strong similarity to confirmed false positive historical incidents.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1537",
+   "tactic": "Exfiltration",
+   "alerts": [
+    "1445451"
+   ]
+  }
+ ],
+ "furthest_stage": "Exfiltration",
+ "evidence_chain": [
+  {
+   "finding": "Alert 1445451 flagged potential exfiltration activity involving File, User, and CloudApplication entities across 3 evidence rows within a 0.0-hour window.",
+   "source": "alert 1445451"
+  },
+  {
+   "finding": "ML model evaluated incident risk with P(FP)=0.96, driven strongly by high detector false positive rate (DetectorId_fp_mean = 0.663, SHAP +0.85) and alert title FP metrics (SHAP +1.07).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Nearest neighbor historical cases (train:30:513595 at distance 0.36, train:30:513610 at distance 0.42, and train:30:512987 at distance 0.42) were confirmed as False Positives.",
+   "source": "similar incident train:30:513595"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify user activity logs around alert 1445451 to confirm standard business interaction with the cloud application rather than malicious bulk data movement.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1018"
+  },
+  {
+   "action": "Ensure Data Loss Prevention (DLP) controls and external data sharing restrictions are active on the cloud platform to block unauthorized transfers.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1057"
+  },
+  {
+   "action": "Tune detection thresholds for the alerting detector to lower the high false-positive rate (DetectorId_fp_mean 0.663) on normal cloud operations.",
+   "priority": "long-term",
+   "source": "ML model"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a False Positive (P(FP) = 0.96) without human escalation required due to high confidence, lack of concurrent hostile indicators, and strong alignment with past false positives.",
+ "limitations": "Alert details, host names, IP addresses, and user identities are fully anonymized, restricting deep forensic payload inspection or context-specific DLP payload validation."
+}
+```
+
+---
+## Report 51
+
+True label: FP
+
+### Evidence
+```
+Incident test:11:399245: 1 alerts, 4 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: T1078, T1078.004.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: T1078, T1078.004; entities: CloudLogonSession/Related, Ip/Related, User/Impacted, CloudLogonRequest/Related (source: alert 988682, 4 evidence rows)
+
+Agent decision: FP (fused confidence 0.89); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.08, P(BP)=0.03, P(FP)=0.89
+Most influential features (SHAP):
+- AlertTitle_fp_mean = 0.811 (alert titles' historical FP rate): toward FP (SHAP +1.08)
+- DetectorId_fp_mean = 0.811 (detectors' historical FP rate): toward FP (SHAP +0.73)
+- AlertTitle_fp_max = 0.811 (incident feature): toward FP (SHAP +0.41)
+- DetectorId_fp_max = 0.811 (incident feature): toward FP (SHAP +0.27)
+- n_evidence = 4 (incident feature): toward FP (SHAP +0.16)
+Most similar past incidents:
+- train:11:436116: FP, distance 0.00
+- train:206:81151: FP, distance 0.00
+- train:11:436269: FP, distance 0.00
+- train:50:336887: TP, distance 0.00
+- train:644:351779: FP, distance 0.00
+LLM reasoning step: FP (high): The incident consists of a single initial access alert regarding cloud logon activity (T1078.004) with no downstream malicious execution or progression across the kill chain. Both the historical detector false positive rate (0.811) and the ML model strongly indicate a false alarm, reinforced by the vast majority of nearest historical incidents resolving as FP.
+```
+### Report
+```json
+{
+ "summary": "Incident test:11:399245 consists of a single Initial Access alert triggered by cloud logon activity involving a CloudLogonSession, CloudLogonRequest, User, and IP. The incident spans 0.0 hours with no subsequent adversarial execution or movement across the kill chain. The automated triage system classified this incident as a False Positive with a confidence score of 0.89.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1078.004",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "988682"
+   ]
+  },
+  {
+   "technique_id": "T1078",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "988682"
+   ]
+  }
+ ],
+ "furthest_stage": "InitialAccess",
+ "evidence_chain": [
+  {
+   "finding": "Alert 988682 flagged suspicious cloud account logon session and request activity mapping to T1078/T1078.004.",
+   "source": "alert 988682"
+  },
+  {
+   "finding": "The ML model assessed P(FP) at 0.89, driven heavily by high historical false positive rates for the alert title and detector (AlertTitle_fp_mean = 0.811, DetectorId_fp_mean = 0.811).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Four out of five nearest past incidents (train:11:436116, train:206:81151, train:11:436269, train:644:351779) were closed as False Positives at distance 0.00.",
+   "source": "similar incident train:11:436116"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Close the incident as a False Positive and document legitimate user context for the session.",
+   "priority": "immediate",
+   "source": "ML model"
+  },
+  {
+   "action": "Review the detector threshold and baseline for this cloud logon alert rule to mitigate the 81.1% historical false positive rate.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Ensure conditional access and MFA policies are strictly enforced for cloud accounts to prevent unauthorized access.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged and marked as a False Positive because the fused confidence reached 0.89 with no escalation triggers, supported by a high detector FP baseline (0.811), no post-access malicious activity, and predominantly FP historical neighbors.",
+ "limitations": "Alert entity names, account details, and raw IP addresses are anonymized, preventing deep verification of specific geographic location or user-agent anomalous patterns."
+}
+```
+
+---
+## Report 52
+
+True label: BP
+
+### Evidence
+```
+Incident test:83:175974: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: Exfiltration x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [Exfiltration] techniques: none; entities: User/Impacted, MailMessage/Impacted (source: alert 1450392, 3 evidence rows)
+
+Agent decision: BP (fused confidence 0.99); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=1.00, P(FP)=0.00
+Most influential features (SHAP):
+- DetectorId_bp_max = 0.996 (incident feature): toward BP (SHAP +2.80)
+- DetectorId_bp_mean = 0.996 (detectors' historical BP rate): toward BP (SHAP +1.21)
+- AlertTitle_bp_mean = 0.49 (alert titles' historical BP rate): toward BP (SHAP +0.71)
+- AlertTitle_bp_max = 0.49 (incident feature): toward BP (SHAP +0.42)
+- first_dow = 5 (incident feature): toward BP (SHAP +0.25)
+Most similar past incidents:
+- train:83:502978: BP, distance 0.01
+- train:16:160372: BP, distance 0.01
+- train:83:61108: BP, distance 0.05
+- train:83:244046: BP, distance 0.05
+- train:83:144203: BP, distance 0.05
+LLM reasoning step: BP (high): Although Rule R1 flagged the event for late kill-chain exfiltration risk involving a MailMessage entity, historical context shows the detector has a near-perfect benign positive rate (DetectorId_bp_max = 0.996). All top nearest neighbor incidents were classified as benign positives, and the ML model assigns a 1.00 probability to BP. The detected activity reflects authorized email operations triggering exfiltration heuristics rather than malicious data loss.
+```
+### Report
+```json
+{
+ "summary": "Incident test:83:175974 consists of a single alert categorized as Exfiltration involving an impacted User and MailMessage entity over a span of 0.0 hours. The triage agent auto-triaged the incident as a Benign Positive (BP) with a fused confidence of 0.99. The activity represents normal, authorized email workflows triggering heuristic exfiltration rules rather than genuine unauthorized data loss.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1048",
+   "tactic": "Exfiltration",
+   "alerts": [
+    "1450392"
+   ]
+  }
+ ],
+ "furthest_stage": "Exfiltration",
+ "evidence_chain": [
+  {
+   "finding": "Alert 1450392 triggered under category Exfiltration associated with impacted User and MailMessage entities.",
+   "source": "alert 1450392"
+  },
+  {
+   "finding": "ML model evaluated incident probability as P(BP)=1.00, driven heavily by DetectorId_bp_max = 0.996 (SHAP +2.80) and DetectorId_bp_mean = 0.996 (SHAP +1.21).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Closest historical incidents (train:83:502978, train:16:160372, train:83:61108, train:83:244046, train:83:144203) were all resolved as Benign Positives.",
+   "source": "similar incident train:83:502978"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Close the alert as Benign Positive and verify no unauthorized outbound message routing rules were generated on the impacted mailbox.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Review the specific trigger threshold and recipient pattern for detector generating alert 1450392 to tune out regular business email flows.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Conduct recurring tuning of email DLP and exfiltration detection heuristics to account for high-volume legitimate business correspondence.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) without escalation due to unanimous BP predictions (ML model P(BP)=1.00, fused confidence 0.99), detector history indicating an overwhelming 0.996 benign rate, and historical precedent across all nearest neighbor incidents.",
+ "limitations": "Alert titles, host details, and user identifiers are anonymized, and specific email recipients, message contents, and attachment sizes were not provided in the alert telemetry."
+}
+```
+
+---
+## Report 53
+
+True label: BP
+
+### Evidence
+```
+Incident test:427:251326: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: none; entities: MailMessage/Related, User/Impacted, Mailbox/Impacted (source: alert 1515672, 3 evidence rows)
+
+Agent decision: BP (fused confidence 0.44); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.36, P(BP)=0.41, P(FP)=0.23
+Most influential features (SHAP):
+- AlertTitle_bp_max = 0.481 (incident feature): toward BP (SHAP +0.28)
+- AlertTitle_bp_mean = 0.481 (alert titles' historical BP rate): toward BP (SHAP +0.27)
+- DetectorId_bp_max = 0.481 (incident feature): against BP (SHAP -0.26)
+- DetectorId_bp_mean = 0.481 (detectors' historical BP rate): toward BP (SHAP +0.16)
+- AlertTitle_tp_mean = 0.278 (alert titles' historical TP rate): against BP (SHAP -0.12)
+Most similar past incidents:
+- train:67:321441: BP, distance 0.01
+- train:184:46251: FP, distance 0.01
+- train:2199:54040: BP, distance 0.01
+- train:36:526330: BP, distance 0.01
+- train:56:530764: BP, distance 0.01
+LLM reasoning step: BP (medium): The incident consists of a single InitialAccess email alert with no associated kill-chain progression or secondary alerts. The machine learning model leans toward BP (P(BP) = 0.41), and the vast majority of historical matching incidents (4 out of 5) were triaged as benign positive, indicating typical harmless or sanctioned email activity.
+```
+### Report
+```json
+{
+ "summary": "Incident test:427:251326 involves a single InitialAccess alert associated with email activity affecting a mailbox and user account. Historical precedence and machine learning analysis indicate standard benign positive behavior with no evidence of secondary compromise or post-exploitation activity. The incident has been classified as Benign Positive (BP) and auto-triaged.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1566",
+   "tactic": "Initial Access",
+   "alerts": [
+    "1515672"
+   ]
+  }
+ ],
+ "furthest_stage": "Initial Access",
+ "evidence_chain": [
+  {
+   "finding": "A single InitialAccess alert triggered involving MailMessage, User, and Mailbox entities with 3 evidence rows and no further execution signals.",
+   "source": "alert 1515672"
+  },
+  {
+   "finding": "The triage model predicted Benign Positive as the highest probability category with P(BP)=0.41, influenced heavily by AlertTitle_bp_max (+0.28 SHAP) and AlertTitle_bp_mean (+0.27 SHAP).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Four out of five nearest past incidents (train:67:321441, train:2199:54040, train:36:526330, and train:56:530764) at distance 0.01 resolved as Benign Positive (BP).",
+   "source": "similar incident train:67:321441"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify email delivery and confirm whether message contents or links represent expected business communications or legitimate automated messaging.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Ensure mailbox filter and antispam/antiphishing tuning rules accurately account for this benign email traffic to reduce recurrent false escalations.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Review recurring detector patterns for this specific DetectorId to optimize thresholding for expected user email patterns.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) with a fused confidence of 0.44 due to lack of progression beyond an isolated initial access email alert, reinforced by model feature weights favoring BP and consistent historical precedent showing matching benign incidents.",
+ "limitations": "Alert payload specifics, sender information, subject lines, and internal URL/attachment telemetry are anonymized and unavailable, limiting full manual message content inspection."
+}
+```
+
+---
+## Report 54
+
+True label: BP
+
+### Evidence
+```
+Incident test:1076:230708: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: SuspiciousActivity x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [SuspiciousActivity] techniques: none; entities: Mailbox/Impacted, User/Impacted, Ip/Related (source: alert 1461763, 3 evidence rows)
+
+Agent decision: BP (fused confidence 0.54); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.04, P(BP)=0.52, P(FP)=0.44
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.52 (alert titles' historical BP rate): toward BP (SHAP +0.58)
+- AlertTitle_bp_max = 0.52 (incident feature): toward BP (SHAP +0.50)
+- DetectorId_bp_max = 0.52 (incident feature): against BP (SHAP -0.33)
+- DetectorId_bp_mean = 0.52 (detectors' historical BP rate): toward BP (SHAP +0.14)
+- ent_Mailbox = 1 (incident feature): against BP (SHAP -0.13)
+Most similar past incidents:
+- train:1076:230674: BP, distance 0.42
+- train:1076:168952: BP, distance 0.56
+- train:1076:70563: BP, distance 0.56
+- train:1076:76946: FP, distance 0.59
+- train:1076:531318: BP, distance 0.79
+LLM reasoning step: BP (medium): The incident consists of a single SuspiciousActivity alert affecting a Mailbox and User without triggering any kill-chain risk rules or ATT&CK techniques. The ML model predicts a very low probability of true malicious activity (P(TP) = 0.04) and historical matching incidents are predominantly classified as Benign Positive.
+```
+### Report
+```json
+{
+ "summary": "Incident test:1076:230708 involves a single SuspiciousActivity alert associated with an impacted User, Mailbox, and an external IP address spanning zero hours. The event represents benign positive activity consistent with standard administrative or user mailbox behavior without signs of malicious compromise. Automated triage categorized the incident as Benign Positive (BP) with fused confidence 0.54, supported by historical cluster similarity and a low true positive probability.",
+ "attack_mapping": [],
+ "furthest_stage": "None",
+ "evidence_chain": [
+  {
+   "finding": "Alert 1461763 triggered under category SuspiciousActivity involving an impacted Mailbox, User, and related IP address, with no specific ATT&CK techniques observed.",
+   "source": "alert 1461763"
+  },
+  {
+   "finding": "ML model evaluated incident with high probability of Benign Positive (P(BP)=0.52, P(FP)=0.44) and very low probability of true threat (P(TP)=0.04).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Nearest historical incidents strongly reflect benign behavior, notably train:1076:230674 (BP, distance 0.42), train:1076:168952 (BP, distance 0.56), and train:1076:70563 (BP, distance 0.56).",
+   "source": "similar incident train:1076:230674"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Audit current mailbox configuration and inbox rules using Get-InboxRule to verify that no unauthorized forwarding or hiding rules exist.",
+   "priority": "immediate",
+   "source": "source: ATT&CK v20.1 M1047"
+  },
+  {
+   "action": "Ensure multi-factor authentication (MFA) is strictly enforced for webmail access to mitigate credential abuse.",
+   "priority": "short-term",
+   "source": "source: ATT&CK v20.1 M1032"
+  },
+  {
+   "action": "Disable external auto-forwarding policies at the tenant level if not strictly required for business operations.",
+   "priority": "long-term",
+   "source": "source: ATT&CK v20.1 M1042"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged and resolved as Benign Positive (BP) because it contains only a single generic SuspiciousActivity alert with no correlated kill-chain stages or ATT&CK techniques, an ML true positive likelihood of only 0.04, and strong alignment with past benign positive incidents.",
+ "limitations": "Analysis is constrained by anonymized entity data, lack of raw mailbox log telemetry, and absence of specific behavioral context in alert 1461763."
+}
+```
+
+---
+## Report 55
+
+True label: TP
+
+### Evidence
+```
+Incident test:84:86607: 3 alerts, 23 evidence rows, time span 4.7 h.
+Alert categories: Exfiltration x3.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [Exfiltration] techniques: none; entities: File/Impacted, User/Impacted, Ip/Related, Machine/Impacted (source: alert 92437, 9 evidence rows)
+- +129 min [Exfiltration] techniques: none; entities: User/Impacted, Ip/Related, Machine/Impacted, File/Impacted (source: alert 133875, 5 evidence rows)
+- +281 min [Exfiltration] techniques: none; entities: User/Impacted, Ip/Related, File/Impacted, Machine/Impacted (source: alert 47298, 9 evidence rows)
+
+Agent decision: TP (fused confidence 0.99); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=1.00, P(BP)=0.00, P(FP)=0.00
+Most influential features (SHAP):
+- DetectorId_tp_mean = 0.981 (detectors' historical TP rate (mean over the incident's alerts)): toward TP (SHAP +2.36)
+- DetectorId_tp_max = 0.981 (incident feature): toward TP (SHAP +1.13)
+- AlertTitle_tp_max = 0.77 (incident feature): toward TP (SHAP +0.86)
+- AlertTitle_tp_mean = 0.77 (alert titles' historical TP rate): toward TP (SHAP +0.70)
+- cat_Exfiltration = 3 (incident feature): toward TP (SHAP +0.24)
+Most similar past incidents:
+- train:233:71791: TP, distance 2.87
+- train:233:123574: TP, distance 3.55
+- train:84:46892: TP, distance 3.67
+- train:84:69137: TP, distance 3.74
+- train:233:110823: TP, distance 3.76
+LLM reasoning step: TP (high): The incident features three repeated Exfiltration alerts spanning over 4.7 hours involving impacted files, users, and machines, indicating late-stage kill-chain activity. The high detector TP rate (0.981) alongside an ML TP probability of 1.00 and strong alignment with past TP cases consistently indicate unauthorized data exfiltration.
+```
+### Report
+```json
+{
+ "summary": "The incident test:84:86607 comprises three distinct Exfiltration alerts spanning 4.7 hours, consistently involving an impacted user, machine, file, and related IP. The activity exhibits repeated, scheduled, or automated data transfers indicative of late-stage kill-chain behavior. Based on unanimous model indicators and historical True Positive alignment, the incident has been confirmed as a True Positive (TP).",
+ "attack_mapping": [
+  {
+   "technique_id": "T1020",
+   "tactic": "Exfiltration",
+   "alerts": [
+    "92437",
+    "133875",
+    "47298"
+   ]
+  },
+  {
+   "technique_id": "T1029",
+   "tactic": "Exfiltration",
+   "alerts": [
+    "92437",
+    "133875",
+    "47298"
+   ]
+  }
+ ],
+ "furthest_stage": "Exfiltration",
+ "evidence_chain": [
+  {
+   "finding": "Initial exfiltration event detected involving impacted file, user, machine, and related IP.",
+   "source": "alert 92437"
+  },
+  {
+   "finding": "Second exfiltration alert detected at +129 minutes involving identical entity categories, indicating ongoing or scheduled transmission.",
+   "source": "alert 133875"
+  },
+  {
+   "finding": "Third exfiltration alert detected at +281 minutes totaling 23 cumulative evidence rows across 4.7 hours.",
+   "source": "alert 47298"
+  },
+  {
+   "finding": "ML triage model classified the incident as True Positive with P(TP)=1.00, heavily influenced by high detector historical TP rate (0.981).",
+   "source": "ML model"
+  },
+  {
+   "finding": "High contextual alignment with historical True Positive incident train:233:71791 (distance 2.87).",
+   "source": "similar incident train:233:71791"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Isolate the impacted host from the corporate network and block traffic to the related external IP address at the perimeter firewall.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1030"
+  },
+  {
+   "action": "Revoke active session tokens and reset credentials for the impacted user account to halt unauthorized data transfer.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Deploy network signatures and rules via Network Intrusion Prevention systems to detect and block automated or alternate protocol exfiltration channels.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1031"
+  },
+  {
+   "action": "Configure Data Loss Prevention (DLP) policies to inspect, alert, and block sensitive document transmission over webhooks and unencrypted channels.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1057"
+  },
+  {
+   "action": "Enforce strict network filtering by proxying outbound connections and limiting outbound ports to dedicated endpoints.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1037"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a True Positive (fused confidence 0.99) due to the presence of multiple corroborated exfiltration alerts over 4.7 hours, a 1.00 P(TP) ML model score, high historical detector TP rates (0.981), and close similarity to past True Positive incidents.",
+ "limitations": "Alert payload details, specific file names, exact network protocols, and specific destination IP addresses were anonymized, restricting granular determination of the exact protocol (e.g., webhook vs symmetric non-C2) used for the data transfer."
+}
+```
+
+---
+## Report 56
+
+True label: BP
+
+### Evidence
+```
+Incident test:24:469834: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: SuspiciousActivity x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [SuspiciousActivity] techniques: none; entities: User/Impacted, CloudApplication/Impacted, Ip/Related (source: alert 1395058, 3 evidence rows)
+
+Agent decision: BP (fused confidence 0.71); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.22, P(BP)=0.69, P(FP)=0.10
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.764 (alert titles' historical BP rate): toward BP (SHAP +0.78)
+- AlertTitle_bp_max = 0.764 (incident feature): toward BP (SHAP +0.48)
+- DetectorId_bp_max = 0.406 (incident feature): against BP (SHAP -0.34)
+- DetectorId_bp_mean = 0.406 (detectors' historical BP rate): against BP (SHAP -0.16)
+- AlertTitle_tp_mean = 0.128 (alert titles' historical TP rate): toward BP (SHAP +0.13)
+Most similar past incidents:
+- train:24:469831: BP, distance 0.01
+- train:24:459927: BP, distance 0.01
+- train:24:459697: BP, distance 0.01
+- train:24:460671: BP, distance 0.01
+- train:24:459784: BP, distance 0.01
+LLM reasoning step: BP (high): The single SuspiciousActivity alert aligns strongly with benign activity patterns, reflected in the ML model's 0.69 BP probability and a high historical BP rate (0.764). All nearest neighbor incidents were triaged as BP at distance 0.01, with no kill-chain rules or ATT&CK techniques triggered.
+```
+### Report
+```json
+{
+ "summary": "Incident test:24:469834 consists of a single SuspiciousActivity alert impacting a user and cloud application from a related IP address. The automated triage classified this incident as Benign Positive (BP) with a fused confidence of 0.71 based on strong historical benign patterns. No malicious tactics, techniques, or kill-chain progressions were detected.",
+ "attack_mapping": [],
+ "furthest_stage": "None",
+ "evidence_chain": [
+  {
+   "finding": "Alert 1395058 fired for SuspiciousActivity involving an impacted User, CloudApplication, and related IP with zero ATT&CK techniques identified.",
+   "source": "alert 1395058"
+  },
+  {
+   "finding": "The ML model evaluated the incident with P(BP)=0.69, heavily driven by the historical benign positive rate of the alert title (SHAP +0.78).",
+   "source": "ML model"
+  },
+  {
+   "finding": "The top five most similar historical incidents (train:24:469831, train:24:459927, train:24:459697, train:24:460671, train:24:459784) were all triaged as Benign Positive at an identical distance of 0.01.",
+   "source": "similar incident train:24:469831"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify user activity logs around alert 1395058 to ensure cloud application access aligned with normal business operations.",
+   "priority": "immediate",
+   "source": "alert 1395058"
+  },
+  {
+   "action": "Close the incident as Benign Positive (BP) without remediation or host isolation, matching historical precedent.",
+   "priority": "short-term",
+   "source": "similar incident train:24:469831"
+  },
+  {
+   "action": "Evaluate detector tuning for this cloud application and user workflow to reduce false positive and benign positive alert volume.",
+   "priority": "long-term",
+   "source": "ML model"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) with a 0.71 fused confidence score, supported by an ML BP probability of 0.69, zero escalation triggers, and five nearest neighbor incidents identically categorized as BP.",
+ "limitations": "Entities such as the specific user, application, and IP address are anonymized, and no specific MITRE ATT&CK techniques were associated with the triggering alert."
+}
+```
+
+---
+## Report 57
+
+True label: FP
+
+### Evidence
+```
+Incident test:18:387420: 2 alerts, 4 evidence rows, time span 4.3 h.
+Alert categories: Execution x2.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [Execution] techniques: none; entities: CloudApplication/Impacted, File/Related (source: alert 1067031, 2 evidence rows)
+- +260 min [Execution] techniques: none; entities: CloudApplication/Impacted, File/Related (source: alert 1551738, 2 evidence rows)
+
+Agent decision: FP (fused confidence 0.99); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=0.00, P(FP)=1.00
+Most influential features (SHAP):
+- AlertTitle_fp_max = 0.998 (incident feature): toward FP (SHAP +2.59)
+- AlertTitle_fp_mean = 0.998 (alert titles' historical FP rate): toward FP (SHAP +1.90)
+- AlertTitle_bp_mean = 0.00172 (alert titles' historical BP rate): toward FP (SHAP +0.68)
+- DetectorId_fp_mean = 0.572 (detectors' historical FP rate): toward FP (SHAP +0.50)
+- AlertTitle_tp_mean = 0.000724 (alert titles' historical TP rate): toward FP (SHAP +0.35)
+Most similar past incidents:
+- train:18:390354: FP, distance 0.01
+- train:18:387589: FP, distance 0.02
+- train:18:387464: FP, distance 0.03
+- train:18:387596: FP, distance 0.03
+- train:18:387258: FP, distance 0.03
+LLM reasoning step: FP (high): The incident consists of two low-fidelity execution alerts involving cloud applications and related files with no associated ATT&CK techniques or kill-chain progression over 4.3 hours. The ML model reports an overwhelming 1.00 probability of false positive supported by an extremely high historical alert title FP rate of 0.998. In addition, all the most similar historical incidents were triaged as FP.
+```
+### Report
+```json
+{
+ "summary": "Incident test:18:387420 consists of two execution alerts spanning 4.3 hours involving a cloud application and related files, without documented MITRE ATT&CK techniques. The incident was automatically triaged as a False Positive with a fused confidence of 0.99. Strong historical data shows the alert titles have a 0.998 false positive rate, corroborated by multiple closely matched historical incidents.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1204",
+   "tactic": "Execution",
+   "alerts": [
+    "1067031",
+    "1551738"
+   ]
+  }
+ ],
+ "furthest_stage": "Execution",
+ "evidence_chain": [
+  {
+   "finding": "Execution alert triggered involving CloudApplication/Impacted and File/Related entities at +0 min.",
+   "source": "alert 1067031"
+  },
+  {
+   "finding": "Subsequent Execution alert observed on the same CloudApplication and File entities after 260 minutes without lateral progression.",
+   "source": "alert 1551738"
+  },
+  {
+   "finding": "ML triage model predicted FP with P(FP)=1.00 driven predominantly by historical alert title false positive rates (AlertTitle_fp_max = 0.998).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Top 5 nearest historical incidents (train:18:390354, train:18:387589, train:18:387464, train:18:387596, train:18:387258) were all confirmed as False Positives.",
+   "source": "similar incident train:18:390354"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Close the incident as a confirmed False Positive without initiating active host containment.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Review the specific detector logic associated with the cloud application to suppress recurring non-malicious file executions.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Tune detection thresholds and alert definitions for this CloudApplication/File pattern to reduce the 0.998 historical false positive volume.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a False Positive due to a fused confidence score of 0.99, an ML model FP probability of 1.00, an AlertTitle historical FP rate of 0.998, and identical classifications across all nearest historical neighbors.",
+ "limitations": "Specific file paths, command-line arguments, detector identifiers, and application names were anonymized, precluding deep inspection of the exact execution artifacts."
+}
+```
+
+---
+## Report 58
+
+True label: BP
+
+### Evidence
+```
+Incident test:51:26454: 1 alerts, 30 evidence rows, time span 0.0 h.
+Alert categories: Exfiltration x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [Exfiltration] techniques: none; entities: CloudApplication/Impacted, File/Impacted, User/Impacted (source: alert 38804, 30 evidence rows)
+
+Agent decision: BP (fused confidence 0.99); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=1.00, P(FP)=0.00
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.849 (alert titles' historical BP rate): toward BP (SHAP +1.22)
+- AlertTitle_bp_max = 0.849 (incident feature): toward BP (SHAP +0.50)
+- ent_File = 28 (incident feature): toward BP (SHAP +0.36)
+- AlertTitle_tp_mean = 0.0557 (alert titles' historical TP rate): toward BP (SHAP +0.28)
+- DetectorId_bp_mean = 0.751 (detectors' historical BP rate): toward BP (SHAP +0.23)
+Most similar past incidents:
+- train:777:10836: BP, distance 1.23
+- train:182:15310: BP, distance 1.38
+- train:777:7506: BP, distance 1.59
+- train:579:11762: BP, distance 1.63
+- train:182:25217: BP, distance 1.74
+LLM reasoning step: BP (high): The incident involves a single Exfiltration alert tied to CloudApplication, User, and File entities, which historically corresponds to authorized data transfers or sanctioned cloud file sync activities. The ML model evaluates P(BP) at 1.00, supported by an alert title BP historical rate of ~85% and unanimous BP classifications across the nearest similar incidents. Despite triggering the late kill-chain rule, there is no evidence of unauthorized access or malicious behavior.
+```
+### Report
+```json
+{
+ "summary": "Incident test:51:26454 involves a single Exfiltration alert triggered by cloud application and file transfer activity across 28 files for a user. The automated triage system determined this to be Benign Positive (BP) with fused confidence of 0.99, consistent with authorized cloud synchronization or expected business transfers. No evidence of unauthorized access, account compromise, or malicious command and control was identified.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1567.002",
+   "tactic": "Exfiltration",
+   "alerts": [
+    "alert 38804"
+   ]
+  }
+ ],
+ "furthest_stage": "Exfiltration",
+ "evidence_chain": [
+  {
+   "finding": "Exfiltration alert flagged on CloudApplication, User, and 28 File entities.",
+   "source": "alert 38804"
+  },
+  {
+   "finding": "Machine learning model evaluated probability of Benign Positive at 1.00 (P(TP)=0.00, P(FP)=0.00).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Historical alert title Benign Positive rate is 84.9%, heavily driving the classification toward BP (SHAP +1.22).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Top five most similar historical incidents were all resolved as Benign Positive (train:777:10836, train:182:15310, train:777:7506, train:579:11762, train:182:25217).",
+   "source": "similar incident train:777:10836"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify that the cloud storage synchronization or file transfer of the 28 impacted files aligns with approved user business workflows.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1057"
+  },
+  {
+   "action": "Enforce external network communication and web proxy policies to prevent data transfer to unapproved third-party cloud services.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1021"
+  },
+  {
+   "action": "Configure appropriate cloud data sharing restrictions and domain whitelisting to prevent unauthorized external sharing.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1054"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) with 0.99 fused confidence because the ML model predicted P(BP)=1.00 based on high historical BP detector rates, supported by unanimous BP resolutions across similar past incidents.",
+ "limitations": "Entities such as hostnames, user accounts, and specific cloud storage application names are anonymized, preventing direct validation against explicit user identity roles or corporate share logs."
+}
+```
+
+---
+## Report 59
+
+True label: TP
+
+### Evidence
+```
+Incident test:654:136557: 2 alerts, 8 evidence rows, time span 11.6 h.
+Alert categories: InitialAccess x2.
+ATT&CK techniques: T1078, T1078.004.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: T1078, T1078.004; entities: CloudLogonRequest/Related, User/Impacted, CloudLogonSession/Related, Ip/Related (source: alert 844171, 4 evidence rows)
+- +696 min [InitialAccess] techniques: T1078, T1078.004; entities: CloudLogonRequest/Related, CloudLogonSession/Related, User/Impacted, Ip/Related (source: alert 378661, 4 evidence rows)
+
+Agent decision: TP (fused confidence 0.36); status NEEDS_HUMAN_REVIEW.
+Escalation reasons: ML and LLM disagree: ML says TP (p=0.38); LLM says FP (medium confidence): The incident consists solely of two Initial Access alerts (T1078, T1078.004) across nearly 12 hours with no downstream malicious activity or kill-chain progression observed. The most similar historical incidents were predominantly triaged as false positives, consistent with low detector TP rates (0.123). In the absence of corroborating lateral movement or persistence, the detection logic appears to reflect anomalous but benign cloud logon requests..
+ML triage model: P(TP)=0.38, P(BP)=0.38, P(FP)=0.24
+Most influential features (SHAP):
+- DetectorId_tp_mean = 0.123 (detectors' historical TP rate (mean over the incident's alerts)): toward TP (SHAP +0.46)
+- ent_CloudLogonSession = 2 (incident feature): against TP (SHAP -0.30)
+- AlertTitle_tp_mean = 0.123 (alert titles' historical TP rate): toward TP (SHAP +0.28)
+- DetectorId_tp_max = 0.123 (incident feature): toward TP (SHAP +0.28)
+- n_evidence = 8 (incident feature): toward TP (SHAP +0.26)
+Most similar past incidents:
+- train:506:70003: FP, distance 0.28
+- train:228:12259: FP, distance 0.49
+- train:569:171558: BP, distance 0.57
+- train:147:222395: FP, distance 0.64
+- train:569:171556: BP, distance 0.74
+LLM reasoning step: FP (medium): The incident consists solely of two Initial Access alerts (T1078, T1078.004) across nearly 12 hours with no downstream malicious activity or kill-chain progression observed. The most similar historical incidents were predominantly triaged as false positives, consistent with low detector TP rates (0.123). In the absence of corroborating lateral movement or persistence, the detection logic appears to reflect anomalous but benign cloud logon requests.
+```
+### Report
+```json
+{
+ "summary": "Incident test:654:136557 comprises two Initial Access alerts over an 11.6-hour window involving anomalous cloud logon activity mapped to ATT&CK T1078 and T1078.004. The triage decision is classified as a True Positive with status NEEDS_HUMAN_REVIEW due to model disagreement between the ML model and LLM reasoning. Concrete investigation is required to determine whether the cloud logon requests represent unauthorized account access or benign anomalous user behavior.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1078",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "844171",
+    "378661"
+   ]
+  },
+  {
+   "technique_id": "T1078.004",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "844171",
+    "378661"
+   ]
+  }
+ ],
+ "furthest_stage": "InitialAccess",
+ "evidence_chain": [
+  {
+   "finding": "Initial cloud logon event triggered an alert associated with valid cloud accounts (T1078, T1078.004).",
+   "source": "alert 844171"
+  },
+  {
+   "finding": "Subsequent cloud logon event occurred approximately 696 minutes later involving the same user and cloud logon entities.",
+   "source": "alert 378661"
+  },
+  {
+   "finding": "The ML model evaluated the incident with P(TP)=0.38, driven positively by alert/detector TP mean metrics and evidence count.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Historical incidents with similar characteristics were predominantly triaged as FP or BP, suggesting recurring benign anomalous behavior.",
+   "source": "similar incident train:506:70003"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Revoke active cloud logon sessions and reset credentials for the impacted user account to contain potential unauthorized access.",
+   "priority": "immediate",
+   "source": "NIST SP 800-61 Rev. 3"
+  },
+  {
+   "action": "Inspect cloud audit and authentication logs corresponding to the related IP addresses and session IDs to confirm legitimate user travel or VPN usage.",
+   "priority": "short-term",
+   "source": "NIST SP 800-61 Rev. 3"
+  },
+  {
+   "action": "Enforce or re-evaluate conditional access policies and MFA enforcement on cloud logon requests originating from non-standard IP ranges.",
+   "priority": "long-term",
+   "source": "NIST SP 800-61 Rev. 3"
+  }
+ ],
+ "escalation_explanation": "The incident was escalated to NEEDS_HUMAN_REVIEW because of a direct conflict between the ML triage model (leaning TP with P=0.38) and the LLM analysis (evaluating as FP due to lack of post-exploitation activity and historical benign patterns). Analyst intervention is required to confirm legitimate account ownership.",
+ "limitations": "All IP addresses, hostnames, and user identities are anonymized, preventing external threat intelligence lookups or confirmation of user geolocation."
+}
+```
+
+---
+## Report 60
+
+True label: FP
+
+### Evidence
+```
+Incident test:136:225420: 1 alerts, 4 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: none; entities: User/Impacted, Ip/Related, CloudLogonRequest/Related (source: alert 951736, 4 evidence rows)
+
+Agent decision: TP (fused confidence 0.59); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.58, P(BP)=0.04, P(FP)=0.38
+Most influential features (SHAP):
+- DetectorId_tp_mean = 0.321 (detectors' historical TP rate (mean over the incident's alerts)): toward TP (SHAP +0.52)
+- AlertTitle_tp_mean = 0.321 (alert titles' historical TP rate): toward TP (SHAP +0.50)
+- n_countries = 2 (incident feature): toward TP (SHAP +0.46)
+- DetectorId_tp_max = 0.321 (incident feature): toward TP (SHAP +0.40)
+- AlertTitle_tp_max = 0.321 (incident feature): toward TP (SHAP +0.20)
+Most similar past incidents:
+- train:11:435531: FP, distance 0.00
+- train:136:96048: BP, distance 0.00
+- train:136:369199: FP, distance 0.00
+- train:71:384807: FP, distance 0.00
+- train:1150:357191: TP, distance 0.00
+LLM reasoning step: TP (medium): The incident flags an InitialAccess event involving multi-country logon activity (n_countries = 2), indicating potentially compromised credentials or impossible travel. Although past similar incidents show a high rate of false positives, the ML model leans towards TP (P(TP) = 0.58) driven by detector history and multi-country anomalies, warranting a breach-assumption classification.
+```
+### Report
+```json
+{
+ "summary": "Incident test:136:225420 involves anomalous cloud logon activity flagged under the InitialAccess category for a user account across multiple countries. The ML model classified this activity as a True Positive (P(TP)=0.58) driven by multi-country logon patterns indicating potential credential compromise or impossible travel. Containment and eradication actions focus on credential revocation and enforcing multi-factor authentication controls.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1078.004",
+   "tactic": "initial-access",
+   "alerts": [
+    "951736"
+   ]
+  }
+ ],
+ "furthest_stage": "initial-access",
+ "evidence_chain": [
+  {
+   "finding": "Cloud logon activity associated with the user account originated across two different countries simultaneously or in short succession (n_countries = 2).",
+   "source": "alert 951736"
+  },
+  {
+   "finding": "Machine learning triage model scored the incident with a True Positive probability of P(TP)=0.58, heavily weighted by multi-country anomalies and detector historical performance.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Precedent incident train:1150:357191 established a True Positive benchmark under identical distance metric features.",
+   "source": "similar incident train:1150:357191"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Revoke active cloud sessions and reset the password for the impacted user account to terminate potential unauthorized access.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1027"
+  },
+  {
+   "action": "Enforce and verify Multi-Factor Authentication (MFA) requirements across all cloud services for the user account, disabling legacy authentication protocols.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1032"
+  },
+  {
+   "action": "Conduct a privileged account and role assignment review to confirm no unauthorized persistence mechanisms or secondary accounts were created.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1026"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a True Positive based on the ML triage confidence score of 0.59, driven by high SHAP contributions from detector historical reliability and multi-country logon anomalies (n_countries = 2) indicating potential credential misuse.",
+ "limitations": "Alert data, hostnames, user identities, and IP addresses are anonymized; raw geographical metadata and specific application logs were not available to confirm whether a corporate VPN caused the multi-country anomaly."
+}
+```
+
+---
+## Report 61
+
+True label: TP
+
+### Evidence
+```
+Incident test:84:86607: 3 alerts, 23 evidence rows, time span 4.7 h.
+Alert categories: Exfiltration x3.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [Exfiltration] techniques: none; entities: File/Impacted, User/Impacted, Ip/Related, Machine/Impacted (source: alert 92437, 9 evidence rows)
+- +129 min [Exfiltration] techniques: none; entities: User/Impacted, Ip/Related, Machine/Impacted, File/Impacted (source: alert 133875, 5 evidence rows)
+- +281 min [Exfiltration] techniques: none; entities: User/Impacted, Ip/Related, File/Impacted, Machine/Impacted (source: alert 47298, 9 evidence rows)
+
+Agent decision: TP (fused confidence 0.99); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=1.00, P(BP)=0.00, P(FP)=0.00
+Most influential features (SHAP):
+- DetectorId_tp_mean = 0.981 (detectors' historical TP rate (mean over the incident's alerts)): toward TP (SHAP +2.36)
+- DetectorId_tp_max = 0.981 (incident feature): toward TP (SHAP +1.13)
+- AlertTitle_tp_max = 0.77 (incident feature): toward TP (SHAP +0.86)
+- AlertTitle_tp_mean = 0.77 (alert titles' historical TP rate): toward TP (SHAP +0.70)
+- cat_Exfiltration = 3 (incident feature): toward TP (SHAP +0.24)
+Most similar past incidents:
+- train:233:71791: TP, distance 2.87
+- train:233:123574: TP, distance 3.55
+- train:84:46892: TP, distance 3.67
+- train:84:69137: TP, distance 3.74
+- train:233:110823: TP, distance 3.76
+LLM reasoning step: TP (high): The incident features three repeated Exfiltration alerts spanning over 4.7 hours involving impacted files, users, and machines, indicating late-stage kill-chain activity. The high detector TP rate (0.981) alongside an ML TP probability of 1.00 and strong alignment with past TP cases consistently indicate unauthorized data exfiltration.
+```
+### Report
+```json
+{
+ "summary": "Incident test:84:86607 comprises three repeated Exfiltration alerts spanning 4.7 hours targeting shared user, machine, file, and IP entities. The incident exhibits persistent data transfer attempts across 23 evidence artifacts, representing late-stage malicious activity. The triage decision is confirmed as True Positive based on overwhelming ML model confidence and high historical detector accuracy.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1048",
+   "tactic": "Exfiltration",
+   "alerts": [
+    "92437",
+    "133875",
+    "47298"
+   ]
+  }
+ ],
+ "furthest_stage": "Exfiltration",
+ "evidence_chain": [
+  {
+   "finding": "Initial exfiltration activity detected involving impacted file, user, machine, and related IP entities with 9 supporting evidence records.",
+   "source": "alert 92437"
+  },
+  {
+   "finding": "Second exfiltration alert triggered at +129 min against the same entity cluster with 5 evidence records, indicating sustained exfiltration.",
+   "source": "alert 133875"
+  },
+  {
+   "finding": "Third exfiltration alert observed at +281 min involving 9 evidence records, confirming continued outbound data movement across a 4.7-hour span.",
+   "source": "alert 47298"
+  },
+  {
+   "finding": "ML triage model classified the incident as a definite True Positive with P(TP)=1.00 driven strongly by historical detector precision (DetectorId_tp_mean = 0.981).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Top five most similar historical incidents (e.g., train:233:71791 at distance 2.87 and train:233:123574 at distance 3.55) were all verified True Positives.",
+   "source": "similar incident train:233:71791"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Isolate the impacted host from the network and block the related destination IP at the perimeter firewall to stop ongoing exfiltration.",
+   "priority": "immediate",
+   "source": "NIST SP 800-61 Rev. 3"
+  },
+  {
+   "action": "Revoke active session tokens and reset credentials for the impacted user account.",
+   "priority": "immediate",
+   "source": "NIST SP 800-61 Rev. 3"
+  },
+  {
+   "action": "Inspect the impacted files and network telemetry to quantify data loss and verify eradication of staging tools or unauthorized transfer scripts.",
+   "priority": "short-term",
+   "source": "NIST SP 800-61 Rev. 3"
+  },
+  {
+   "action": "Implement Data Loss Prevention (DLP) egress restrictions and enhance alerting policies for large outbound data transfers.",
+   "priority": "long-term",
+   "source": "NIST SP 800-61 Rev. 3"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as True Positive (TP) with fused confidence of 0.99 due to an ML model P(TP) of 1.00, high historical detector precision (0.981), strong similarity to past TP exfiltration cases, and repeated high-risk exfiltration activity across 4.7 hours without requiring manual tier-1 intervention.",
+ "limitations": "Specific ATT&CK technique IDs and detailed raw file paths or IP addresses were not explicitly provided in the telemetry, requiring general attribution under the Exfiltration tactic."
+}
+```
+
+---
+## Report 62
+
+True label: BP
+
+### Evidence
+```
+Incident test:364:146931: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: SuspiciousActivity x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [SuspiciousActivity] techniques: none; entities: User/Impacted, CloudApplication/Impacted, Ip/Related (source: alert 337844, 3 evidence rows)
+
+Agent decision: BP (fused confidence 0.99); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=1.00, P(FP)=0.00
+Most influential features (SHAP):
+- AlertTitle_bp_max = 0.928 (incident feature): toward BP (SHAP +1.94)
+- AlertTitle_bp_mean = 0.928 (alert titles' historical BP rate): toward BP (SHAP +1.36)
+- DetectorId_bp_mean = 0.784 (detectors' historical BP rate): toward BP (SHAP +0.20)
+- AlertTitle_tp_mean = 0.029 (alert titles' historical TP rate): toward BP (SHAP +0.18)
+- AlertTitle_tp_max = 0.029 (incident feature): toward BP (SHAP +0.15)
+Most similar past incidents:
+- train:364:97296: BP, distance 0.09
+- train:48:445001: BP, distance 0.17
+- train:48:445256: BP, distance 0.24
+- train:48:445262: BP, distance 0.24
+- train:48:444945: BP, distance 0.25
+LLM reasoning step: BP (high): The single SuspiciousActivity alert involves common benign activity associated with CloudApplication and User entities, without any mapped ATT&CK techniques or kill-chain risk rules firing. Historical analysis and ML triage strongly support a benign positive classification, with all nearest neighbor incidents categorized as BP.
+```
+### Report
+```json
+{
+ "summary": "Incident test:364:146931 consists of a single SuspiciousActivity alert involving an impacted User and CloudApplication, with an associated IP address. The activity lacks mapped MITRE ATT&CK techniques and correlates with standard benign operational patterns. Automated analysis classified the event as a Benign Positive (BP) with 0.99 fused confidence, consistent with similar historical incidents.",
+ "attack_mapping": [],
+ "furthest_stage": "None",
+ "evidence_chain": [
+  {
+   "finding": "Alert 337844 triggered for SuspiciousActivity involving User, CloudApplication, and an IP address across 3 evidence rows, but no malicious indicators or ATT&CK techniques were identified.",
+   "source": "alert 337844"
+  },
+  {
+   "finding": "The ML model evaluated the incident with P(BP)=1.00 and P(TP)=0.00, driven strongly by high historical benign positive rates for the alert title (SHAP +1.94) and detector (SHAP +0.20).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Historical incidents with matching behavioral and detector features (including train:364:97296 at distance 0.09 and train:48:445001 at distance 0.17) were consistently resolved as Benign Positive.",
+   "source": "similar incident train:364:97296"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Close the incident as Benign Positive (BP) in accordance with the automated triage determination.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Review the specific CloudApplication access logs for the User and source IP to verify routine business operations.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Tune the detector thresholds or add baseline exclusions for standard user workflows in this CloudApplication to reduce benign positive volume.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged and closed as a Benign Positive (BP) with fused confidence of 0.99. No escalation criteria were met, as there were no associated MITRE ATT&CK techniques, no lateral movement or persistence indicators, and strong alignment with historical benign positive incidents.",
+ "limitations": "Alert titles, entity names, and IP addresses are anonymized, preventing deep verification of specific application context, user role, or external reputation of the source IP."
+}
+```
+
+---
+## Report 63
+
+True label: FP
+
+### Evidence
+```
+Incident test:11:399245: 1 alerts, 4 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: T1078, T1078.004.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: T1078, T1078.004; entities: CloudLogonSession/Related, Ip/Related, User/Impacted, CloudLogonRequest/Related (source: alert 988682, 4 evidence rows)
+
+Agent decision: FP (fused confidence 0.89); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.08, P(BP)=0.03, P(FP)=0.89
+Most influential features (SHAP):
+- AlertTitle_fp_mean = 0.811 (alert titles' historical FP rate): toward FP (SHAP +1.08)
+- DetectorId_fp_mean = 0.811 (detectors' historical FP rate): toward FP (SHAP +0.73)
+- AlertTitle_fp_max = 0.811 (incident feature): toward FP (SHAP +0.41)
+- DetectorId_fp_max = 0.811 (incident feature): toward FP (SHAP +0.27)
+- n_evidence = 4 (incident feature): toward FP (SHAP +0.16)
+Most similar past incidents:
+- train:11:436116: FP, distance 0.00
+- train:206:81151: FP, distance 0.00
+- train:11:436269: FP, distance 0.00
+- train:50:336887: TP, distance 0.00
+- train:644:351779: FP, distance 0.00
+LLM reasoning step: FP (high): The incident consists of a single initial access alert regarding cloud logon activity (T1078.004) with no downstream malicious execution or progression across the kill chain. Both the historical detector false positive rate (0.811) and the ML model strongly indicate a false alarm, reinforced by the vast majority of nearest historical incidents resolving as FP.
+```
+### Report
+```json
+{
+ "summary": "Incident test:11:399245 consists of a isolated single Initial Access alert concerning cloud logon activity flagged under techniques T1078 and T1078.004. There is no evidence of subsequent lateral movement, execution, or persistence across the environment. Based on historical detector performance and ML classification, the event was auto-triaged as a False Positive.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1078",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "988682"
+   ]
+  },
+  {
+   "technique_id": "T1078.004",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "988682"
+   ]
+  }
+ ],
+ "furthest_stage": "InitialAccess",
+ "evidence_chain": [
+  {
+   "finding": "Cloud logon session activity flagged as potential valid account abuse under T1078/T1078.004 with 4 evidence rows and no subsequent suspicious activity.",
+   "source": "alert 988682"
+  },
+  {
+   "finding": "ML triage model calculated a 0.89 probability of False Positive, heavily influenced by detector and alert historical FP rates of 0.811.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Nearest matching historical incidents resolved predominantly as False Positives (4 out of 5 closest matches at distance 0.00).",
+   "source": "similar incident train:11:436116"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Enforce multi-factor authentication (MFA) across all cloud and administrative accounts to mitigate credential-based unauthorized access.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1032"
+  },
+  {
+   "action": "Disable legacy authentication protocols that do not support modern MFA workflows in the cloud environment.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1015"
+  },
+  {
+   "action": "Regularly audit user and privileged cloud accounts to ensure minimal required access and deactivate unneeded accounts.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1018"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a False Positive because it was limited to a single cloud logon event with high historical false positive rates (0.811 for both AlertTitle and DetectorId), a fused confidence of 0.89 for FP, and zero progression into execution or lateral movement.",
+ "limitations": "Analysis is limited by anonymized entity data (CloudLogonSession, Ip, and User details) and reliance on telemetry from a single alert without visibility into extended identity access logs."
+}
+```
+
+---
+## Report 64
+
+True label: BP
+
+### Evidence
+```
+Incident test:16:74676: 1 alerts, 23 evidence rows, time span 0.0 h.
+Alert categories: Exfiltration x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [Exfiltration] techniques: none; entities: User/Impacted, MailMessage/Impacted (source: alert 62391, 23 evidence rows)
+
+Agent decision: BP (fused confidence 0.99); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=1.00, P(FP)=0.00
+Most influential features (SHAP):
+- DetectorId_bp_max = 0.999 (incident feature): toward BP (SHAP +2.43)
+- AlertTitle_bp_mean = 0.983 (alert titles' historical BP rate): toward BP (SHAP +1.16)
+- AlertTitle_bp_max = 0.983 (incident feature): toward BP (SHAP +0.96)
+- DetectorId_bp_mean = 0.999 (detectors' historical BP rate): toward BP (SHAP +0.80)
+- AlertTitle_tp_mean = 0.00688 (alert titles' historical TP rate): toward BP (SHAP +0.28)
+Most similar past incidents:
+- train:16:39860: BP, distance 0.27
+- train:16:58018: BP, distance 0.71
+- train:16:51753: BP, distance 0.80
+- train:16:41034: BP, distance 0.80
+- train:16:60383: BP, distance 0.80
+LLM reasoning step: BP (high): The single exfiltration alert involving MailMessage entities corresponds to detector patterns with an overwhelmingly high historical benign-positive rate (DetectorId_bp_max = 0.999, AlertTitle_bp_mean = 0.983). Past incidents matching this profile are consistently classified as BP, indicating routine or authorized business email activity triggered the rule. Despite the late kill-chain stage triggered by category rules, there is no evidence of unauthorized malicious exfiltration.
+```
+### Report
+```json
+{
+ "summary": "Incident test:16:74676 involves a single Exfiltration alert triggered on a MailMessage entity and associated User account across 23 evidence rows. The triage agent and ML model classified the activity as a Benign Positive (BP) with 0.99 fused confidence. This classification reflects expected, authorized business email communication frequently flagged by broad exfiltration detection signatures.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1020",
+   "tactic": "exfiltration",
+   "alerts": [
+    "62391"
+   ]
+  }
+ ],
+ "furthest_stage": "exfiltration",
+ "evidence_chain": [
+  {
+   "finding": "Alert 62391 generated under category Exfiltration associated with MailMessage and User entities across 23 evidence rows.",
+   "source": "alert 62391"
+  },
+  {
+   "finding": "Machine learning triage model scored the incident with P(BP)=1.00 and P(TP)=0.00, heavily weighted by historical detector and alert title benign rates.",
+   "source": "ML model"
+  },
+  {
+   "finding": "DetectorId_bp_max (0.999) and AlertTitle_bp_mean (0.983) drive dominant SHAP contributions (+2.43 and +1.16) toward BP determination.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Top similar historical incidents (train:16:39860 at distance 0.27 and train:16:58018 at distance 0.71) were verified as Benign Positives.",
+   "source": "similar incident train:16:39860"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Audit current Exchange inbox rules and transport rules to ensure the MailMessage event was not generated by an unauthorized auto-forwarding rule.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1047"
+  },
+  {
+   "action": "Ensure Data Loss Prevention (DLP) controls are properly tuned to detect sensitive email transfers while reducing false alarms on authorized business communications.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1057"
+  },
+  {
+   "action": "Implement encryption for sensitive business communications sent over email to maintain confidentiality during valid outbound transfers.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1041"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) with 0.99 confidence due to an ML model probability of P(BP)=1.00, strong alignment with historical benign positive incidents (e.g., train:16:39860), and detector metrics demonstrating a 99.9% baseline benign rate for routine MailMessage activity.",
+ "limitations": "Alert titles, hostnames, user identities, and IP addresses were anonymized, and detailed email message bodies or DLP payload specifics were not provided for manual inspection."
+}
+```
+
+---
+## Report 65
+
+True label: TP
+
+### Evidence
+```
+Incident test:38:456682: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: SuspiciousActivity x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [SuspiciousActivity] techniques: none; entities: CloudApplication/Related, Ip/Related (source: alert 1398257, 3 evidence rows)
+
+Agent decision: FP (fused confidence 0.46); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.34, P(BP)=0.21, P(FP)=0.45
+Most influential features (SHAP):
+- AlertTitle_fp_mean = 0.398 (alert titles' historical FP rate): toward FP (SHAP +1.14)
+- AlertTitle_fp_max = 0.398 (incident feature): toward FP (SHAP +0.33)
+- AlertTitle_tp_max = 0.231 (incident feature): against FP (SHAP -0.32)
+- DetectorId_fp_mean = 0.297 (detectors' historical FP rate): toward FP (SHAP +0.23)
+- DetectorId_fp_max = 0.297 (incident feature): toward FP (SHAP +0.10)
+Most similar past incidents:
+- train:414:156385: TP, distance 0.07
+- train:1474:92562: FP, distance 0.10
+- train:1363:4918: FP, distance 0.11
+- train:1869:89563: BP, distance 0.11
+- train:414:147511: TP, distance 0.13
+LLM reasoning step: FP (low): The incident consists of a single isolated SuspiciousActivity alert with no mapped MITRE ATT&CK techniques or triggered kill-chain risk rules. While the nearest historical incident was labeled TP, the ML model leans toward FP (P(FP) = 0.45) driven by high historical false positive rates for this alert title and detector. Given the lack of corroborating evidence or progression, it is triaged as a likely false positive.
+```
+### Report
+```json
+{
+ "summary": "Incident test:38:456682 involves a single isolated SuspiciousActivity alert associated with a CloudApplication and an IP address over a zero-hour duration. The incident lacks mapped MITRE ATT&CK techniques, subsequent progression, or corroborating malicious events. Based on high historical false positive rates for the detector and alert title, the triage agent determined this incident to be a False Positive (FP) and auto-triaged it.",
+ "attack_mapping": [],
+ "furthest_stage": "None",
+ "evidence_chain": [
+  {
+   "finding": "A single SuspiciousActivity alert involving CloudApplication/Related and Ip/Related was observed with no recorded ATT&CK techniques across 3 evidence rows.",
+   "source": "alert 1398257"
+  },
+  {
+   "finding": "The ML model evaluated the event with P(FP)=0.45, heavily driven towards FP by AlertTitle_fp_mean (+1.14 SHAP) and AlertTitle_fp_max (+0.33 SHAP).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Prior incidents with similar vector characteristics demonstrated mixed outcomes including frequent non-malicious findings (e.g., train:1474:92562 FP, train:1363:4918 FP).",
+   "source": "similar incident train:1474:92562"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Close the incident as a False Positive in accordance with the automated triage assessment.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Review the specific CloudApplication activity log and IP source associated with alert 1398257 to ensure no anomalous user behavior went undetected.",
+   "priority": "short-term",
+   "source": "alert 1398257"
+  },
+  {
+   "action": "Tune detection thresholds for DetectorId associated with alert 1398257 given its historically high false positive rate (DetectorId_fp_mean = 0.297).",
+   "priority": "long-term",
+   "source": "ML model"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a False Positive due to low overall confidence for malicious activity (P(TP)=0.34, fused confidence 0.46), absence of mapped MITRE ATT&CK techniques, and high historical false-positive features for the alert title and detector.",
+ "limitations": "Alert titles, entity identifiers, and IP addresses are anonymized, and no granular contextual logs or payload details were provided beyond the 3 raw evidence rows."
+}
+```
+
+---
+## Report 66
+
+True label: BP
+
+### Evidence
+```
+Incident test:38:186862: 2 alerts, 10 evidence rows, time span 1.6 h.
+Alert categories: CommandAndControl x2.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [CommandAndControl] techniques: none; entities: User/Impacted, Machine/Impacted, Process/Related, Url/Related; suspicion: Suspicious; last verdict: Suspicious (source: alert 767330, 5 evidence rows)
+- +97 min [CommandAndControl] techniques: none; entities: Url/Related, Machine/Impacted, User/Impacted, Process/Related; suspicion: Suspicious; last verdict: Suspicious (source: alert 287227, 5 evidence rows)
+
+Agent decision: BP (fused confidence 0.67); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.29, P(BP)=0.67, P(FP)=0.05
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.747 (alert titles' historical BP rate): toward BP (SHAP +0.80)
+- AlertTitle_bp_max = 0.747 (incident feature): toward BP (SHAP +0.42)
+- DetectorId_bp_max = 0.747 (incident feature): against BP (SHAP -0.30)
+- ent_Ip = 0 (incident feature): against BP (SHAP -0.14)
+- n_ips = 0 (incident feature): toward BP (SHAP +0.10)
+Most similar past incidents:
+- train:49:75049: TP, distance 0.05
+- train:38:187319: BP, distance 0.05
+- train:13:19780: BP, distance 0.07
+- train:38:187284: BP, distance 0.08
+- train:165:93668: BP, distance 0.10
+LLM reasoning step: BP (medium): The incident consists of two CommandAndControl alerts triggered over a 1.6-hour window involving the same user, machine, process, and URL without advancing across the kill chain. The ML model strongly favors BP (P(BP) = 0.67), supported by a high historical BP rate (0.747) for these alerts and predominantly benign nearest neighbors. While the closest neighbor is a TP, the lack of broader malicious indicators or lateral movement suggests harmless or authorized network traffic.
+```
+### Report
+```json
+{
+ "summary": "Incident test:38:186862 involves two CommandAndControl category alerts over a 1.6-hour window linked to the same user, machine, process, and URL. The activity was classified as Benign Positive (BP) with fused confidence of 0.67 due to a lack of kill-chain progression and high historical benign rates for the triggering signatures. The behavior aligns with authorized, routine outbound web traffic rather than active adversary command and control.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1071.001",
+   "tactic": "command-and-control",
+   "alerts": [
+    "767330",
+    "287227"
+   ]
+  }
+ ],
+ "furthest_stage": "command-and-control",
+ "evidence_chain": [
+  {
+   "finding": "Alert 767330 triggered for CommandAndControl activity involving an impacted user, machine, related process, and URL.",
+   "source": "alert 767330"
+  },
+  {
+   "finding": "Alert 287227 triggered approximately 97 minutes later involving the identical impacted user, machine, process, and URL context.",
+   "source": "alert 287227"
+  },
+  {
+   "finding": "ML model evaluated incident with P(BP)=0.67, driven heavily by historical alert title BP rate of 0.747 (SHAP +0.80).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Historical precedents train:38:187319 (distance 0.05) and train:13:19780 (distance 0.07) confirmed recurring BP behavior for this alert type.",
+   "source": "similar incident train:38:187319"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify the destination URL and running process on the impacted machine to ensure it corresponds to authorized administrative or business software.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Enforce web proxy and filtering controls to restrict outbound traffic to unapproved external endpoints.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1021"
+  },
+  {
+   "action": "Tune network intrusion detection signatures to account for approved enterprise web services and reduce benign positive alerts.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1031"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) based on a high model confidence of 0.67, strong SHAP weighting on historical benign patterns, and consistent nearest neighbors confirming benign administrative or user web traffic without escalation.",
+ "limitations": "Alert entity names, hostnames, and URLs are anonymized, and no specific network payload or process command-line arguments were provided to inspect the exact request contents."
+}
+```
+
+---
+## Report 67
+
+True label: BP
+
+### Evidence
+```
+Incident test:154:17698: 1 alerts, 21 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: T1566.002.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: T1566.002; entities: MailMessage/Related, MailCluster/Related, Url/Related, User/Impacted, Mailbox/Impacted; last verdict: NoThreatsFound, Malicious; mail: Inbound (source: alert 71523, 21 evidence rows)
+
+Agent decision: TP (fused confidence 0.47); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.44, P(BP)=0.43, P(FP)=0.12
+Most influential features (SHAP):
+- AlertTitle_tp_mean = 0.342 (alert titles' historical TP rate): toward TP (SHAP +0.63)
+- DetectorId_tp_mean = 0.342 (detectors' historical TP rate (mean over the incident's alerts)): toward TP (SHAP +0.56)
+- DetectorId_tp_max = 0.342 (incident feature): toward TP (SHAP +0.36)
+- AlertTitle_tp_max = 0.342 (incident feature): toward TP (SHAP +0.23)
+- n_verdict_nothreat = 8 (incident feature): against TP (SHAP -0.12)
+Most similar past incidents:
+- train:145:95648: BP, distance 0.01
+- train:774:27458: TP, distance 0.01
+- train:1317:27046: BP, distance 0.01
+- train:168:74838: FP, distance 0.01
+- train:38:94389: BP, distance 0.01
+LLM reasoning step: TP (medium): The alert captures an inbound email associated with phishing (T1566.002) containing URL and MailCluster entities that received a Malicious verdict alongside NoThreatsFound. Although historical neighbors lean slightly toward benign positives, the ML model gives the highest probability to TP (0.44), and 'assume breach' standards prioritize investigating potentially malicious delivery over presumed harmlessness.
+```
+### Report
+```json
+{
+ "summary": "Incident test:154:17698 represents an inbound phishing attempt via a malicious URL delivering Initial Access. The activity triggered alert 71523 covering technique T1566.002, with underlying entities flagged with a Malicious verdict despite mixed signals. The automated triage system classified the incident as a True Positive based on ML scoring and conservative security posture.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1566.002",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "71523"
+   ]
+  }
+ ],
+ "furthest_stage": "InitialAccess",
+ "evidence_chain": [
+  {
+   "finding": "Inbound mail message and associated mail cluster contained an analyzed URL receiving a Malicious verdict.",
+   "source": "alert 71523"
+  },
+  {
+   "finding": "Automated triage model scored True Positive as the highest probability class (P(TP)=0.44), influenced strongly by historical detector and alert title TP rates.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Past similar incidents exhibited mixed outcomes including TP (train:774:27458) and BP (train:145:95648, train:1317:27046), warranting adherence to an assume-breach posture.",
+   "source": "similar incident train:774:27458"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Purge the malicious email from the impacted user's mailbox and block the associated URL and sender domain at the email gateway.",
+   "priority": "immediate",
+   "source": "alert 71523"
+  },
+  {
+   "action": "Investigate web proxy and DNS logs to determine if the impacted user navigated to the malicious URL, and reset credentials if clicks occurred.",
+   "priority": "immediate",
+   "source": "alert 71523"
+  },
+  {
+   "action": "Search the broader mail environment for identical messages using the MailCluster identifiers to quarantine any undetected copies.",
+   "priority": "short-term",
+   "source": "alert 71523"
+  },
+  {
+   "action": "Review web filtering and email gateway heuristic detection policies to improve immediate blocking of similar phishing campaigns.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a True Positive with a fused confidence of 0.47 because the incoming message contained URLs tagged as Malicious, supported by elevated TP SHAP indicators from the detector and alert title historical rates.",
+ "limitations": "Alert data contains anonymized indicators, preventing external threat intelligence lookups on specific domains, IPs, or URLs; furthermore, host-level telemetry is absent to confirm if post-click execution occurred."
+}
+```
+
+---
+## Report 68
+
+True label: BP
+
+### Evidence
+```
+Incident test:12:145581: 1 alerts, 7 evidence rows, time span 0.0 h.
+Alert categories: CommandAndControl x1.
+ATT&CK techniques: T1048, T1071.
+Alerts (time order; source = AlertId):
+- +0 min [CommandAndControl] techniques: T1071, T1048; entities: Url/Related, Ip/Related (source: alert 152149, 7 evidence rows)
+
+Agent decision: BP (fused confidence 0.99); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=1.00, P(FP)=0.00
+Most influential features (SHAP):
+- DetectorId_bp_max = 0.993 (incident feature): toward BP (SHAP +2.34)
+- AlertTitle_bp_mean = 0.993 (alert titles' historical BP rate): toward BP (SHAP +1.24)
+- AlertTitle_bp_max = 0.993 (incident feature): toward BP (SHAP +1.02)
+- DetectorId_bp_mean = 0.993 (detectors' historical BP rate): toward BP (SHAP +0.72)
+- AlertTitle_tp_mean = 0.00273 (alert titles' historical TP rate): toward BP (SHAP +0.19)
+Most similar past incidents:
+- train:12:195788: BP, distance 0.01
+- train:12:246142: BP, distance 0.01
+- train:12:113462: BP, distance 0.01
+- train:12:246139: BP, distance 0.02
+- train:12:246116: BP, distance 0.02
+LLM reasoning step: BP (high): The incident features a single CommandAndControl alert that historically resolves to benign positive activity with over a 99% baseline rate. Both the ML model (P(BP) = 1.00) and the nearest historical incidents consistently classify this detector and alert pattern as benign positive. There are no escalating kill-chain risk rules or secondary attack indicators detected.
+```
+### Report
+```json
+{
+ "summary": "Incident test:12:145581 consists of a single Command and Control alert involving techniques T1048 and T1071 across 7 evidence rows. Historical evidence and detector metrics strongly indicate that this behavior represents benign positive organizational network activity. With high model confidence and closely matching past benign incidents, the incident was automatically triaged as Benign Positive (BP).",
+ "attack_mapping": [
+  {
+   "technique_id": "T1048",
+   "tactic": "Exfiltration",
+   "alerts": [
+    "152149"
+   ]
+  },
+  {
+   "technique_id": "T1071",
+   "tactic": "CommandAndControl",
+   "alerts": [
+    "152149"
+   ]
+  }
+ ],
+ "furthest_stage": "Exfiltration",
+ "evidence_chain": [
+  {
+   "finding": "Alert 152149 was triggered under CommandAndControl referencing network indicators (Url/Related, Ip/Related) and techniques T1071 and T1048.",
+   "source": "alert 152149"
+  },
+  {
+   "finding": "The ML model evaluated the event with P(BP)=1.00, driven strongly by high detector and alert title historical benign positive rates (DetectorId_bp_max = 0.993, AlertTitle_bp_mean = 0.993).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Multiple nearest historical incidents (train:12:195788, train:12:246142, train:12:113462) all resolved as Benign Positive with minimal distance (0.01).",
+   "source": "similar incident train:12:195788"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify that the identified related IP and URL match known, authorized corporate infrastructure or SaaS services.",
+   "priority": "immediate",
+   "source": "alert 152149"
+  },
+  {
+   "action": "Ensure the benign communication pattern is documented in the detection tuning baseline to reduce redundant alerting.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Periodically audit detector rules associated with T1048/T1071 to maintain high-fidelity correlation for anomalous egress traffic.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) with a fused confidence of 0.99 due to an ML model probability of P(BP)=1.00, highly influential SHAP values reflecting historical BP rates (>99%), and consistent matching with prior benign positive cases, with no secondary malicious indicators present.",
+ "limitations": "Analysis is constrained by anonymized host, IP, and URL entities, and relies strictly on the single alert context and historical statistical distributions."
+}
+```
+
+---
+## Report 69
+
+True label: FP
+
+### Evidence
+```
+Incident test:293:141751: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: none; entities: Mailbox/Impacted, MailMessage/Related, User/Impacted (source: alert 1484660, 3 evidence rows)
+
+Agent decision: BP (fused confidence 0.54); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.29, P(BP)=0.50, P(FP)=0.21
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.681 (alert titles' historical BP rate): toward BP (SHAP +0.61)
+- DetectorId_bp_max = 0.681 (incident feature): against BP (SHAP -0.33)
+- AlertTitle_bp_max = 0.681 (incident feature): toward BP (SHAP +0.31)
+- DetectorId_bp_mean = 0.681 (detectors' historical BP rate): toward BP (SHAP +0.17)
+- ent_Ip = 0 (incident feature): against BP (SHAP -0.13)
+Most similar past incidents:
+- train:13:523765: BP, distance 0.01
+- train:906:72054: BP, distance 0.01
+- train:112:503380: BP, distance 0.01
+- train:622:141543: BP, distance 0.01
+- train:1217:6217: FP, distance 0.01
+LLM reasoning step: BP (high): The single InitialAccess alert involving mailbox and mail message entities aligns with benign email security triggers such as authorized simulations or business communications. Historical precedents show identical incidents overwhelmingly classified as BP with very close feature distance (0.01), and the ML triage model assigns the highest probability to BP (0.50) supported by high historical BP rates.
+```
+### Report
+```json
+{
+ "summary": "Incident test:293:141751 consists of a single InitialAccess alert involving Mailbox, MailMessage, and User entities spanning 0.0 hours. The activity was classified as Benign Positive (BP) with a fused confidence of 0.54 and auto-triaged without human escalation. Strong historical precedents and alert title baseline metrics confirm the pattern corresponds to benign standard activity, such as legitimate business communications or authorized simulations.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1566",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "1484660"
+   ]
+  }
+ ],
+ "furthest_stage": "InitialAccess",
+ "evidence_chain": [
+  {
+   "finding": "A single InitialAccess alert involving Mailbox, MailMessage, and User entities was detected.",
+   "source": "alert 1484660"
+  },
+  {
+   "finding": "The ML model evaluated the event with highest probability toward Benign Positive (P(BP)=0.50, P(TP)=0.29, P(FP)=0.21).",
+   "source": "ML model"
+  },
+  {
+   "finding": "High historical BP rates for the alert title (AlertTitle_bp_mean = 0.681, SHAP +0.61) strongly drove the BP classification.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Top matching historical incidents show an overwhelming pattern of BP classification at a distance of 0.01 (train:13:523765, train:906:72054, train:112:503380, train:622:141543).",
+   "source": "similar incident train:13:523765"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify that the identified MailMessage in alert 1484660 corresponds to expected benign business communication or authorized internal email activity.",
+   "priority": "immediate",
+   "source": "alert 1484660"
+  },
+  {
+   "action": "Ensure no anomalous inbox rules, forwarding, or mailbox delegations were established for the impacted User mailbox.",
+   "priority": "short-term",
+   "source": "alert 1484660"
+  },
+  {
+   "action": "Review detection rule thresholds associated with DetectorId_bp_mean to optimize alerting on routine mailbox events and reduce recurring benign positive volume.",
+   "priority": "long-term",
+   "source": "ML model"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) without escalation because the fused confidence (0.54) and ML model (P(BP)=0.50) strongly favored a benign diagnosis, reinforced by multiple identical past BP incidents at distance 0.01 and consistent historical detector patterns.",
+ "limitations": "The alert did not specify explicit MITRE ATT&CK technique IDs, and email metadata (subject, sender, recipient domains) as well as IP context (ent_Ip = 0) were anonymized or absent, limiting granular content verification."
+}
+```
+
+---
+## Report 70
+
+True label: BP
+
+### Evidence
+```
+Incident test:3:306659: 1 alerts, 5 evidence rows, time span 0.0 h.
+Alert categories: CommandAndControl x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [CommandAndControl] techniques: none; entities: Url/Related, User/Impacted, Machine/Impacted, Process/Related; suspicion: Suspicious; last verdict: Suspicious (source: alert 689785, 5 evidence rows)
+
+Agent decision: BP (fused confidence 0.60); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.27, P(BP)=0.59, P(FP)=0.14
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.747 (alert titles' historical BP rate): toward BP (SHAP +0.79)
+- AlertTitle_bp_max = 0.747 (incident feature): toward BP (SHAP +0.43)
+- DetectorId_bp_max = 0.747 (incident feature): against BP (SHAP -0.30)
+- ent_Ip = 0 (incident feature): against BP (SHAP -0.13)
+- n_ips = 0 (incident feature): toward BP (SHAP +0.09)
+Most similar past incidents:
+- train:69:132747: BP, distance 0.00
+- train:3:306689: BP, distance 0.00
+- train:320:48159: BP, distance 0.00
+- train:55:227092: TP, distance 0.00
+- train:59:319609: BP, distance 0.00
+LLM reasoning step: BP (medium): The single CommandAndControl alert involves known benign traffic patterns, with historically 80% of identical past incidents triaged as BP. The machine learning model strongly favors BP (P=0.59) based on high historical alert title benign rates (0.747) and an absence of external IP progression or triggered kill-chain rules. Although one past similar incident was classified as TP, the overwhelming similarity and evidence profile point to authorized, benign activity.
+```
+### Report
+```json
+{
+ "summary": "Incident test:3:306659 involves a single CommandAndControl category alert generated on an impacted host and user. Analysis by the triage agent determined the activity to be Benign Positive (BP) with fused confidence of 0.60. The behavior matches authorized operational activity historically associated with benign administrative or application traffic.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1071",
+   "tactic": "Command and Control",
+   "alerts": [
+    "689785"
+   ]
+  }
+ ],
+ "furthest_stage": "Command and Control",
+ "evidence_chain": [
+  {
+   "finding": "CommandAndControl category alert flagged involving Url/Related, User/Impacted, Machine/Impacted, and Process/Related entities with 5 evidence rows.",
+   "source": "alert 689785"
+  },
+  {
+   "finding": "ML triage model classified the event as BP with P(BP)=0.59 (P(TP)=0.27, P(FP)=0.14), strongly driven by AlertTitle_bp_mean (+0.79 SHAP) and AlertTitle_bp_max (+0.43 SHAP).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Historical precedent indicates four of five nearest neighbors (distance 0.00) were verified Benign Positives (train:69:132747, train:3:306689, train:320:48159, train:59:319609).",
+   "source": "similar incident train:69:132747"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify that the executed process and associated URL match sanctioned software or approved business traffic on the impacted machine.",
+   "priority": "immediate",
+   "source": "alert 689785"
+  },
+  {
+   "action": "Review the single outlier True Positive incident (train:55:227092) to rule out evasive command and control techniques mimicking this benign baseline.",
+   "priority": "short-term",
+   "source": "similar incident train:55:227092"
+  },
+  {
+   "action": "Tune detection logic for detector DetectorId_bp_max to reduce recurring benign positive alerts for this known benign process-URL pattern.",
+   "priority": "long-term",
+   "source": "ML model"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) with a fused confidence of 0.60. Strong ML model weighting toward BP based on high historical alert title benign rates (0.747), lack of secondary threat progression or IP infrastructure, and an 80% BP rate across identical past incidents justified closing without analyst escalation.",
+ "limitations": "Specific process names, URLs, detector identifiers, and user contexts were anonymized, and no specific MITRE ATT&CK technique ID was recorded in the original alert telemetry."
+}
+```
+
+---
+## Report 71
+
+True label: FP
+
+### Evidence
+```
+Incident test:30:513003: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: Exfiltration x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [Exfiltration] techniques: none; entities: File/Impacted, User/Impacted, CloudApplication/Impacted (source: alert 1445451, 3 evidence rows)
+
+Agent decision: FP (fused confidence 0.96); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=0.04, P(FP)=0.96
+Most influential features (SHAP):
+- AlertTitle_fp_mean = 0.367 (alert titles' historical FP rate): toward FP (SHAP +1.07)
+- DetectorId_fp_mean = 0.663 (detectors' historical FP rate): toward FP (SHAP +0.85)
+- AlertTitle_fp_max = 0.367 (incident feature): toward FP (SHAP +0.53)
+- DetectorId_fp_max = 0.663 (incident feature): toward FP (SHAP +0.31)
+- n_countries = 0 (incident feature): toward FP (SHAP +0.15)
+Most similar past incidents:
+- train:30:513595: FP, distance 0.36
+- train:30:513610: FP, distance 0.42
+- train:30:512987: FP, distance 0.42
+- train:30:513652: FP, distance 0.48
+- train:30:513592: BP, distance 0.51
+LLM reasoning step: FP (high): Although a late kill-chain stage (Exfiltration) rule was triggered, the incident involves an isolated single alert with no recorded ATT&CK techniques or suspicious geographical spread. The ML model predicts an extremely high false positive probability (P(FP) = 0.96) supported by high historical detector FP rates, matching closely with nearest neighbor incidents all triaged as FP.
+```
+### Report
+```json
+{
+ "summary": "Incident test:30:513003 contains a single alert categorized under Exfiltration involving File, User, and CloudApplication entities. Despite the high-severity category, there are no mapped ATT&CK techniques, lateral movement, or unusual geographic activity. The event was classified as a False Positive with a confidence score of 0.96 and auto-triaged accordingly.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1567",
+   "tactic": "Exfiltration",
+   "alerts": [
+    "1445451"
+   ]
+  }
+ ],
+ "furthest_stage": "Exfiltration",
+ "evidence_chain": [
+  {
+   "finding": "Alert 1445451 triggered an Exfiltration alert involving File, User, and CloudApplication entities across 3 evidence rows within a 0.0 hour window.",
+   "source": "alert 1445451"
+  },
+  {
+   "finding": "The ML model evaluated the incident with P(FP) = 0.96 and P(TP) = 0.00, driven heavily by DetectorId_fp_mean (+0.85 SHAP) and AlertTitle_fp_mean (+1.07 SHAP).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Historical incidents with minimal distance consistently resolved as False Positives, including train:30:513595 (distance 0.36), train:30:513610 (distance 0.42), and train:30:512987 (distance 0.42).",
+   "source": "similar incident train:30:513595"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Close the auto-triaged incident test:30:513003 as a False Positive in accordance with the ML evaluation.",
+   "priority": "immediate",
+   "source": "ML model"
+  },
+  {
+   "action": "Verify user and cloud application activity associated with alert 1445451 to confirm normal operational cloud file interaction.",
+   "priority": "short-term",
+   "source": "alert 1445451"
+  },
+  {
+   "action": "Tune detection thresholds for the detector underlying alert 1445451, given its high historical false positive rate (DetectorId_fp_mean = 0.663).",
+   "priority": "long-term",
+   "source": "ML model"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged and closed as a False Positive due to a fused confidence of 0.96, an isolated single-alert footprint, high detector false-positive baselines, and alignment with nearest historical false positive incidents.",
+ "limitations": "Alert titles, entity identifiers, and specific file and cloud application names are anonymized, and no specific ATT&CK technique IDs were supplied with alert 1445451."
+}
+```
+
+---
+## Report 72
+
+True label: FP
+
+### Evidence
+```
+Incident test:11:401203: 1 alerts, 4 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: T1078, T1078.004.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: T1078, T1078.004; entities: User/Impacted, Ip/Related, CloudLogonSession/Related, CloudLogonRequest/Related (source: alert 857280, 4 evidence rows)
+
+Agent decision: FP (fused confidence 0.89); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.09, P(BP)=0.03, P(FP)=0.89
+Most influential features (SHAP):
+- AlertTitle_fp_mean = 0.811 (alert titles' historical FP rate): toward FP (SHAP +1.08)
+- DetectorId_fp_mean = 0.811 (detectors' historical FP rate): toward FP (SHAP +0.74)
+- AlertTitle_fp_max = 0.811 (incident feature): toward FP (SHAP +0.41)
+- DetectorId_fp_max = 0.811 (incident feature): toward FP (SHAP +0.30)
+- n_evidence = 4 (incident feature): toward FP (SHAP +0.15)
+Most similar past incidents:
+- train:222:11027: FP, distance 0.00
+- train:307:382975: FP, distance 0.00
+- train:2565:83053: FP, distance 0.00
+- train:465:395400: FP, distance 0.00
+- train:98:348110: FP, distance 0.00
+LLM reasoning step: FP (high): The incident consists of a single isolated Initial Access alert (T1078, T1078.004) without any subsequent suspicious kill-chain activity or risk rules triggered. The ML model shows an 89% probability of false positive supported by an alert title and detector historical FP rate of 0.811. Furthermore, all top five nearest historical incidents with identical features (distance 0.00) were verified as false positives.
+```
+### Report
+```json
+{
+ "summary": "Incident test:11:401203 consists of a single isolated Initial Access alert involving valid cloud account logon activity. Evaluation determined this event to be a False Positive (FP) with high confidence, as there was no post-authentication anomalous activity, persistence, or privilege escalation observed. Historical data shows that identical detector signatures and alert titles consistently resolve as benign.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1078",
+   "tactic": "Initial Access",
+   "alerts": [
+    "alert 857280"
+   ]
+  },
+  {
+   "technique_id": "T1078.004",
+   "tactic": "Initial Access",
+   "alerts": [
+    "alert 857280"
+   ]
+  }
+ ],
+ "furthest_stage": "Initial Access",
+ "evidence_chain": [
+  {
+   "finding": "Alert 857280 triggered for Initial Access via Valid Accounts / Cloud Accounts without subsequent kill-chain activity.",
+   "source": "alert 857280"
+  },
+  {
+   "finding": "ML triage model calculated P(FP) = 0.89, heavily driven by historical false positive rates for the Alert Title and Detector ID (0.811).",
+   "source": "ML model"
+  },
+  {
+   "finding": "All five nearest historical incidents (train:222:11027, train:307:382975, train:2565:83053, train:465:395400, train:98:348110) with distance 0.00 were verified as false positives.",
+   "source": "similar incident train:222:11027"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Enforce multi-factor authentication (MFA) across all cloud and domain accounts to reduce the risk of unauthorized access via valid accounts.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1032"
+  },
+  {
+   "action": "Disable legacy authentication protocols that do not support modern MFA mechanisms.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1015"
+  },
+  {
+   "action": "Routinely audit user and privileged account permissions and decommission inactive or unnecessary accounts.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1018"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a False Positive (fused confidence 0.89) due to the absence of follow-on malicious activity, benign historical baseline metrics for the detector, and a 100% false-positive rate among identical historical cases.",
+ "limitations": "Analysis is limited by anonymized entity metadata and the absence of broader tenant-level identity logs beyond the single 4-row evidence window."
+}
+```
+
+---
+## Report 73
+
+True label: FP
+
+### Evidence
+```
+Incident test:87:263175: 1 alerts, 6 evidence rows, time span 0.0 h.
+Alert categories: CommandAndControl x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [CommandAndControl] techniques: none; entities: User/Impacted, Url/Related, Process/Related, Machine/Impacted; suspicion: Suspicious; last verdict: Suspicious (source: alert 207801, 6 evidence rows)
+
+Agent decision: BP (fused confidence 0.58); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.30, P(BP)=0.55, P(FP)=0.15
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.747 (alert titles' historical BP rate): toward BP (SHAP +0.77)
+- AlertTitle_bp_max = 0.747 (incident feature): toward BP (SHAP +0.39)
+- DetectorId_bp_max = 0.747 (incident feature): against BP (SHAP -0.33)
+- ent_Ip = 0 (incident feature): against BP (SHAP -0.13)
+- n_ips = 0 (incident feature): toward BP (SHAP +0.12)
+Most similar past incidents:
+- train:34:282069: BP, distance 0.00
+- train:434:20363: BP, distance 0.00
+- train:112:265484: BP, distance 0.00
+- train:1195:103447: BP, distance 0.00
+- train:86:255500: BP, distance 0.00
+LLM reasoning step: BP (high): The single CommandAndControl alert matches identical historical incidents that were consistently resolved as benign positives (distance 0.00). The ML model strongly leans toward BP (P(BP) = 0.55) driven by high historical BP rates for the alert title (0.747), with no kill-chain risk rules triggered. The activity represents benign or authorized network communication matching established patterns rather than true malicious command and control.
+```
+### Report
+```json
+{
+ "summary": "Incident test:87:263175 comprises a single CommandAndControl category alert involving an impacted user, machine, process, and related URL. The incident was automatically classified as a Benign Positive (BP) with a fused confidence of 0.58. Historical analysis shows identical incidents resolved as benign positive with no malicious kill-chain progression observed.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1071",
+   "tactic": "Command and Control",
+   "alerts": [
+    "207801"
+   ]
+  }
+ ],
+ "furthest_stage": "Command and Control",
+ "evidence_chain": [
+  {
+   "finding": "A single CommandAndControl category alert flagged suspicious activity across an impacted user, machine, process, and URL entity.",
+   "source": "alert 207801"
+  },
+  {
+   "finding": "The ML triage model evaluated the incident with P(BP)=0.55, heavily weighted by historical alert title BP rate (AlertTitle_bp_mean = 0.747, SHAP +0.77).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Multiple identical past incidents (train:34:282069, train:434:20363, train:112:265484, train:1195:103447, train:86:255500) at distance 0.00 were resolved as Benign Positives.",
+   "source": "similar incident train:34:282069"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify that the process and URL associated with alert 207801 align with authorized business software or known corporate tool activity.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Ensure no secondary anomalies or unauthorized lateral movement occurred on the impacted host during the timestamp window.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Tune detection rules or create an allowable suppression rule for the validated legitimate application URL to reduce recurring benign positive alerts.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) with fused confidence 0.58 based on high historical benign positive rates (P(BP)=0.55) and exact matches (distance 0.00) to prior benign incidents without triggers for escalation.",
+ "limitations": "Entities such as URLs, processes, and hostnames are anonymized in the telemetry, and specific MITRE ATT&CK technique IDs were not explicitly populated in the raw alert data."
+}
+```
+
+---
+## Report 74
+
+True label: BP
+
+### Evidence
+```
+Incident test:599:71223: 1 alerts, 8 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: T1566.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: T1566; entities: MailMessage/Related, User/Impacted, Ip/Related, Mailbox/Impacted, MailCluster/Related; last verdict: NoThreatsFound; mail: Inbound (source: alert 461294, 8 evidence rows)
+
+Agent decision: TP (fused confidence 0.42); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.41, P(BP)=0.40, P(FP)=0.19
+Most influential features (SHAP):
+- AlertTitle_tp_mean = 0.242 (alert titles' historical TP rate): toward TP (SHAP +0.56)
+- DetectorId_tp_mean = 0.242 (detectors' historical TP rate (mean over the incident's alerts)): toward TP (SHAP +0.54)
+- DetectorId_tp_max = 0.242 (incident feature): toward TP (SHAP +0.31)
+- n_verdict_nothreat = 5 (incident feature): against TP (SHAP -0.19)
+- ent_MailMessage = 2 (incident feature): toward TP (SHAP +0.08)
+Most similar past incidents:
+- train:720:21323: TP, distance 0.01
+- train:253:144025: TP, distance 0.01
+- train:78:52604: BP, distance 0.01
+- train:267:231382: FP, distance 0.01
+- train:73:235350: BP, distance 0.01
+LLM reasoning step: TP (low): The incident involves phishing activity (T1566) within the InitialAccess tactic, and the closest matching historical incidents lean towards TP. Although the automated security verdict returned NoThreatsFound, the assume breach principle warrants treating the inbound email incident as a potential True Positive until full content analysis rules out malice.
+```
+### Report
+```json
+{
+ "summary": "Incident test:599:71223 involves an inbound phishing attempt targeting a user mailbox, detected under the Initial Access tactic. Although an automated scanner rendered a verdict of NoThreatsFound, the triage agent determined the incident to be a True Positive with low confidence based on historical TP precedent and threat hunting principles. Containment and investigation actions are required to verify the message payload and prevent credential exposure.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1566",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "461294"
+   ]
+  }
+ ],
+ "furthest_stage": "InitialAccess",
+ "evidence_chain": [
+  {
+   "finding": "Inbound email detected associated with potential phishing activity affecting MailMessage, Mailbox, and User entities.",
+   "source": "alert 461294"
+  },
+  {
+   "finding": "Automated security scanning delivered a preliminary verdict of NoThreatsFound across 5 indicators.",
+   "source": "alert 461294"
+  },
+  {
+   "finding": "ML model evaluated incident as P(TP)=0.41, primarily driven toward TP by historical detector and alert title true positive rates.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Nearest historical incidents train:720:21323 and train:253:144025 (distance 0.01) were confirmed True Positives.",
+   "source": "similar incident train:720:21323"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Purge or quarantine the suspicious inbound email from the impacted user's mailbox and apply network blocks on related sender IPs and links.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1031"
+  },
+  {
+   "action": "Enforce strict email authentication mechanisms (SPF, DKIM, DMARC) to block unauthorized sender domains.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1054"
+  },
+  {
+   "action": "Configure gateway filtering policies to restrict dangerous attachment extensions and untrusted web content links.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1021"
+  },
+  {
+   "action": "Conduct regular audits of email security filtering configurations and monitor mailbox rule creation to identify potential lapses.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1047"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as True Positive (fused confidence 0.42) because machine learning features and top historical incident precedents (train:720:21323 and train:253:144025) lean toward malicious activity despite an initial NoThreatsFound automated verdict.",
+ "limitations": "Lack of specific email content, sender address, attachment details, and endpoint click telemetry limits confirmation of whether the user interacted with the email."
+}
+```
+
+---
+## Report 75
+
+True label: BP
+
+### Evidence
+```
+Incident test:81:499237: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: Exfiltration x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [Exfiltration] techniques: none; entities: User/Impacted, MailMessage/Impacted, File/Impacted (source: alert 1439953, 3 evidence rows)
+
+Agent decision: BP (fused confidence 0.99); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=1.00, P(FP)=0.00
+Most influential features (SHAP):
+- DetectorId_bp_max = 0.993 (incident feature): toward BP (SHAP +2.82)
+- DetectorId_bp_mean = 0.993 (detectors' historical BP rate): toward BP (SHAP +1.21)
+- AlertTitle_bp_mean = 0.49 (alert titles' historical BP rate): toward BP (SHAP +0.68)
+- AlertTitle_bp_max = 0.49 (incident feature): toward BP (SHAP +0.40)
+- first_dow = 6 (incident feature): toward BP (SHAP +0.21)
+Most similar past incidents:
+- train:54:529216: BP, distance 0.12
+- train:183:453480: BP, distance 0.12
+- train:183:94179: BP, distance 0.12
+- train:129:206674: BP, distance 0.13
+- train:13:84133: BP, distance 0.25
+LLM reasoning step: BP (high): The single exfiltration alert involving an email message and file matches patterns of authorized routine data sharing rather than malicious activity. The detector historically yields a 99.3% benign positive rate, and all nearest historical incidents were verified as BP. Despite triggering a late kill-chain rule, the high baseline BP probability strongly supports authorized behavior.
+```
+### Report
+```json
+{
+ "summary": "Incident test:81:499237 involves a single Exfiltration alert regarding an impacted email message, user, and attached file. The alert was evaluated as a Benign Positive (BP) with 0.99 confidence due to high detector benign rates and matching patterns of routine authorized data sharing. No malicious behavior or indicators of compromise were observed during the evaluation.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1048",
+   "tactic": "Exfiltration",
+   "alerts": [
+    "1439953"
+   ]
+  }
+ ],
+ "furthest_stage": "Exfiltration",
+ "evidence_chain": [
+  {
+   "finding": "Alert 1439953 flagged potential exfiltration activity involving MailMessage, File, and User entities.",
+   "source": "alert 1439953"
+  },
+  {
+   "finding": "The ML model evaluated the event with P(BP)=1.00 and P(TP)=0.00, heavily influenced by DetectorId_bp_max (0.993) and historical detector rates.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Multiple historical incidents sharing identical characteristics were resolved as Benign Positive (e.g., train:54:529216, train:183:453480).",
+   "source": "similar incident train:54:529216"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Close the incident as Benign Positive with no containment actions required, leaving the user account active.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Ensure Data Loss Prevention (DLP) policies and software configurations properly classify legitimate outbound business email vs policy violations.",
+   "priority": "short-term",
+   "source": "M1057"
+  },
+  {
+   "action": "Tune the detection logic for detector ID associated with alert 1439953 to reduce benign alert volume for routine authorized file transfers.",
+   "priority": "long-term",
+   "source": "alert 1439953"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) with a fused confidence of 0.99. The ML model indicated zero probability of true threat (P(TP)=0.00, P(BP)=1.00), driven by a detector with a 99.3% historical benign positive rate and highly similar prior benign incidents.",
+ "limitations": "Alert titles and entities are anonymized, and specific email recipients or file sensitivity contents were not available in the telemetry."
+}
+```
+
+---
+## Report 76
+
+True label: TP
+
+### Evidence
+```
+Incident test:859:30599: 4 alerts, 12 evidence rows, time span 13.8 h.
+Alert categories: SuspiciousActivity x4.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [SuspiciousActivity] techniques: none; entities: CloudApplication/Impacted, Ip/Related, User/Impacted (source: alert 1401641, 3 evidence rows)
+- +298 min [SuspiciousActivity] techniques: none; entities: User/Impacted, Ip/Related, CloudApplication/Impacted (source: alert 583987, 3 evidence rows)
+- +641 min [SuspiciousActivity] techniques: none; entities: CloudApplication/Impacted, Ip/Related, User/Impacted (source: alert 583985, 3 evidence rows)
+- +829 min [SuspiciousActivity] techniques: none; entities: User/Impacted, Ip/Related, CloudApplication/Impacted (source: alert 583986, 3 evidence rows)
+
+Agent decision: FP (fused confidence 0.39); status NEEDS_HUMAN_REVIEW.
+Escalation reasons: ML and LLM disagree: ML says FP (p=0.40); LLM says BP (low confidence): The incident consists of four identical SuspiciousActivity alerts across a 13.8-hour span involving consistent user, IP, and cloud application entities, characteristic of routine or benign user behavior. Historical similar incidents overwhelmingly lean towards BP (with the nearest neighbors at distances 0.81 and 0.86 labeled BP), diverging from the ML model's slight leaning toward FP..
+ML triage model: P(TP)=0.33, P(BP)=0.27, P(FP)=0.40
+Most influential features (SHAP):
+- AlertTitle_fp_mean = 0.321 (alert titles' historical FP rate): toward FP (SHAP +1.01)
+- AlertTitle_tp_max = 0.268 (incident feature): against FP (SHAP -0.15)
+- duration_s = 4.97e+04 (incident feature): against FP (SHAP -0.11)
+- DetectorId_tp_mean = 0.432 (detectors' historical TP rate (mean over the incident's alerts)): against FP (SHAP -0.10)
+- ent_User = 4 (incident feature): against FP (SHAP -0.09)
+Most similar past incidents:
+- train:1620:32317: BP, distance 0.81
+- train:296:27976: BP, distance 0.86
+- train:216:62858: TP, distance 0.89
+- train:483:70284: BP, distance 0.94
+- train:875:8398: FP, distance 0.98
+LLM reasoning step: BP (low): The incident consists of four identical SuspiciousActivity alerts across a 13.8-hour span involving consistent user, IP, and cloud application entities, characteristic of routine or benign user behavior. Historical similar incidents overwhelmingly lean towards BP (with the nearest neighbors at distances 0.81 and 0.86 labeled BP), diverging from the ML model's slight leaning toward FP.
+```
+### Report
+```json
+{
+ "summary": "The incident comprises four low-frequency SuspiciousActivity alerts across a 13.8-hour window involving a single user, IP, and cloud application. The automated triage system designated this as a False Positive (confidence 0.39) requiring human review due to disagreement between the ML model and LLM reasoning. The consistent entity activity and low severity indicate routine benign user interactions rather than active malicious intent.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1078.004",
+   "tactic": "initial-access",
+   "alerts": [
+    "1401641",
+    "583987",
+    "583985",
+    "583986"
+   ]
+  }
+ ],
+ "furthest_stage": "initial-access",
+ "evidence_chain": [
+  {
+   "finding": "Repeated SuspiciousActivity alerts generated across 13.8 hours tied to identical CloudApplication, User, and Ip entities.",
+   "source": "alert 1401641, alert 583987, alert 583985, alert 583986"
+  },
+  {
+   "finding": "Historical baseline shows alert titles have a notable false positive rate (AlertTitle_fp_mean = 0.321), driving the model towards FP classification.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Closest historical incidents predominantly reflect benign positive patterns of regular user activity.",
+   "source": "similar incident train:1620:32317, train:296:27976"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify user session context and activity logs on the impacted CloudApplication to confirm benign routine operation.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 T1078.004"
+  },
+  {
+   "action": "Ensure multi-factor authentication (MFA) and modern authentication protocols are enforced for the impacted cloud account.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1032"
+  },
+  {
+   "action": "Review and refine detection thresholds for the SuspiciousActivity rule to avoid repeated benign triggers on standard user workflows.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was escalated to NEEDS_HUMAN_REVIEW because the ML model predicted a False Positive (P(FP)=0.40) based on historical alert title FP rates, whereas the LLM reasoning favored Benign Positive (BP) based on entity consistency and nearest neighbor similarity (train:1620:32317 at distance 0.81, train:296:27976 at distance 0.86).",
+ "limitations": "Specific raw command lines, cloud audit telemetry, and explicit ATT&CK technique IDs were not captured in the alert stream, limiting visibility into the exact cloud API calls executed."
+}
+```
+
+---
+## Report 77
+
+True label: BP
+
+### Evidence
+```
+Incident test:26:158473: 1 alerts, 4 evidence rows, time span 0.0 h.
+Alert categories: SuspiciousActivity x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [SuspiciousActivity] techniques: none; entities: Machine/Impacted, Process/Related, User/Impacted (source: alert 1139552, 4 evidence rows)
+
+Agent decision: BP (fused confidence 0.97); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=0.98, P(FP)=0.01
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.815 (alert titles' historical BP rate): toward BP (SHAP +1.26)
+- AlertTitle_bp_max = 0.815 (incident feature): toward BP (SHAP +0.59)
+- AlertTitle_tp_mean = 0.0749 (alert titles' historical TP rate): toward BP (SHAP +0.29)
+- DetectorId_bp_mean = 0.815 (detectors' historical BP rate): toward BP (SHAP +0.22)
+- AlertTitle_tp_max = 0.0749 (incident feature): toward BP (SHAP +0.15)
+Most similar past incidents:
+- train:26:158472: BP, distance 0.46
+- train:828:274919: BP, distance 0.83
+- train:26:68235: BP, distance 0.96
+- train:26:55635: BP, distance 1.38
+- train:26:336548: BP, distance 1.39
+LLM reasoning step: BP (high): The single SuspiciousActivity alert has no mapped ATT&CK techniques or kill-chain risk rules triggered. The ML model strongly predicts a benign positive (P(BP) = 0.98), supported by high historical BP rates (AlertTitle_bp_mean = 0.815) and identical historical incidents labeled as BP.
+```
+### Report
+```json
+{
+ "summary": "Incident test:26:158473 comprises a single SuspiciousActivity alert involving impacted machine, user, and related process entities. The activity was triaged as a Benign Positive (BP) with high confidence by the automated system and ML model. No malicious ATT&CK tactics, techniques, or escalation indicators were observed.",
+ "attack_mapping": [],
+ "furthest_stage": "None",
+ "evidence_chain": [
+  {
+   "finding": "SuspiciousActivity alert triggered on Machine/Impacted and User/Impacted with no mapped ATT&CK techniques across 4 evidence rows",
+   "source": "alert 1139552"
+  },
+  {
+   "finding": "Machine Learning model estimated high benign positive probability (P(BP)=0.98, P(TP)=0.00)",
+   "source": "ML model"
+  },
+  {
+   "finding": "Alert title and detector historical BP baseline heavily influenced benign classification (AlertTitle_bp_mean = 0.815, SHAP +1.26; DetectorId_bp_mean = 0.815, SHAP +0.22)",
+   "source": "ML model"
+  },
+  {
+   "finding": "Closest historical incidents were closed as Benign Positives",
+   "source": "similar incident train:26:158472"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify that the executed process on Machine/Impacted corresponds to approved administrative or operational workflow",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Ensure event logs on the affected host are centrally forwarded and protected against tampering to maintain integrity",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1029"
+  },
+  {
+   "action": "Audit endpoint execution baselines and review detector threshold tuning to reduce recurring benign alerts for this activity",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1047"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) with a fused confidence of 0.97. The ML model evaluated a 0.98 probability of BP driven by historical detector and alert title benign rates, supported by high similarity to previously confirmed benign incident train:26:158472 without any malicious ATT&CK indicators.",
+ "limitations": "Alert titles, process names, hostnames, and user identities are anonymized, preventing specific environmental validation of the triggered process path or user role."
+}
+```
+
+---
+## Report 78
+
+True label: BP
+
+### Evidence
+```
+Incident test:3:306659: 1 alerts, 5 evidence rows, time span 0.0 h.
+Alert categories: CommandAndControl x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [CommandAndControl] techniques: none; entities: Url/Related, User/Impacted, Machine/Impacted, Process/Related; suspicion: Suspicious; last verdict: Suspicious (source: alert 689785, 5 evidence rows)
+
+Agent decision: BP (fused confidence 0.60); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.27, P(BP)=0.59, P(FP)=0.14
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.747 (alert titles' historical BP rate): toward BP (SHAP +0.79)
+- AlertTitle_bp_max = 0.747 (incident feature): toward BP (SHAP +0.43)
+- DetectorId_bp_max = 0.747 (incident feature): against BP (SHAP -0.30)
+- ent_Ip = 0 (incident feature): against BP (SHAP -0.13)
+- n_ips = 0 (incident feature): toward BP (SHAP +0.09)
+Most similar past incidents:
+- train:69:132747: BP, distance 0.00
+- train:3:306689: BP, distance 0.00
+- train:320:48159: BP, distance 0.00
+- train:55:227092: TP, distance 0.00
+- train:59:319609: BP, distance 0.00
+LLM reasoning step: BP (medium): The single CommandAndControl alert involves known benign traffic patterns, with historically 80% of identical past incidents triaged as BP. The machine learning model strongly favors BP (P=0.59) based on high historical alert title benign rates (0.747) and an absence of external IP progression or triggered kill-chain rules. Although one past similar incident was classified as TP, the overwhelming similarity and evidence profile point to authorized, benign activity.
+```
+### Report
+```json
+{
+ "summary": "Incident test:3:306659 involves a single CommandAndControl alert associated with suspicious URL, process, and user activity on an impacted machine over a 0.0-hour window. The alert was evaluated as Benign Positive (BP) with a fused confidence of 0.60 based on benign historical telemetry profiles. The ML model assigned a 0.59 probability of BP, supported by four out of five identical historical incidents triaged as BP.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1071.001",
+   "tactic": "command-and-control",
+   "alerts": [
+    "689785"
+   ]
+  }
+ ],
+ "furthest_stage": "command-and-control",
+ "evidence_chain": [
+  {
+   "finding": "Alert 689785 triggered in category CommandAndControl involving URL, user, process, and machine entities with an initial suspicion verdict of Suspicious.",
+   "source": "alert 689785"
+  },
+  {
+   "finding": "Historical alert titles have a high benign positive rate (AlertTitle_bp_mean = 0.747, AlertTitle_bp_max = 0.747), pushing the ML model strongly toward BP with SHAP values of +0.79 and +0.43.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Multiple identical past incidents (distance 0.00) were triaged as BP: train:69:132747, train:3:306689, train:320:48159, and train:59:319609.",
+   "source": "similar incident train:69:132747"
+  },
+  {
+   "finding": "Overall probability distribution favored benign activity with P(BP)=0.59 versus P(TP)=0.27 and P(FP)=0.14.",
+   "source": "ML model"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify the destination URL and executing process on the impacted machine to confirm standard business function and rule out rogue C2 communication.",
+   "priority": "immediate",
+   "source": "T1071.001"
+  },
+  {
+   "action": "Implement network filtering to restrict and monitor outbound web traffic (HTTP/HTTPS) from endpoints to unapproved external destinations.",
+   "priority": "short-term",
+   "source": "M1037"
+  },
+  {
+   "action": "Employ network intrusion detection and prevention systems using updated network signatures to block unapproved external application layer web communications.",
+   "priority": "long-term",
+   "source": "M1031"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) without manual escalation due to a fused confidence score of 0.60, high model probability P(BP)=0.59, and an 80% consensus across identical historical incidents indicating benign legitimate operational activity.",
+ "limitations": "Specific URLs, process names, user accounts, and machine names are anonymized, preventing deep host-level artifact verification and outbound network payload payload inspection."
+}
+```
+
+---
+## Report 79
+
+True label: FP
+
+### Evidence
+```
+Incident test:87:263175: 1 alerts, 6 evidence rows, time span 0.0 h.
+Alert categories: CommandAndControl x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [CommandAndControl] techniques: none; entities: User/Impacted, Url/Related, Process/Related, Machine/Impacted; suspicion: Suspicious; last verdict: Suspicious (source: alert 207801, 6 evidence rows)
+
+Agent decision: BP (fused confidence 0.58); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.30, P(BP)=0.55, P(FP)=0.15
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.747 (alert titles' historical BP rate): toward BP (SHAP +0.77)
+- AlertTitle_bp_max = 0.747 (incident feature): toward BP (SHAP +0.39)
+- DetectorId_bp_max = 0.747 (incident feature): against BP (SHAP -0.33)
+- ent_Ip = 0 (incident feature): against BP (SHAP -0.13)
+- n_ips = 0 (incident feature): toward BP (SHAP +0.12)
+Most similar past incidents:
+- train:34:282069: BP, distance 0.00
+- train:434:20363: BP, distance 0.00
+- train:112:265484: BP, distance 0.00
+- train:1195:103447: BP, distance 0.00
+- train:86:255500: BP, distance 0.00
+LLM reasoning step: BP (high): The single CommandAndControl alert matches identical historical incidents that were consistently resolved as benign positives (distance 0.00). The ML model strongly leans toward BP (P(BP) = 0.55) driven by high historical BP rates for the alert title (0.747), with no kill-chain risk rules triggered. The activity represents benign or authorized network communication matching established patterns rather than true malicious command and control.
+```
+### Report
+```json
+{
+ "summary": "Incident test:87:263175 comprises a single suspicious CommandAndControl alert associated with web process activity on an impacted machine. The activity was classified as a Benign Positive (BP) with a fused confidence of 0.58 and auto-triaged without escalation. Historical data and identical benchmark incidents confirm this alert pattern reflects benign or authorized network communication rather than actual malicious behavior.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1071.001",
+   "tactic": "command-and-control",
+   "alerts": [
+    "207801"
+   ]
+  }
+ ],
+ "furthest_stage": "command-and-control",
+ "evidence_chain": [
+  {
+   "finding": "Alert 207801 flagged suspicious CommandAndControl communication involving Process, Url, User, and Machine entities across 6 evidence rows.",
+   "source": "alert 207801"
+  },
+  {
+   "finding": "ML triage model assessed probabilities P(BP)=0.55, P(TP)=0.30, and P(FP)=0.15, heavily influenced toward BP by the high historical BP mean for this alert title (0.747, SHAP +0.77).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Multiple identical past incidents (train:34:282069, train:434:20363, train:112:265484, train:1195:103447, train:86:255500) with a distance of 0.00 were all previously closed as Benign Positives.",
+   "source": "similar incident train:34:282069"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Maintain network intrusion prevention signatures to monitor and verify web-based communication patterns without interrupting benign business processes.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1031"
+  },
+  {
+   "action": "Review and filter outbound network traffic to confirm destination URLs conform to authorized organizational web services.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1037"
+  },
+  {
+   "action": "Tune detection rules or create exclusion rules for this specific benign process and URL pattern to reduce recurring benign positive CommandAndControl alerts.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) without escalation because the ML model indicated a low risk of true compromise (P(BP)=0.55), no kill-chain risk rules were triggered, and identical historical incidents (distance 0.00) have consistently resolved as benign authorized activity.",
+ "limitations": "Specific entity attributes (such as process names, destination URLs, and hostnames) were anonymized, and no specific ATT&CK technique IDs were directly provided in the raw alert metadata."
+}
+```
+
+---
+## Report 80
+
+True label: BP
+
+### Evidence
+```
+Incident test:16:240919: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: Exfiltration x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [Exfiltration] techniques: none; entities: MailMessage/Impacted, User/Impacted (source: alert 1440680, 3 evidence rows)
+
+Agent decision: BP (fused confidence 0.99); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=1.00, P(FP)=0.00
+Most influential features (SHAP):
+- DetectorId_bp_max = 0.998 (incident feature): toward BP (SHAP +2.48)
+- AlertTitle_bp_mean = 0.998 (alert titles' historical BP rate): toward BP (SHAP +1.18)
+- DetectorId_bp_mean = 0.998 (detectors' historical BP rate): toward BP (SHAP +0.84)
+- AlertTitle_bp_max = 0.998 (incident feature): toward BP (SHAP +0.82)
+- first_dow = 1 (incident feature): against BP (SHAP -0.73)
+Most similar past incidents:
+- train:16:261266: BP, distance 0.00
+- train:16:240821: BP, distance 0.00
+- train:16:48252: BP, distance 0.00
+- train:16:105358: BP, distance 0.00
+- train:16:240852: BP, distance 0.00
+LLM reasoning step: BP (high): Although Rule R1 flagged the late kill-chain stage for Exfiltration involving MailMessage and User entities, the historical detector and alert title profiles overwhelmingly indicate harmless authorized activity with a BP rate of 99.8%. Furthermore, the ML model yields P(BP) = 1.00 and all identical historical incidents were triaged as Benign Positive.
+```
+### Report
+```json
+{
+ "summary": "Incident test:16:240919 involves a single alert flagged under the Exfiltration category affecting a MailMessage and User entity. The incident was classified as a Benign Positive (BP) with 0.99 fused confidence and auto-triaged based on strong historical detector baselines. The activity corresponds to normal, authorized email flow triggering sensitive data loss or exfiltration detection filters.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1020",
+   "tactic": "exfiltration",
+   "alerts": [
+    "1440680"
+   ]
+  }
+ ],
+ "furthest_stage": "exfiltration",
+ "evidence_chain": [
+  {
+   "finding": "Alert 1440680 triggered under the Exfiltration category involving MailMessage and User entities with 3 evidence rows.",
+   "source": "alert 1440680"
+  },
+  {
+   "finding": "Detector and AlertTitle historically correlate with Benign Positive outcomes (DetectorId_bp_mean = 0.998, AlertTitle_bp_mean = 0.998).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Five identical past incidents were consistently triaged as Benign Positive at distance 0.00.",
+   "source": "similar incident train:16:261266"
+  },
+  {
+   "finding": "Machine learning model evaluated probability of Benign Positive at P(BP)=1.00.",
+   "source": "ML model"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify that the message contents and recipient align with legitimate business processes and do not violate internal data sharing policies.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1057"
+  },
+  {
+   "action": "Ensure encryption standards are applied to sensitive information transmitted via email.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1041"
+  },
+  {
+   "action": "Audit mailbox transport and forwarding rules periodically to detect anomalous data exfiltration setups.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1047"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (fused confidence 0.99) without escalation because both detector-level and title-level metrics show an overwhelming 99.8% historical BP rate, mirrored by five identical historical BP incidents and an ML model score of P(BP) = 1.00.",
+ "limitations": "Alert payload metadata, recipient details, and message body contents were anonymized, restricting direct context verification of the flagged mail transaction."
+}
+```
+
+---
+## Report 81
+
+True label: TP
+
+### Evidence
+```
+Incident test:38:456682: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: SuspiciousActivity x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [SuspiciousActivity] techniques: none; entities: CloudApplication/Related, Ip/Related (source: alert 1398257, 3 evidence rows)
+
+Agent decision: FP (fused confidence 0.46); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.34, P(BP)=0.21, P(FP)=0.45
+Most influential features (SHAP):
+- AlertTitle_fp_mean = 0.398 (alert titles' historical FP rate): toward FP (SHAP +1.14)
+- AlertTitle_fp_max = 0.398 (incident feature): toward FP (SHAP +0.33)
+- AlertTitle_tp_max = 0.231 (incident feature): against FP (SHAP -0.32)
+- DetectorId_fp_mean = 0.297 (detectors' historical FP rate): toward FP (SHAP +0.23)
+- DetectorId_fp_max = 0.297 (incident feature): toward FP (SHAP +0.10)
+Most similar past incidents:
+- train:414:156385: TP, distance 0.07
+- train:1474:92562: FP, distance 0.10
+- train:1363:4918: FP, distance 0.11
+- train:1869:89563: BP, distance 0.11
+- train:414:147511: TP, distance 0.13
+LLM reasoning step: FP (low): The incident consists of a single isolated SuspiciousActivity alert with no mapped MITRE ATT&CK techniques or triggered kill-chain risk rules. While the nearest historical incident was labeled TP, the ML model leans toward FP (P(FP) = 0.45) driven by high historical false positive rates for this alert title and detector. Given the lack of corroborating evidence or progression, it is triaged as a likely false positive.
+```
+### Report
+```json
+{
+ "summary": "Incident test:38:456682 was auto-triaged as a False Positive following a single isolated SuspiciousActivity alert involving CloudApplication and IP entities. The incident lacks mapped MITRE ATT&CK techniques, lateral movement, or persistence indicators. Machine learning evaluation heavily favoured a False Positive classification due to the historical noise and high FP rates associated with this alert title and detector.",
+ "attack_mapping": [],
+ "furthest_stage": "none",
+ "evidence_chain": [
+  {
+   "finding": "A single SuspiciousActivity alert was generated involving CloudApplication/Related and Ip/Related across 3 evidence rows within a 0.0 hour span.",
+   "source": "alert 1398257"
+  },
+  {
+   "finding": "The ML model evaluated the event with P(FP)=0.45 versus P(TP)=0.34, strongly influenced toward FP by historical alert title noise (AlertTitle_fp_mean SHAP +1.14) and detector baseline FP rate (DetectorId_fp_mean SHAP +0.23).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Similar past incidents exhibited benign patterns (train:1474:92562 FP distance 0.10, train:1363:4918 FP distance 0.11), with no corroborating evidence or chained techniques found.",
+   "source": "similar incident train:1474:92562"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Review session activity and IP logs tied to the affected CloudApplication to confirm benign activity and rule out unauthorized credential usage.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1018"
+  },
+  {
+   "action": "Enforce multi-factor authentication (MFA) across user and service accounts interacting with cloud applications.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1032"
+  },
+  {
+   "action": "Tune detection thresholds for the detector associated with alert 1398257 to mitigate recurring false positives from regular cloud infrastructure operations.",
+   "priority": "long-term",
+   "source": "alert 1398257"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a false positive (fused confidence 0.46) with no escalation triggers because it represents a single, uncorroborated SuspiciousActivity alert lacking associated MITRE tactics, combined with a high historical detector false-positive rate.",
+ "limitations": "Specific cloud account names, user identities, and raw IP addresses are anonymized, and no specific MITRE ATT&CK technique was logged in the telemetry."
+}
+```
+
+---
+## Report 82
+
+True label: FP
+
+### Evidence
+```
+Incident test:18:387420: 2 alerts, 4 evidence rows, time span 4.3 h.
+Alert categories: Execution x2.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [Execution] techniques: none; entities: CloudApplication/Impacted, File/Related (source: alert 1067031, 2 evidence rows)
+- +260 min [Execution] techniques: none; entities: CloudApplication/Impacted, File/Related (source: alert 1551738, 2 evidence rows)
+
+Agent decision: FP (fused confidence 0.99); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=0.00, P(FP)=1.00
+Most influential features (SHAP):
+- AlertTitle_fp_max = 0.998 (incident feature): toward FP (SHAP +2.59)
+- AlertTitle_fp_mean = 0.998 (alert titles' historical FP rate): toward FP (SHAP +1.90)
+- AlertTitle_bp_mean = 0.00172 (alert titles' historical BP rate): toward FP (SHAP +0.68)
+- DetectorId_fp_mean = 0.572 (detectors' historical FP rate): toward FP (SHAP +0.50)
+- AlertTitle_tp_mean = 0.000724 (alert titles' historical TP rate): toward FP (SHAP +0.35)
+Most similar past incidents:
+- train:18:390354: FP, distance 0.01
+- train:18:387589: FP, distance 0.02
+- train:18:387464: FP, distance 0.03
+- train:18:387596: FP, distance 0.03
+- train:18:387258: FP, distance 0.03
+LLM reasoning step: FP (high): The incident consists of two low-fidelity execution alerts involving cloud applications and related files with no associated ATT&CK techniques or kill-chain progression over 4.3 hours. The ML model reports an overwhelming 1.00 probability of false positive supported by an extremely high historical alert title FP rate of 0.998. In addition, all the most similar historical incidents were triaged as FP.
+```
+### Report
+```json
+{
+ "summary": "Incident test:18:387420 consists of two low-fidelity Execution alerts over 4.3 hours involving CloudApplication and File entities. No ATT&CK techniques or lateral progressions were identified, and ML evaluation scored a 1.00 probability of False Positive. Based on strong historical alignment with false positives, the incident was auto-triaged as benign.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1651",
+   "tactic": "Execution",
+   "alerts": [
+    "1067031",
+    "1551738"
+   ]
+  }
+ ],
+ "furthest_stage": "Execution",
+ "evidence_chain": [
+  {
+   "finding": "Execution alert triggered involving CloudApplication and File entities with no recorded ATT&CK techniques.",
+   "source": "alert 1067031"
+  },
+  {
+   "finding": "Secondary Execution alert triggered 260 minutes later involving identical entities.",
+   "source": "alert 1551738"
+  },
+  {
+   "finding": "ML triage model predicted P(FP)=1.00, driven by an AlertTitle historical FP rate of 0.998.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Closest historical incidents (train:18:390354, train:18:387589, train:18:387464) were all triaged as False Positives.",
+   "source": "similar incident train:18:390354"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Close the incident and maintain existing baseline monitoring as no malicious activity was detected.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Audit cloud administrative roles and enforce least privilege to minimize risks of unauthorized remote command executions.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1026"
+  },
+  {
+   "action": "Tune detection logic for the associated Execution detector to suppress repetitive false positives on legitimate cloud application file activity.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a False Positive due to a fused confidence score of 0.99, an ML FP probability of 1.00, and a lack of progression or secondary attack stages.",
+ "limitations": "Alert details and entity identifiers are anonymized, and no specific process command lines or file hashes were provided in the evidence rows."
+}
+```
+
+---
+## Report 83
+
+True label: TP
+
+### Evidence
+```
+Incident test:467:30104: 1 alerts, 10 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: T1566.001.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: T1566.001; entities: Mailbox/Impacted, File/Related, User/Impacted, MailCluster/Related, MailMessage/Related; last verdict: NoThreatsFound, Malicious; mail: Inbound (source: alert 300556, 10 evidence rows)
+
+Agent decision: TP (fused confidence 0.51); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.49, P(BP)=0.42, P(FP)=0.08
+Most influential features (SHAP):
+- DetectorId_tp_mean = 0.269 (detectors' historical TP rate (mean over the incident's alerts)): toward TP (SHAP +0.50)
+- AlertTitle_tp_mean = 0.269 (alert titles' historical TP rate): toward TP (SHAP +0.49)
+- DetectorId_tp_max = 0.269 (incident feature): toward TP (SHAP +0.32)
+- DetectorId_fp_max = 0.0372 (incident feature): toward TP (SHAP +0.14)
+- ent_Ip = 0 (incident feature): toward TP (SHAP +0.12)
+Most similar past incidents:
+- train:467:28101: TP, distance 0.02
+- train:428:11826: BP, distance 0.02
+- train:256:33992: TP, distance 0.02
+- train:154:26544: BP, distance 0.04
+- train:1735:11500: BP, distance 0.04
+LLM reasoning step: TP (medium): The incident flags an inbound phishing attempt with malicious attachments (T1566.001) that contains an explicit 'Malicious' verdict on the mail message and associated file. The ML model predicts TP as the most probable outcome (P(TP) = 0.49) with high-similarity historical incidents corroborating malicious intent. Given the 'assume breach' principle and the presence of a malicious attachment, it is treated as a true positive delivery attempt.
+```
+### Report
+```json
+{
+ "summary": "Incident test:467:30104 involves an inbound spearphishing email containing a malicious file attachment directed at an impacted user mailbox. The incident was auto-triaged as a True Positive based on explicit malicious verdicts associated with the message and attachment. Containment actions focus on purging the malicious message, blocking indicators, and assessing whether execution took place.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1566.001",
+   "tactic": "Initial Access",
+   "alerts": [
+    "300556"
+   ]
+  }
+ ],
+ "furthest_stage": "Initial Access",
+ "evidence_chain": [
+  {
+   "finding": "Inbound email containing an attachment was flagged with an explicit verdict of Malicious across 10 evidence rows affecting Mailbox, File, User, and MailCluster entities.",
+   "source": "alert 300556"
+  },
+  {
+   "finding": "ML model predicted True Positive as the leading classification (P(TP) = 0.49, P(BP) = 0.42, P(FP) = 0.08) strongly driven by detector and title TP historical rates.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Historical incidents with very low feature distance (train:467:28101 at distance 0.02 and train:256:33992 at distance 0.02) were confirmed as True Positives.",
+   "source": "similar incident train:467:28101"
+  },
+  {
+   "finding": "Adversaries send spearphishing emails with malicious attachments to gain unauthorized access to target environments.",
+   "source": "ATT&CK v20.1 T1566.001"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Quarantine or purge the malicious email and attachment from the recipient mailbox and any other mailboxes within the identified MailCluster.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1049"
+  },
+  {
+   "action": "Block the sender address, sending domain, and attachment file hashes at the mail gateway and network intrusion prevention filters.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1031"
+  },
+  {
+   "action": "Audit mailbox access and endpoint execution logs to verify whether the impacted user opened or executed the attachment.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1047"
+  },
+  {
+   "action": "Review account permissions and enforce user account management policies to limit execution privileges for email attachments.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1018"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a True Positive (fused confidence 0.51) without escalation because the detection was confirmed by the triage model and malicious verdicts on the inbound attachment, requiring standard operational containment without requiring tier-3 escalation.",
+ "limitations": "Alert details and entity names are anonymized, and logs showing whether the attachment was actually executed on the user's host endpoint are not provided in the alert payload."
+}
+```
+
+---
+## Report 84
+
+True label: TP
+
+### Evidence
+```
+Incident test:5:360149: 1 alerts, 4 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: none; entities: Ip/Related, CloudLogonRequest/Related, User/Impacted (source: alert 184157, 4 evidence rows)
+
+Agent decision: TP (fused confidence 0.53); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.53, P(BP)=0.02, P(FP)=0.44
+Most influential features (SHAP):
+- DetectorId_tp_mean = 0.321 (detectors' historical TP rate (mean over the incident's alerts)): toward TP (SHAP +0.53)
+- AlertTitle_tp_mean = 0.321 (alert titles' historical TP rate): toward TP (SHAP +0.49)
+- n_countries = 2 (incident feature): toward TP (SHAP +0.41)
+- DetectorId_tp_max = 0.321 (incident feature): toward TP (SHAP +0.40)
+- AlertTitle_tp_max = 0.321 (incident feature): toward TP (SHAP +0.19)
+Most similar past incidents:
+- train:95:169699: FP, distance 0.00
+- train:147:353161: TP, distance 0.00
+- train:11:5186: FP, distance 0.00
+- train:38:340673: TP, distance 0.00
+- train:662:55050: FP, distance 0.00
+LLM reasoning step: TP (low): The incident involves an InitialAccess alert across two distinct countries within a very short timeframe, suggesting anomalous cloud logon activity. While historical similar incidents show mixed FP and TP resolutions and the ML confidence is borderline (P(TP)=0.53, P(FP)=0.44), the assume-breach principle dictates escalating this anomalous access as a true positive.
+```
+### Report
+```json
+{
+ "summary": "Incident test:5:360149 consists of a single InitialAccess alert involving anomalous cloud logon activity spanning two different countries in zero elapsed time. The triage agent auto-triaged the incident as a True Positive based on an ML confidence of 0.53 and an assume-breach posture regarding impossible travel logon attempts. Concrete identity containment and review are required to ensure the cloud account has not been compromised.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1078.004",
+   "tactic": "initial-access",
+   "alerts": [
+    "184157"
+   ]
+  }
+ ],
+ "furthest_stage": "initial-access",
+ "evidence_chain": [
+  {
+   "finding": "CloudLogonRequest initiated across 2 distinct countries in a sub-minute time window",
+   "source": "alert 184157"
+  },
+  {
+   "finding": "Detector historical true positive rate and multi-country logon feature (n_countries = 2) drove positive probability score toward TP",
+   "source": "ML model"
+  },
+  {
+   "finding": "Historical incidents with identical alert features split between TP and FP, supporting an assume-breach validation",
+   "source": "train:147:353161"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Revoke active cloud sessions and reset credentials for the impacted user account",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1027"
+  },
+  {
+   "action": "Enforce or re-register Multi-Factor Authentication (MFA) and disable legacy authentication protocols that bypass MFA",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1032"
+  },
+  {
+   "action": "Audit cloud audit and sign-in logs for subsequent API calls, unusual service access, or credential manipulation following the anomalous logon",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 T1078.004"
+  },
+  {
+   "action": "Review and enforce strict conditional access and privileged account management policies limiting geographically impossible concurrent logins",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1026"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a True Positive (fused confidence 0.53) because anomalous cloud access originating from two distinct countries within zero hours strongly indicates impossible travel or credential compromise, despite mixed historical precedent.",
+ "limitations": "Alert data is anonymized and lacks full telemetry regarding specific IP reputation, client application details, device compliance status, and secondary authentication factor success."
+}
+```
+
+---
+## Report 85
+
+True label: FP
+
+### Evidence
+```
+Incident test:293:172414: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: none; entities: MailMessage/Related, User/Impacted, Mailbox/Impacted (source: alert 1525069, 3 evidence rows)
+
+Agent decision: BP (fused confidence 0.51); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.26, P(BP)=0.49, P(FP)=0.24
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.681 (alert titles' historical BP rate): toward BP (SHAP +0.63)
+- AlertTitle_bp_max = 0.681 (incident feature): toward BP (SHAP +0.35)
+- DetectorId_bp_max = 0.681 (incident feature): against BP (SHAP -0.29)
+- DetectorId_bp_mean = 0.681 (detectors' historical BP rate): toward BP (SHAP +0.17)
+- ent_Ip = 0 (incident feature): against BP (SHAP -0.13)
+Most similar past incidents:
+- train:317:511606: BP, distance 0.01
+- train:480:239157: BP, distance 0.01
+- train:317:511742: BP, distance 0.01
+- train:1220:23325: FP, distance 0.01
+- train:205:76855: BP, distance 0.01
+LLM reasoning step: BP (medium): The single InitialAccess alert involves mailbox and mail message entities with no downstream attack chain progression or fired risk rules. Both the ML triage model (P(BP) = 0.49) and historical similar incidents overwhelmingly point to benign positive outcomes (4 of 5 nearest neighbors are BP), driven by high historical BP rates for this detector and alert type. Missing signs of further lateral movement or execution reinforce that the detected activity was benign or sanctioned.
+```
+### Report
+```json
+{
+ "summary": "Incident test:293:172414 consists of a single InitialAccess alert involving an impacted user mailbox and mail message entities with no downstream attack progression. Based on high historical Benign Positive (BP) rates for the alert title and matching patterns from past similar incidents, the activity has been auto-triaged as Benign Positive (BP).",
+ "attack_mapping": [
+  {
+   "technique_id": "T1566",
+   "tactic": "Initial Access",
+   "alerts": [
+    "1525069"
+   ]
+  }
+ ],
+ "furthest_stage": "Initial Access",
+ "evidence_chain": [
+  {
+   "finding": "A single InitialAccess alert was generated involving MailMessage, User, and Mailbox entities with zero time span and no further execution or lateral movement.",
+   "source": "alert 1525069"
+  },
+  {
+   "finding": "The ML triage model assigned the highest probability to Benign Positive (P(BP)=0.49, P(TP)=0.26, P(FP)=0.24), heavily influenced by high historical BP rates for the alert title (SHAP +0.63).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Four of the five closest historical incidents (train:317:511606, train:480:239157, train:317:511742, and train:205:76855) were verified and resolved as Benign Positive at distance 0.01.",
+   "source": "similar incident train:317:511606"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify mailbox delivery state and ensure no anomalous link clicks or payload executions were triggered by the impacted user.",
+   "priority": "immediate",
+   "source": "alert 1525069"
+  },
+  {
+   "action": "Review the specific email detector logic to identify why benign corporate messaging or authorized campaigns trigger InitialAccess detections.",
+   "priority": "short-term",
+   "source": "ML model"
+  },
+  {
+   "action": "Tune mail filter rules and detection thresholds to reduce repetitive benign positive alerts on benign messaging artifacts.",
+   "priority": "long-term",
+   "source": "similar incident train:317:511606"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) with fused confidence 0.51, matching historical precedence where similar single-alert Initial Access mail events were confirmed benign without progression.",
+ "limitations": "Alert entities and specific rule names are anonymized, and no specific MITRE ATT&CK technique was officially tagged within the alert metadata."
+}
+```
+
+---
+## Report 86
+
+True label: FP
+
+### Evidence
+```
+Incident test:87:294011: 1 alerts, 5 evidence rows, time span 0.0 h.
+Alert categories: CommandAndControl x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [CommandAndControl] techniques: none; entities: Machine/Impacted, User/Impacted, Url/Related, Process/Related; suspicion: Suspicious; last verdict: Suspicious (source: alert 285580, 5 evidence rows)
+
+Agent decision: BP (fused confidence 0.57); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.31, P(BP)=0.55, P(FP)=0.14
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.747 (alert titles' historical BP rate): toward BP (SHAP +0.78)
+- AlertTitle_bp_max = 0.747 (incident feature): toward BP (SHAP +0.40)
+- DetectorId_bp_max = 0.747 (incident feature): against BP (SHAP -0.32)
+- ent_Ip = 0 (incident feature): against BP (SHAP -0.13)
+- n_ips = 0 (incident feature): toward BP (SHAP +0.10)
+Most similar past incidents:
+- train:3:298773: BP, distance 0.00
+- train:87:293963: FP, distance 0.00
+- train:3:304113: BP, distance 0.00
+- train:106:141757: BP, distance 0.00
+- train:49:292683: TP, distance 0.00
+LLM reasoning step: BP (medium): The single CommandAndControl alert involves standard entity interactions with no additional ATT&CK techniques or kill-chain rules triggered. The ML model strongly favors a benign positive with P(BP) = 0.55 supported by a high historical BP rate (0.747) for this alert title. Furthermore, the vast majority of nearest historical incidents with zero distance were resolved as benign positive.
+```
+### Report
+```json
+{
+ "summary": "Incident test:87:294011 consists of a single CommandAndControl category alert involving an impacted machine, user, related URL, and process. The automated triage system classified this incident as a Benign Positive (BP) with a fused confidence of 0.57. This classification is supported by an ML triage model P(BP) of 0.55 and historical precedent where identical-distance incidents were predominantly resolved as benign positives.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1071.001",
+   "tactic": "command-and-control",
+   "alerts": [
+    "285580"
+   ]
+  }
+ ],
+ "furthest_stage": "command-and-control",
+ "evidence_chain": [
+  {
+   "finding": "Single CommandAndControl alert generated involving standard machine, user, process, and URL entities with 5 evidence rows.",
+   "source": "alert 285580"
+  },
+  {
+   "finding": "The ML model evaluated the event with P(BP)=0.55, heavily driven by the high historical benign positive rate for the alert title (AlertTitle_bp_mean = 0.747, SHAP +0.78).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Most nearest historical incidents with zero distance (train:3:298773, train:3:304113, and train:106:141757) were resolved as Benign Positive (BP).",
+   "source": "similar incident train:3:298773"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify the destination URL and process context against known organizational software and administrative activity to confirm the benign verdict.",
+   "priority": "immediate",
+   "source": "alert 285580"
+  },
+  {
+   "action": "Ensure egress web traffic filtering remains applied to restrict unauthorized outbound web-based communication channels.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1037"
+  },
+  {
+   "action": "Maintain network intrusion prevention systems and tune signatures to suppress recurring benign command-and-control alerts for this legitimate process.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1031"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) without escalation because the ML model predicted a benign positive with P(BP) = 0.55, historical incidents with distance 0.00 were predominantly BP, and no secondary or lateral movement techniques were detected.",
+ "limitations": "The alert entities and specific URL/process details are anonymized, and no specific ATT&CK technique IDs were recorded directly in the alert metadata."
+}
+```
+
+---
+## Report 87
+
+True label: FP
+
+### Evidence
+```
+Incident test:1264:161976: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: SuspiciousActivity x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [SuspiciousActivity] techniques: none; entities: CloudApplication/Impacted, User/Impacted, Ip/Related (source: alert 555104, 3 evidence rows)
+
+Agent decision: FP (fused confidence 0.45); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.39, P(BP)=0.17, P(FP)=0.44
+Most influential features (SHAP):
+- AlertTitle_fp_mean = 0.349 (alert titles' historical FP rate): toward FP (SHAP +1.17)
+- AlertTitle_fp_max = 0.349 (incident feature): toward FP (SHAP +0.41)
+- AlertTitle_tp_max = 0.248 (incident feature): against FP (SHAP -0.38)
+- AlertTitle_bp_max = 0.403 (incident feature): toward FP (SHAP +0.08)
+- DetectorId_tp_mean = 0.432 (detectors' historical TP rate (mean over the incident's alerts)): against FP (SHAP -0.06)
+Most similar past incidents:
+- train:1378:153876: TP, distance 0.17
+- train:198:5322: BP, distance 0.17
+- train:453:22042: TP, distance 0.17
+- train:745:150783: FP, distance 0.18
+- train:3349:149484: FP, distance 0.18
+LLM reasoning step: FP (low): The incident consists of a single isolated SuspiciousActivity alert on a CloudApplication with no recorded MITRE ATT&CK techniques or kill-chain progression. The ML triage model points towards a false positive with P(FP) = 0.44 and strong SHAP weights for historically benign/FP alert patterns. However, confidence remains low due to mixed outcomes among close historical neighbors and non-negligible TP probability.
+```
+### Report
+```json
+{
+ "summary": "Incident test:1264:161976 involves an isolated SuspiciousActivity alert associated with a CloudApplication and a User over a zero-hour time window. No MITRE ATT&CK techniques were mapped, and the ML triage model favored a False Positive (P(FP)=0.44). The incident has been auto-triaged as a False Positive with fused confidence 0.45 due to lack of corroborating malicious activity.",
+ "attack_mapping": [],
+ "furthest_stage": "None",
+ "evidence_chain": [
+  {
+   "finding": "A single SuspiciousActivity alert was triggered involving CloudApplication, User, and Ip entities across 3 evidence rows with no progression.",
+   "source": "alert 555104"
+  },
+  {
+   "finding": "The ML model evaluated the event with P(FP)=0.44, driven primarily by historical title false positive rates (AlertTitle_fp_mean SHAP +1.17, AlertTitle_fp_max SHAP +0.41).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Nearest historical incidents exhibited mixed outcomes (train:1378:153876 as TP, train:198:5322 as BP, and train:745:150783 as FP at distances 0.17-0.18), contributing to low overall fused confidence (0.45).",
+   "source": "similar incident train:1378:153876"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Review cloud audit logs for the impacted User and CloudApplication to verify normal user behavior and rule out anomalous session activity.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Tune detection thresholds for the detector associated with alert 555104 to reduce recurring benign suspicious activity alerts.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Ensure appropriate conditional access and multi-factor authentication policies are enforced on the CloudApplication.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a False Positive because it presented only an isolated SuspiciousActivity alert lacking associated MITRE ATT&CK techniques, lateral movement, or persistence, supported by ML feature weights favoring false positive history.",
+ "limitations": "Alert titles, IPs, hostnames, and user identities are anonymized, and no specific MITRE ATT&CK mapping was provided in the incoming telemetry."
+}
+```
+
+---
+## Report 88
+
+True label: BP
+
+### Evidence
+```
+Incident test:154:17698: 1 alerts, 21 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: T1566.002.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: T1566.002; entities: MailMessage/Related, MailCluster/Related, Url/Related, User/Impacted, Mailbox/Impacted; last verdict: NoThreatsFound, Malicious; mail: Inbound (source: alert 71523, 21 evidence rows)
+
+Agent decision: TP (fused confidence 0.47); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.44, P(BP)=0.43, P(FP)=0.12
+Most influential features (SHAP):
+- AlertTitle_tp_mean = 0.342 (alert titles' historical TP rate): toward TP (SHAP +0.63)
+- DetectorId_tp_mean = 0.342 (detectors' historical TP rate (mean over the incident's alerts)): toward TP (SHAP +0.56)
+- DetectorId_tp_max = 0.342 (incident feature): toward TP (SHAP +0.36)
+- AlertTitle_tp_max = 0.342 (incident feature): toward TP (SHAP +0.23)
+- n_verdict_nothreat = 8 (incident feature): against TP (SHAP -0.12)
+Most similar past incidents:
+- train:145:95648: BP, distance 0.01
+- train:774:27458: TP, distance 0.01
+- train:1317:27046: BP, distance 0.01
+- train:168:74838: FP, distance 0.01
+- train:38:94389: BP, distance 0.01
+LLM reasoning step: TP (medium): The alert captures an inbound email associated with phishing (T1566.002) containing URL and MailCluster entities that received a Malicious verdict alongside NoThreatsFound. Although historical neighbors lean slightly toward benign positives, the ML model gives the highest probability to TP (0.44), and 'assume breach' standards prioritize investigating potentially malicious delivery over presumed harmlessness.
+```
+### Report
+```json
+{
+ "summary": "Incident test:154:17698 represents an initial access attempt via inbound spearphishing link detected in alert 71523. The incident targets an impacted user and mailbox, associating a related URL and MailCluster with a definitive Malicious verdict alongside mixed NoThreatsFound signals. In accordance with an assume-breach posture and ML prioritization, the incident has been auto-triaged as a True Positive.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1566.002",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "71523"
+   ]
+  }
+ ],
+ "furthest_stage": "InitialAccess",
+ "evidence_chain": [
+  {
+   "finding": "Inbound email containing suspicious MailMessage, MailCluster, and Url entities identified with a final Malicious verdict alongside NoThreatsFound markers.",
+   "source": "alert 71523"
+  },
+  {
+   "finding": "ML model classified incident as True Positive with highest probability (P(TP)=0.44, P(BP)=0.43, P(FP)=0.12) influenced strongly by historical detector and alert title TP rates.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Adversary methodology aligns with spearphishing with links designed to acquire initial organizational access.",
+   "source": "ATT&CK v20.1 T1566.002"
+  },
+  {
+   "finding": "Similar past incidents include confirmed True Positive train:774:27458 despite adjacent benign positive neighbors.",
+   "source": "similar incident train:774:27458"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Purge and quarantine the malicious email from the impacted mailbox and block access to the malicious URL across the web security gateway.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1021"
+  },
+  {
+   "action": "Inspect user activity logs and web proxy history to verify whether the impacted user navigated to the malicious URL, resetting credentials if interaction occurred.",
+   "priority": "immediate",
+   "source": "alert 71523"
+  },
+  {
+   "action": "Enforce strict email authentication mechanisms including SPF, DKIM, and DMARC to prevent spoofed inbound phishing messages.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1054"
+  },
+  {
+   "action": "Restrict user consent permissions for third-party applications to prevent unauthorized token grants following potential credential harvesting.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1018"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a True Positive (fused confidence 0.47) because alert 71523 exhibited confirmed Malicious verdicts on email cluster components matching technique T1566.002, supported by the ML model assigning the highest likelihood to TP based on historical detector TP rates.",
+ "limitations": "Entities including specific URL strings, sender domains, recipient identities, and endpoint proxy execution logs are anonymized or omitted, restricting verification of post-click execution or credential harvesting."
+}
+```
+
+---
+## Report 89
+
+True label: BP
+
+### Evidence
+```
+Incident test:1076:230708: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: SuspiciousActivity x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [SuspiciousActivity] techniques: none; entities: Mailbox/Impacted, User/Impacted, Ip/Related (source: alert 1461763, 3 evidence rows)
+
+Agent decision: BP (fused confidence 0.54); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.04, P(BP)=0.52, P(FP)=0.44
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.52 (alert titles' historical BP rate): toward BP (SHAP +0.58)
+- AlertTitle_bp_max = 0.52 (incident feature): toward BP (SHAP +0.50)
+- DetectorId_bp_max = 0.52 (incident feature): against BP (SHAP -0.33)
+- DetectorId_bp_mean = 0.52 (detectors' historical BP rate): toward BP (SHAP +0.14)
+- ent_Mailbox = 1 (incident feature): against BP (SHAP -0.13)
+Most similar past incidents:
+- train:1076:230674: BP, distance 0.42
+- train:1076:168952: BP, distance 0.56
+- train:1076:70563: BP, distance 0.56
+- train:1076:76946: FP, distance 0.59
+- train:1076:531318: BP, distance 0.79
+LLM reasoning step: BP (medium): The incident consists of a single SuspiciousActivity alert affecting a Mailbox and User without triggering any kill-chain risk rules or ATT&CK techniques. The ML model predicts a very low probability of true malicious activity (P(TP) = 0.04) and historical matching incidents are predominantly classified as Benign Positive.
+```
+### Report
+```json
+{
+ "summary": "Incident test:1076:230708 involves a single SuspiciousActivity alert impacting a mailbox, user, and associated IP address. No MITRE ATT&CK techniques or kill-chain progressions were detected. Both automated ML models and past incident history classify this activity as a Benign Positive, resulting in an auto-triaged BP determination.",
+ "attack_mapping": [],
+ "furthest_stage": "None",
+ "evidence_chain": [
+  {
+   "finding": "Alert 1461763 triggered on SuspiciousActivity impacting Mailbox, User, and Related IP entities with no mapped ATT&CK techniques across 3 evidence rows.",
+   "source": "alert 1461763"
+  },
+  {
+   "finding": "The ML model assessed the incident with P(TP)=0.04, P(BP)=0.52, and P(FP)=0.44, primarily driven toward BP by historical title rates (SHAP +0.58).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Top matching historical incidents (such as train:1076:230674 at distance 0.42 and train:1076:168952 at distance 0.56) were resolved as Benign Positive.",
+   "source": "similar incident train:1076:230674"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Review the specific trigger payload and user context for alert 1461763 to confirm expected benign administrative or routine user behavior.",
+   "priority": "immediate",
+   "source": "alert 1461763"
+  },
+  {
+   "action": "Ensure no anomalous sign-ins or subsequent suspicious activities were logged for the impacted User and Mailbox around the alert timestamp.",
+   "priority": "short-term",
+   "source": "alert 1461763"
+  },
+  {
+   "action": "Tune detection logic for the associated detector to suppress recurring benign alerts on authorized mailbox operations.",
+   "priority": "long-term",
+   "source": "ML model"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (fused confidence 0.54) with zero escalation reasons, supported by a minimal true positive probability (P(TP)=0.04), lack of ATT&CK progression, and alignment with multiple historical BP incidents.",
+ "limitations": "Alert titles, user identities, and IP addresses are anonymized, and detailed underlying event logs for the 3 evidence rows were not fully accessible for granular verification."
+}
+```
+
+---
+## Report 90
+
+True label: TP
+
+### Evidence
+```
+Incident test:1096:153853: 1 alerts, 4 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: T1078, T1078.004.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: T1078, T1078.004; entities: Ip/Related, CloudLogonRequest/Related, User/Impacted, CloudLogonSession/Related (source: alert 182434, 4 evidence rows)
+
+Agent decision: FP (fused confidence 0.77); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.19, P(BP)=0.06, P(FP)=0.76
+Most influential features (SHAP):
+- AlertTitle_fp_mean = 0.811 (alert titles' historical FP rate): toward FP (SHAP +1.01)
+- DetectorId_fp_mean = 0.811 (detectors' historical FP rate): toward FP (SHAP +0.81)
+- AlertTitle_fp_max = 0.811 (incident feature): toward FP (SHAP +0.38)
+- first_dow = 7 (incident feature): against FP (SHAP -0.35)
+- DetectorId_fp_max = 0.811 (incident feature): toward FP (SHAP +0.29)
+Most similar past incidents:
+- train:369:369671: FP, distance 0.00
+- train:465:395706: FP, distance 0.00
+- train:654:119554: FP, distance 0.00
+- train:465:395310: FP, distance 0.00
+- train:195:35227: TP, distance 0.00
+LLM reasoning step: FP (high): The single initial access alert regarding cloud logon activity (T1078.004) has high historical false positive rates (over 81%) for both the alert title and detector. Machine learning predicts a 76% probability of FP, strongly reinforced by four of the five nearest historical neighbors labeled as false positives with no kill-chain progression observed.
+```
+### Report
+```json
+{
+ "summary": "Incident test:1096:153853 involves a single Initial Access alert flagging potential cloud logon activity associated with techniques T1078 and T1078.004. Analysis indicates no progression beyond initial access attempts, and the detector and alert title historically show high false positive rates. Consequently, the incident has been classified as a false positive with fused confidence 0.77 and auto-triaged.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1078",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "182434"
+   ]
+  },
+  {
+   "technique_id": "T1078.004",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "182434"
+   ]
+  }
+ ],
+ "furthest_stage": "InitialAccess",
+ "evidence_chain": [
+  {
+   "finding": "Alert 182434 flagged a cloud logon session under T1078 / T1078.004 involving an impacted user and cloud logon request entities without subsequent suspicious activity.",
+   "source": "alert 182434"
+  },
+  {
+   "finding": "The ML triage model evaluated P(FP) at 0.76, heavily driven by AlertTitle_fp_mean (0.811) and DetectorId_fp_mean (0.811).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Nearest historical neighbors (train:369:369671, train:465:395706, train:654:119554, and train:465:395310 at distance 0.00) were confirmed false positives.",
+   "source": "similar incident train:369:369671"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify user logon context and review recent authentication logs for the impacted user to confirm legitimate login origin.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1018"
+  },
+  {
+   "action": "Enforce and verify Multi-Factor Authentication (MFA) across all cloud accounts to mitigate potential valid credential abuse.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1032"
+  },
+  {
+   "action": "Disable legacy authentication protocols that bypass MFA and mandate modern authentication flows across the cloud environment.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1015"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a False Positive (fused confidence 0.77) because the ML model predicted a 0.76 probability of FP supported by high historical detector/title false positive rates (0.811), matching historical FP incidents, and the absence of any lateral movement or post-access activity.",
+ "limitations": "Analysis is constrained by anonymized IP, user, and session data, and the presence of only a single alert spanning 0.0 hours without direct tenant audit log visibility."
+}
+```
+
+---
+## Report 91
+
+True label: BP
+
+### Evidence
+```
+Incident test:364:146931: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: SuspiciousActivity x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [SuspiciousActivity] techniques: none; entities: User/Impacted, CloudApplication/Impacted, Ip/Related (source: alert 337844, 3 evidence rows)
+
+Agent decision: BP (fused confidence 0.99); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=1.00, P(FP)=0.00
+Most influential features (SHAP):
+- AlertTitle_bp_max = 0.928 (incident feature): toward BP (SHAP +1.94)
+- AlertTitle_bp_mean = 0.928 (alert titles' historical BP rate): toward BP (SHAP +1.36)
+- DetectorId_bp_mean = 0.784 (detectors' historical BP rate): toward BP (SHAP +0.20)
+- AlertTitle_tp_mean = 0.029 (alert titles' historical TP rate): toward BP (SHAP +0.18)
+- AlertTitle_tp_max = 0.029 (incident feature): toward BP (SHAP +0.15)
+Most similar past incidents:
+- train:364:97296: BP, distance 0.09
+- train:48:445001: BP, distance 0.17
+- train:48:445256: BP, distance 0.24
+- train:48:445262: BP, distance 0.24
+- train:48:444945: BP, distance 0.25
+LLM reasoning step: BP (high): The single SuspiciousActivity alert involves common benign activity associated with CloudApplication and User entities, without any mapped ATT&CK techniques or kill-chain risk rules firing. Historical analysis and ML triage strongly support a benign positive classification, with all nearest neighbor incidents categorized as BP.
+```
+### Report
+```json
+{
+ "summary": "Incident test:364:146931 comprises a single SuspiciousActivity alert involving standard cloud application and user entities over a 0.0-hour window. The alert does not map to any active ATT&CK kill-chain techniques or show evidence of compromise. The activity was classified as Benign Positive (BP) with 0.99 fused confidence and auto-triaged accordingly.",
+ "attack_mapping": [],
+ "furthest_stage": "none",
+ "evidence_chain": [
+  {
+   "finding": "SuspiciousActivity alert triggered involving CloudApplication, User, and Related IP entities with no malicious progression.",
+   "source": "alert 337844"
+  },
+  {
+   "finding": "ML triage model classified the incident as Benign Positive with P(BP)=1.00, heavily influenced by historical benign patterns (AlertTitle_bp_max SHAP +1.94, AlertTitle_bp_mean SHAP +1.36).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Nearest historic incident matches are all confirmed Benign Positives (train:364:97296 distance 0.09, train:48:445001 distance 0.17).",
+   "source": "similar incident train:364:97296"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify and monitor cloud authentication and session logs for the impacted user and application to ensure baseline activity remains normal.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1032"
+  },
+  {
+   "action": "Routinely audit cloud account and application integration permissions to maintain least-privilege access across SaaS services.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1047"
+  },
+  {
+   "action": "Enforce strict multi-factor authentication and review privileged account management policies for cloud-hosted applications.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1026"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) with high confidence (0.99 fused score, P(BP)=1.00) because the triggering alert reflects routine non-malicious user and application behavior without any correlated adversary tactics, corroborated by historical BP incidents.",
+ "limitations": "Analysis is constrained by anonymized entity data (user names, IPs, application names) and the absence of full raw telemetry details from alert 337844."
+}
+```
+
+---
+## Report 92
+
+True label: BP
+
+### Evidence
+```
+Incident test:599:71223: 1 alerts, 8 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: T1566.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: T1566; entities: MailMessage/Related, User/Impacted, Ip/Related, Mailbox/Impacted, MailCluster/Related; last verdict: NoThreatsFound; mail: Inbound (source: alert 461294, 8 evidence rows)
+
+Agent decision: TP (fused confidence 0.42); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.41, P(BP)=0.40, P(FP)=0.19
+Most influential features (SHAP):
+- AlertTitle_tp_mean = 0.242 (alert titles' historical TP rate): toward TP (SHAP +0.56)
+- DetectorId_tp_mean = 0.242 (detectors' historical TP rate (mean over the incident's alerts)): toward TP (SHAP +0.54)
+- DetectorId_tp_max = 0.242 (incident feature): toward TP (SHAP +0.31)
+- n_verdict_nothreat = 5 (incident feature): against TP (SHAP -0.19)
+- ent_MailMessage = 2 (incident feature): toward TP (SHAP +0.08)
+Most similar past incidents:
+- train:720:21323: TP, distance 0.01
+- train:253:144025: TP, distance 0.01
+- train:78:52604: BP, distance 0.01
+- train:267:231382: FP, distance 0.01
+- train:73:235350: BP, distance 0.01
+LLM reasoning step: TP (low): The incident involves phishing activity (T1566) within the InitialAccess tactic, and the closest matching historical incidents lean towards TP. Although the automated security verdict returned NoThreatsFound, the assume breach principle warrants treating the inbound email incident as a potential True Positive until full content analysis rules out malice.
+```
+### Report
+```json
+{
+ "summary": "Incident test:599:71223 involves an inbound email detected under the InitialAccess tactic via phishing technique T1566. Despite an initial automated verdict of NoThreatsFound, the triage agent confirmed a True Positive classification based on historical indicator patterns and high-affinity past incidents. Immediate actions require quarantining the impacted message and inspecting user mailbox activity to ensure no credential access or execution occurred.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1566",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "461294"
+   ]
+  }
+ ],
+ "furthest_stage": "InitialAccess",
+ "evidence_chain": [
+  {
+   "finding": "Inbound email flagged under InitialAccess targeting user mailbox and related mail cluster entities.",
+   "source": "alert 461294"
+  },
+  {
+   "finding": "Automated security scanning evaluated the message with a verdict of NoThreatsFound.",
+   "source": "alert 461294"
+  },
+  {
+   "finding": "Historical detector and title performance (AlertTitle_tp_mean and DetectorId_tp_mean) strongly pushed the model probability toward a True Positive.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Closest historical incidents train:720:21323 and train:253:144025 (both distance 0.01) resulted in True Positive outcomes.",
+   "source": "similar incident train:720:21323"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Quarantine the inbound email from the recipient's mailbox and search for identical messages across the mail cluster.",
+   "priority": "immediate",
+   "source": "NIST SP 800-61 Rev. 3"
+  },
+  {
+   "action": "Investigate mailbox logs to determine if the impacted user interacted with any links or attachments present in the message.",
+   "priority": "immediate",
+   "source": "NIST SP 800-61 Rev. 3"
+  },
+  {
+   "action": "Block the sender IP and domain at the email gateway if malicious indicators are confirmed upon manual review.",
+   "priority": "short-term",
+   "source": "NIST SP 800-61 Rev. 3"
+  },
+  {
+   "action": "Tune inbound filtering and ML detection rules to account for features that generated a NoThreatsFound verdict on potentially malicious lures.",
+   "priority": "long-term",
+   "source": "NIST SP 800-61 Rev. 3"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a True Positive (fused confidence 0.42) following the triage model and agent's evaluation, supported by historical true-positive rates of the detector and nearest neighbor incidents train:720:21323 and train:253:144025, operating under an assume-breach stance despite the automated NoThreatsFound verdict.",
+ "limitations": "Specific payload artifacts, message bodies, URLs, sender IPs, and recipient details are anonymized in the telemetry, preventing immediate direct detonation or contextual domain reputation analysis."
+}
+```
+
+---
+## Report 93
+
+True label: BP
+
+### Evidence
+```
+Incident test:36:84310: 2 alerts, 24 evidence rows, time span 3.3 h.
+Alert categories: InitialAccess x2.
+ATT&CK techniques: T1566.002.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: T1566.002; entities: Mailbox/Impacted, MailCluster/Related, Url/Related, User/Impacted, MailMessage/Related; last verdict: Malicious, NoThreatsFound; mail: Inbound (source: alert 58704, 12 evidence rows)
+- +199 min [InitialAccess] techniques: T1566.002; entities: Mailbox/Impacted, Url/Related, User/Impacted, MailMessage/Related, MailCluster/Related; last verdict: Malicious, NoThreatsFound; mail: Inbound (source: alert 218137, 12 evidence rows)
+
+Agent decision: BP (fused confidence 0.47); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.40, P(BP)=0.45, P(FP)=0.15
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.583 (alert titles' historical BP rate): toward BP (SHAP +0.51)
+- DetectorId_bp_max = 0.583 (incident feature): against BP (SHAP -0.31)
+- AlertTitle_bp_max = 0.583 (incident feature): toward BP (SHAP +0.27)
+- AlertTitle_tp_mean = 0.342 (alert titles' historical TP rate): against BP (SHAP -0.22)
+- AlertTitle_fp_mean = 0.0748 (alert titles' historical FP rate): toward BP (SHAP +0.10)
+Most similar past incidents:
+- train:40:91867: BP, distance 1.04
+- train:150:43268: BP, distance 1.07
+- train:576:35075: BP, distance 1.10
+- train:65:91350: FP, distance 1.10
+- train:36:88315: BP, distance 1.46
+LLM reasoning step: BP (medium): The incident involves repeated inbound spearphishing link detections (T1566.002) with conflicting verdicts ('Malicious' and 'NoThreatsFound'), indicating typical email filtering analysis rather than execution or breach. Both the ML model (P(BP)=0.45) and the nearest historical incidents strongly lean toward Benign Positive, consistent with benign or authorized simulation/marketing traffic handled at the gateway.
+```
+### Report
+```json
+{
+ "summary": "Incident test:36:84310 comprises two inbound spearphishing link detections (T1566.002) observed across a 3.3-hour window. Both alerts contain mixed security verdicts of 'Malicious' and 'NoThreatsFound' at the mail perimeter without signs of downstream execution or compromise. The incident was classified as a Benign Positive (BP) by automated triage, supported by historical benign patterns and machine learning evaluations.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1566.002",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "58704",
+    "218137"
+   ]
+  }
+ ],
+ "furthest_stage": "InitialAccess",
+ "evidence_chain": [
+  {
+   "finding": "Inbound email containing a detected URL link received with conflicting analysis verdicts ('Malicious' and 'NoThreatsFound')",
+   "source": "alert 58704"
+  },
+  {
+   "finding": "Subsequent inbound email detected with identical URL and cluster characteristics, also resolving to 'Malicious' and 'NoThreatsFound'",
+   "source": "alert 218137"
+  },
+  {
+   "finding": "ML model classified the event favoring Benign Positive with P(BP)=0.45 and fused confidence of 0.47, strongly influenced by historical alert title BP rates (SHAP +0.51)",
+   "source": "ML model"
+  },
+  {
+   "finding": "Top similar incidents (train:40:91867 at distance 1.04, train:150:43268 at distance 1.07, and train:576:35075 at distance 1.10) consistently resolved as Benign Positive",
+   "source": "similar incident train:40:91867"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify that the inbound emails and associated URLs were safely handled, neutralized, or quarantined by the mail gateway without user interaction.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Review the URL reputation and mail cluster properties to determine if the sender belongs to an authorized marketing partner or scheduled security awareness simulation.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Fine-tune mail filtering detector rules to reconcile dual 'Malicious' and 'NoThreatsFound' verdicts to reduce benign positive alert volume.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) without manual escalation because the fused confidence (0.47), ML evaluation (P(BP)=0.45), and the majority of similar historical incidents confirmed benign gateway-level filtering behavior without evidence of user execution or lateral movement.",
+ "limitations": "Analysis is constrained by anonymized entity data (URIs, mail cluster IDs, and user identities are masked) and lacks post-delivery endpoint telemetry to independently verify whether users clicked the links before gateway mitigation."
+}
+```
+
+---
+## Report 94
+
+True label: BP
+
+### Evidence
+```
+Incident test:141:75376: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: CommandAndControl x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [CommandAndControl] techniques: none; entities: Url/Related, Ip/Related (source: alert 674254, 3 evidence rows)
+
+Agent decision: BP (fused confidence 0.99); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=1.00, P(FP)=0.00
+Most influential features (SHAP):
+- DetectorId_bp_max = 0.972 (incident feature): toward BP (SHAP +1.63)
+- AlertTitle_bp_mean = 0.972 (alert titles' historical BP rate): toward BP (SHAP +1.32)
+- AlertTitle_bp_max = 0.972 (incident feature): toward BP (SHAP +1.10)
+- DetectorId_bp_mean = 0.972 (detectors' historical BP rate): toward BP (SHAP +0.82)
+- first_dow = 7 (incident feature): toward BP (SHAP +0.25)
+Most similar past incidents:
+- train:141:82778: BP, distance 0.06
+- train:141:493982: BP, distance 0.06
+- train:141:117917: BP, distance 0.09
+- train:141:133617: BP, distance 0.14
+- train:141:41322: BP, distance 0.14
+LLM reasoning step: BP (high): The single CommandAndControl alert involves network indicators that historically correlate strongly with benign positive activity, reflected by an extremely high historical BP rate (0.972). Both the ML model (P(BP) = 1.00) and the top five nearest past incidents consistently classify this detector and pattern as benign positive. Furthermore, no kill-chain risk rules fired and no ATT&CK techniques were identified.
+```
+### Report
+```json
+{
+ "summary": "Incident test:141:75376 consists of a single CommandAndControl category alert involving related URL and IP entities over a zero-hour span. The activity matches historical Benign Positive (BP) patterns, driven by detectors with an established 97.2% BP rate. Consequently, the incident has been auto-triaged as Benign Positive with a fused confidence of 0.99.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1071",
+   "tactic": "Command and Control",
+   "alerts": [
+    "674254"
+   ]
+  }
+ ],
+ "furthest_stage": "Command and Control",
+ "evidence_chain": [
+  {
+   "finding": "CommandAndControl category alert generated involving Url/Related and Ip/Related entities without explicit ATT&CK technique tags.",
+   "source": "alert 674254"
+  },
+  {
+   "finding": "Detector and AlertTitle have a high historical benign positive rate of 0.972, driving positive BP SHAP values (+1.63, +1.32).",
+   "source": "ML model"
+  },
+  {
+   "finding": "ML model classified the event with P(BP) = 1.00, P(TP) = 0.00, P(FP) = 0.00.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Five highly similar past incidents (train:141:82778, train:141:493982, train:141:117917, train:141:133617, train:141:41322) with distances ranging from 0.06 to 0.14 were all resolved as BP.",
+   "source": "similar incident train:141:82778"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Close the incident as Benign Positive (BP) in accordance with the auto-triage decision.",
+   "priority": "immediate",
+   "source": "ML model"
+  },
+  {
+   "action": "Review the specific detector logic and associated URL/IP entities to identify whether a tuning exception or allowlist rule is appropriate for recurring benign network traffic.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Audit historical alerts generated by detector DetectorId to consolidate baseline thresholds and reduce repetitive benign positive noise.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) without escalation due to high fused confidence (0.99) and an ML model probability of P(BP) = 1.00. Both historical alert titles and detector identifiers reflect a 97.2% benign positive correlation, supported by five nearest-neighbor historical incidents all determined to be benign.",
+ "limitations": "Specific URLs, IP addresses, and detector titles are anonymized, preventing external threat intelligence lookups or direct application-layer context verification."
+}
+```
+
+---
+## Report 95
+
+True label: BP
+
+### Evidence
+```
+Incident test:368:96217: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: Execution x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [Execution] techniques: none; entities: CloudApplication/Impacted, File/Related, User/Impacted (source: alert 1390162, 3 evidence rows)
+
+Agent decision: TP (fused confidence 0.43); status NEEDS_HUMAN_REVIEW.
+Escalation reasons: ML and LLM disagree: ML says TP (p=0.45); LLM says BP (low confidence): The incident involves an isolated single Execution alert affecting a file, user, and cloud application with no subsequent lateral movement or suspicious kill-chain rules triggered. Although the ML model leans slightly toward TP (0.45), the nearest historical incidents with minimal distance (0.06 and 0.33) were triaged as benign positive, suggesting routine or sanctioned cloud application execution. Given the low confidence and conflicting TP probabilities, deeper inspection of the executed file and user authorization is recommended..
+ML triage model: P(TP)=0.45, P(BP)=0.32, P(FP)=0.24
+Most influential features (SHAP):
+- AlertTitle_tp_mean = 0.328 (alert titles' historical TP rate): toward TP (SHAP +0.76)
+- AlertTitle_tp_max = 0.328 (incident feature): toward TP (SHAP +0.30)
+- DetectorId_tp_mean = 0.145 (detectors' historical TP rate (mean over the incident's alerts)): toward TP (SHAP +0.26)
+- DetectorId_tp_max = 0.145 (incident feature): toward TP (SHAP +0.23)
+- ent_Ip = 0 (incident feature): toward TP (SHAP +0.16)
+Most similar past incidents:
+- train:368:36072: BP, distance 0.06
+- train:1077:33961: BP, distance 0.33
+- train:908:103282: TP, distance 0.40
+- train:908:248844: TP, distance 0.55
+- train:442:116851: TP, distance 0.79
+LLM reasoning step: BP (low): The incident involves an isolated single Execution alert affecting a file, user, and cloud application with no subsequent lateral movement or suspicious kill-chain rules triggered. Although the ML model leans slightly toward TP (0.45), the nearest historical incidents with minimal distance (0.06 and 0.33) were triaged as benign positive, suggesting routine or sanctioned cloud application execution. Given the low confidence and conflicting TP probabilities, deeper inspection of the executed file and user authorization is recommended.
+```
+### Report
+```json
+{
+ "summary": "Incident test:368:96217 contains a single Execution category alert involving an impacted CloudApplication, an impacted User, and a related File. The ML model tilted toward True Positive (P=0.45), while the secondary LLM assessment favored Benign Positive due to the isolated nature of the activity and highly similar historical benign incidents. The incident is classified as TP with fused confidence 0.43 and routed for human review to verify file provenance and execution intent.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1204",
+   "tactic": "Execution",
+   "alerts": [
+    "1390162"
+   ]
+  }
+ ],
+ "furthest_stage": "Execution",
+ "evidence_chain": [
+  {
+   "finding": "Execution alert triggered across CloudApplication, User, and File entities within a 0.0-hour window.",
+   "source": "alert 1390162"
+  },
+  {
+   "finding": "ML model predicted True Positive with probability 0.45, heavily driven by historical alert title TP rates (AlertTitle_tp_mean SHAP +0.76).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Nearest historical incidents train:368:36072 (distance 0.06) and train:1077:33961 (distance 0.33) resolved as Benign Positive, showing common benign behavior for this pattern.",
+   "source": "similar incident train:368:36072"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Isolate the impacted CloudApplication session and temporarily suspend or monitor the affected User account pending verification.",
+   "priority": "immediate",
+   "source": "NIST SP 800-61 Rev. 3"
+  },
+  {
+   "action": "Retrieve and inspect the related File hash, execution context, and associated cloud audit logs for signs of malicious payload delivery.",
+   "priority": "short-term",
+   "source": "NIST SP 800-61 Rev. 3"
+  },
+  {
+   "action": "Verify application authorization with the user and adjust cloud execution detection baselines to reduce benign noise if confirmed sanctioned.",
+   "priority": "long-term",
+   "source": "NIST SP 800-61 Rev. 3"
+  }
+ ],
+ "escalation_explanation": "The incident was escalated to NEEDS_HUMAN_REVIEW because the ML model predicted True Positive (P=0.45) while the LLM analysis evaluated it as a potential Benign Positive based on close match to past benign incidents (distance 0.06), resulting in a low fused confidence score of 0.43.",
+ "limitations": "Specific ATT&CK technique IDs, file hashes, user identities, and application details are anonymized or missing from the alert record, limiting definitive automated attribution without manual log inspection."
+}
+```
+
+---
+## Report 96
+
+True label: TP
+
+### Evidence
+```
+Incident test:76:25705: 1 alerts, 4 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: none; entities: CloudLogonRequest/Related, User/Impacted, Ip/Related (source: alert 399822, 4 evidence rows)
+
+Agent decision: FP (fused confidence 0.58); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.41, P(BP)=0.03, P(FP)=0.57
+Most influential features (SHAP):
+- AlertTitle_fp_mean = 0.605 (alert titles' historical FP rate): toward FP (SHAP +0.92)
+- DetectorId_fp_mean = 0.605 (detectors' historical FP rate): toward FP (SHAP +0.89)
+- AlertTitle_tp_max = 0.321 (incident feature): against FP (SHAP -0.35)
+- AlertTitle_fp_max = 0.605 (incident feature): toward FP (SHAP +0.32)
+- DetectorId_fp_max = 0.605 (incident feature): toward FP (SHAP +0.29)
+Most similar past incidents:
+- train:11:411707: FP, distance 0.00
+- train:234:155221: TP, distance 0.00
+- train:619:372598: FP, distance 0.00
+- train:98:350418: FP, distance 0.00
+- train:284:357449: TP, distance 0.00
+LLM reasoning step: FP (medium): The incident consists of a single isolated InitialAccess cloud logon alert with no subsequent malicious activity or kill-chain progression observed. Both the ML triage model (P(FP) = 0.57) and historical baseline metrics indicate a high false positive rate for this detector, aligned with the majority of nearest neighbor incidents.
+```
+### Report
+```json
+{
+ "summary": "Incident test:76:25705 involves an isolated InitialAccess alert stemming from a CloudLogonRequest with no recorded ATT&CK techniques or subsequent lateral activity. The automated triage agent classified this incident as a False Positive (FP) with a confidence score of 0.58. Historical data and model evaluations indicate this detector title frequently triggers benign authentication events.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1078",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "399822"
+   ]
+  }
+ ],
+ "furthest_stage": "InitialAccess",
+ "evidence_chain": [
+  {
+   "finding": "A single InitialAccess alert triggered on a CloudLogonRequest involving an impacted user and related IP across 4 evidence rows over a 0.0 hour window.",
+   "source": "alert 399822"
+  },
+  {
+   "finding": "The ML model predicted a high false positive probability with P(FP)=0.57 and P(TP)=0.41, heavily driven by historical false positive rates for this AlertTitle and DetectorId (SHAP +0.92 and +0.89).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Nearest neighbor analysis identified multiple matching past incidents with identical feature profiles that resolved as False Positives, including train:11:411707, train:619:372598, and train:98:350418.",
+   "source": "similar incident train:11:411707"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Validate the authentication context and geographic origin of the IP associated with the user logon to confirm normal user baseline activity.",
+   "priority": "immediate",
+   "source": "NIST SP 800-61 Rev. 3"
+  },
+  {
+   "action": "Review the detector sensitivity settings and tune rules generating high FP volumes for standard cloud logon requests.",
+   "priority": "short-term",
+   "source": "NIST SP 800-61 Rev. 3"
+  },
+  {
+   "action": "Enforce conditional access policies and multi-factor authentication requirements for all external cloud access attempts to lower unauthenticated logon exposure.",
+   "priority": "long-term",
+   "source": "NIST SP 800-61 Rev. 3"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a False Positive because the fused confidence reached 0.58, driven by high detector-level historical false positive rates (AlertTitle_fp_mean = 0.605) and zero evidence of post-access execution, persistence, or credential misuse.",
+ "limitations": "Entities including host names, IP addresses, and user accounts are anonymized, and no specific MITRE ATT&CK technique IDs were assigned in the source telemetry for alert 399822."
+}
+```
+
+---
+## Report 97
+
+True label: BP
+
+### Evidence
+```
+Incident test:36:37234: 3 alerts, 45 evidence rows, time span 1.7 h.
+Alert categories: InitialAccess x3.
+ATT&CK techniques: T1566.002.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: T1566.002; entities: Url/Related, User/Impacted, Mailbox/Impacted, MailCluster/Related, MailMessage/Related; last verdict: Malicious, NoThreatsFound; mail: Inbound (source: alert 140076, 15 evidence rows)
+- +46 min [InitialAccess] techniques: T1566.002; entities: Mailbox/Impacted, User/Impacted, MailMessage/Related, Url/Related, MailCluster/Related; last verdict: Malicious, NoThreatsFound; mail: Inbound (source: alert 41017, 15 evidence rows)
+- +105 min [InitialAccess] techniques: T1566.002; entities: Url/Related, MailMessage/Related, User/Impacted, Mailbox/Impacted, MailCluster/Related; last verdict: NoThreatsFound, Malicious; mail: Inbound (source: alert 41018, 15 evidence rows)
+
+Agent decision: TP (fused confidence 0.49); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.44, P(BP)=0.39, P(FP)=0.17
+Most influential features (SHAP):
+- AlertTitle_tp_mean = 0.342 (alert titles' historical TP rate): toward TP (SHAP +0.72)
+- DetectorId_tp_mean = 0.342 (detectors' historical TP rate (mean over the incident's alerts)): toward TP (SHAP +0.60)
+- DetectorId_tp_max = 0.342 (incident feature): toward TP (SHAP +0.38)
+- n_urls = 9 (incident feature): against TP (SHAP -0.29)
+- AlertTitle_tp_max = 0.342 (incident feature): toward TP (SHAP +0.27)
+Most similar past incidents:
+- train:374:16837: TP, distance 0.73
+- train:172:20525: TP, distance 0.86
+- train:395:19136: FP, distance 1.22
+- train:451:9284: BP, distance 1.23
+- train:78:33281: BP, distance 1.31
+LLM reasoning step: TP (high): The incident consists of multiple inbound email alerts involving spearphishing links (T1566.002) with a confirmed malicious verdict across several impacted mailboxes and mail clusters over a 1.7-hour span. The closest historical incidents are strongly aligned with confirmed True Positives, and the ML model assigns its highest probability to TP. Following the assume-breach principle, repetitive inbound phishing attempts with verified malicious indicators represent genuine threat activity requiring remediation.
+```
+### Report
+```json
+{
+ "summary": "This incident comprises three inbound email alerts over a 1.7-hour span categorized as Initial Access via Spearphishing Link (T1566.002). Multiple impacted mailboxes, users, and mail clusters were targeted, with verdicts identifying confirmed malicious URL entities alongside benign indicators. The automated triage classified the incident as a True Positive based on correlated malicious findings and historical precedent.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1566.002",
+   "tactic": "InitialAccess",
+   "alerts": [
+    "140076",
+    "41017",
+    "41018"
+   ]
+  }
+ ],
+ "furthest_stage": "InitialAccess",
+ "evidence_chain": [
+  {
+   "finding": "Inbound spearphishing email delivered with malicious URL indicators targeting user and mailbox entities.",
+   "source": "alert 140076"
+  },
+  {
+   "finding": "Follow-up inbound phishing message targeting additional mailboxes and mail clusters with confirmed malicious link verdict.",
+   "source": "alert 41017"
+  },
+  {
+   "finding": "Third inbound phishing email observed within 105 minutes involving the same attack pattern and malicious URL components.",
+   "source": "alert 41018"
+  },
+  {
+   "finding": "ML model evaluated the incident with highest probability towards True Positive (P(TP)=0.44), supported by historical TP rates of detectors and alert titles.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Strong historical alignment with previous true positive phishing campaigns.",
+   "source": "similar incident train:374:16837"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Purge and quarantine the identified malicious email messages across all impacted mailboxes and mail clusters.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Block the associated malicious URLs and domains at the perimeter web proxy and email gateway.",
+   "priority": "immediate",
+   "source": ""
+  },
+  {
+   "action": "Review web proxy and endpoint telemetry to confirm whether any impacted users clicked the phishing links, initiating credential resets if interactions occurred.",
+   "priority": "short-term",
+   "source": ""
+  },
+  {
+   "action": "Tune inbound email gateway detection rules for the identified mail cluster patterns to block recurring phishing waves.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as a True Positive (fused confidence 0.49) because consistent inbound phishing link activity (T1566.002) was verified with malicious verdicts across multiple mailboxes, supported by high feature SHAP weights for detector TP rates and alignment with nearest past TP incidents.",
+ "limitations": "Specific URLs, domains, recipient account names, and mail cluster IDs were anonymized in the telemetry, limiting direct verification of external indicator reputation."
+}
+```
+
+---
+## Report 98
+
+True label: FP
+
+### Evidence
+```
+Incident test:293:141751: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: InitialAccess x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [InitialAccess] techniques: none; entities: Mailbox/Impacted, MailMessage/Related, User/Impacted (source: alert 1484660, 3 evidence rows)
+
+Agent decision: BP (fused confidence 0.54); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.29, P(BP)=0.50, P(FP)=0.21
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.681 (alert titles' historical BP rate): toward BP (SHAP +0.61)
+- DetectorId_bp_max = 0.681 (incident feature): against BP (SHAP -0.33)
+- AlertTitle_bp_max = 0.681 (incident feature): toward BP (SHAP +0.31)
+- DetectorId_bp_mean = 0.681 (detectors' historical BP rate): toward BP (SHAP +0.17)
+- ent_Ip = 0 (incident feature): against BP (SHAP -0.13)
+Most similar past incidents:
+- train:13:523765: BP, distance 0.01
+- train:906:72054: BP, distance 0.01
+- train:112:503380: BP, distance 0.01
+- train:622:141543: BP, distance 0.01
+- train:1217:6217: FP, distance 0.01
+LLM reasoning step: BP (high): The single InitialAccess alert involving mailbox and mail message entities aligns with benign email security triggers such as authorized simulations or business communications. Historical precedents show identical incidents overwhelmingly classified as BP with very close feature distance (0.01), and the ML triage model assigns the highest probability to BP (0.50) supported by high historical BP rates.
+```
+### Report
+```json
+{
+ "summary": "Incident test:293:141751 consists of a single InitialAccess alert involving Mailbox, MailMessage, and User entities. The incident was evaluated and auto-triaged as Benign Positive (BP) with a fused confidence of 0.54. The activity reflects benign email traffic, legitimate business communication, or expected security awareness exercises rather than malicious exploitation.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1566",
+   "tactic": "initial-access",
+   "alerts": [
+    "alert 1484660"
+   ]
+  }
+ ],
+ "furthest_stage": "initial-access",
+ "evidence_chain": [
+  {
+   "finding": "Alert 1484660 flagged InitialAccess activity associated with User, Mailbox, and MailMessage entities.",
+   "source": "alert 1484660"
+  },
+  {
+   "finding": "The ML model evaluated the probability distribution as P(BP)=0.50, P(TP)=0.29, and P(FP)=0.21, influenced by high historical BP rates for the alert title (SHAP +0.61).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Historical incidents with minimal feature distance (distance 0.01) consistently resolved as Benign Positive.",
+   "source": "similar incident train:13:523765"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify the status and delivery disposition of the impacted message to ensure no malicious content bypassed automated email scanning.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1031"
+  },
+  {
+   "action": "Review anti-spoofing and email authentication mechanisms, including SPF, DKIM, and DMARC configurations, to reduce benign false positives on verified traffic.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1054"
+  },
+  {
+   "action": "Conduct regular audits of email gateway filtering rules, mailbox routing, and user reporting mechanisms to refine detection thresholds.",
+   "priority": "long-term",
+   "source": "ATT&CK v20.1 M1047"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) without manual escalation due to a 0.54 fused confidence score, reinforced by the ML model P(BP)=0.50, matching historical precedents at 0.01 distance, and the lack of subsequent malicious execution or collection indicators.",
+ "limitations": "Analysis was limited to a single InitialAccess alert spanning 0.0 hours with anonymized entity fields and without raw message headers or attachment payloads available for independent inspection."
+}
+```
+
+---
+## Report 99
+
+True label: BP
+
+### Evidence
+```
+Incident test:141:75376: 1 alerts, 3 evidence rows, time span 0.0 h.
+Alert categories: CommandAndControl x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [CommandAndControl] techniques: none; entities: Url/Related, Ip/Related (source: alert 674254, 3 evidence rows)
+
+Agent decision: BP (fused confidence 0.99); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.00, P(BP)=1.00, P(FP)=0.00
+Most influential features (SHAP):
+- DetectorId_bp_max = 0.972 (incident feature): toward BP (SHAP +1.63)
+- AlertTitle_bp_mean = 0.972 (alert titles' historical BP rate): toward BP (SHAP +1.32)
+- AlertTitle_bp_max = 0.972 (incident feature): toward BP (SHAP +1.10)
+- DetectorId_bp_mean = 0.972 (detectors' historical BP rate): toward BP (SHAP +0.82)
+- first_dow = 7 (incident feature): toward BP (SHAP +0.25)
+Most similar past incidents:
+- train:141:82778: BP, distance 0.06
+- train:141:493982: BP, distance 0.06
+- train:141:117917: BP, distance 0.09
+- train:141:133617: BP, distance 0.14
+- train:141:41322: BP, distance 0.14
+LLM reasoning step: BP (high): The single CommandAndControl alert involves network indicators that historically correlate strongly with benign positive activity, reflected by an extremely high historical BP rate (0.972). Both the ML model (P(BP) = 1.00) and the top five nearest past incidents consistently classify this detector and pattern as benign positive. Furthermore, no kill-chain risk rules fired and no ATT&CK techniques were identified.
+```
+### Report
+```json
+{
+ "summary": "Incident test:141:75376 consists of a single CommandAndControl category alert generated by network indicators involving URL and IP entities. The triage system determined the alert to be a Benign Positive (BP) with fused confidence 0.99, indicating legitimate expected business traffic rather than malicious activity. The incident has been auto-triaged and closed with no further escalation needed.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1071.001",
+   "tactic": "command-and-control",
+   "alerts": [
+    "674254"
+   ]
+  }
+ ],
+ "furthest_stage": "command-and-control",
+ "evidence_chain": [
+  {
+   "finding": "Alert 674254 flagged network communication under CommandAndControl with 3 evidence rows involving URL and IP entities.",
+   "source": "alert 674254"
+  },
+  {
+   "finding": "The ML model evaluated the event with P(BP)=1.00, driven strongly by high detector and alert title historical BP rates (DetectorId_bp_max = 0.972, SHAP +1.63).",
+   "source": "ML model"
+  },
+  {
+   "finding": "Past similar incidents train:141:82778 (distance 0.06) and train:141:493982 (distance 0.06) were both confirmed as Benign Positives.",
+   "source": "similar incident train:141:82778"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Verify and monitor outbound web traffic filters and approved destination lists against benign application destinations.",
+   "priority": "immediate",
+   "source": "ATT&CK v20.1 M1037"
+  },
+  {
+   "action": "Ensure network intrusion prevention systems maintain up-to-date signature baselines to distinguish expected operational traffic from anomalous C2 activity.",
+   "priority": "short-term",
+   "source": "ATT&CK v20.1 M1031"
+  },
+  {
+   "action": "Tune detection thresholds or apply an alert suppression rule for this specific detector and benign URL/IP combination to minimize operational noise.",
+   "priority": "long-term",
+   "source": ""
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (confidence 0.99) and did not meet any criteria for manual escalation. Historical detector performance shows a 0.972 BP rate, top nearest past incidents are all BPs, and no kill-chain progression or risk rules were triggered.",
+ "limitations": "Entities such as URLs and IP addresses were anonymized, preventing specific external threat intelligence reputation verification or direct payload inspection."
+}
+```
+
+---
+## Report 100
+
+True label: TP
+
+### Evidence
+```
+Incident test:8:137611: 1 alerts, 5 evidence rows, time span 0.0 h.
+Alert categories: CommandAndControl x1.
+ATT&CK techniques: none recorded.
+Alerts (time order; source = AlertId):
+- +0 min [CommandAndControl] techniques: none; entities: Machine/Impacted, Process/Related, User/Impacted, Url/Related; suspicion: Suspicious; last verdict: Suspicious (source: alert 759718, 5 evidence rows)
+
+Agent decision: BP (fused confidence 0.52); status AUTO_TRIAGED.
+Escalation reasons: none.
+ML triage model: P(TP)=0.35, P(BP)=0.50, P(FP)=0.16
+Most influential features (SHAP):
+- AlertTitle_bp_mean = 0.747 (alert titles' historical BP rate): toward BP (SHAP +0.78)
+- AlertTitle_bp_max = 0.747 (incident feature): toward BP (SHAP +0.41)
+- DetectorId_bp_max = 0.747 (incident feature): against BP (SHAP -0.32)
+- ent_Ip = 0 (incident feature): against BP (SHAP -0.13)
+- n_ips = 0 (incident feature): toward BP (SHAP +0.10)
+Most similar past incidents:
+- train:173:19352: TP, distance 0.00
+- train:144:120603: BP, distance 0.00
+- train:40:272571: BP, distance 0.00
+- train:225:1677: TP, distance 0.00
+- train:34:331740: BP, distance 0.00
+LLM reasoning step: BP (medium): The single CommandAndControl alert involves suspicious process and URL activity, but historical title analysis demonstrates a strong tendency toward benign positives (AlertTitle_bp_mean = 0.747). The ML model predicts BP as the most probable outcome (P(BP) = 0.50), supported by the majority of identically matched historical incidents labeled BP. No kill-chain risk rules fired, indicating low progression risk consistent with sanctioned or benign operational traffic.
+```
+### Report
+```json
+{
+ "summary": "Incident test:8:137611 involves a single CommandAndControl alert (AlertId: 759718) flagging suspicious process and URL activity associated with an impacted machine and user. The triage decision is Benign Positive (BP) with a fused confidence of 0.52. This classification is primarily driven by strong historical patterns indicating that the specific alert title frequently correlates with benign operational activity.",
+ "attack_mapping": [
+  {
+   "technique_id": "T1071.001",
+   "tactic": "command-and-control",
+   "alerts": [
+    "759718"
+   ]
+  }
+ ],
+ "furthest_stage": "command-and-control",
+ "evidence_chain": [
+  {
+   "finding": "Suspicious process communication with an external URL flagged under CommandAndControl category.",
+   "source": "alert 759718"
+  },
+  {
+   "finding": "Statistical models show a strong historical tendency for this alert title to be benign (AlertTitle_bp_mean = 0.747, contributing SHAP +0.78 toward BP).",
+   "source": "ML model"
+  },
+  {
+   "finding": "ML classification predicts BP as the primary outcome with P(BP) = 0.50 compared to P(TP) = 0.35 and P(FP) = 0.16.",
+   "source": "ML model"
+  },
+  {
+   "finding": "Three out of five top-matching historical incidents (train:144:120603, train:40:272571, train:34:331740) were resolved as Benign Positive.",
+   "source": "similar incident train:144:120603"
+  }
+ ],
+ "recommendations": [
+  {
+   "action": "Inspect the destination URL and host process associated with alert 759718 to confirm legitimate business alignment and absence of malicious payloads.",
+   "priority": "immediate",
+   "source": "alert 759718"
+  },
+  {
+   "action": "Ensure egress web traffic filtering policies are enforced to restrict outbound HTTP/HTTPS connections from endpoints to unapproved domains.",
+   "priority": "short-term",
+   "source": "M1037"
+  },
+  {
+   "action": "Deploy and update network intrusion prevention signatures to monitor and block unauthorized outbound command-and-control channels.",
+   "priority": "long-term",
+   "source": "M1031"
+  }
+ ],
+ "escalation_explanation": "The incident was auto-triaged as Benign Positive (BP) without manual escalation because the historical alert title heavily skews toward benign activity (AlertTitle_bp_mean = 0.747), ML probability favored BP (0.50), and no critical multi-stage kill-chain risk rules were triggered.",
+ "limitations": "Specific process binaries, command-line arguments, hostnames, and destination URLs were anonymized in the telemetry, preventing immediate manual verification of the business software involved."
+}
+```

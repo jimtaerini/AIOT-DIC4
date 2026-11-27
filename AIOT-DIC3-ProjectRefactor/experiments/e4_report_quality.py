@@ -68,13 +68,13 @@ class Mapping(BaseModel):
 
 class Finding(BaseModel):
     finding: str
-    source: str = Field(description="e.g. 'alert 12345', 'ML model', 'similar incident ...', 'ATT&CK v20.1 T1566'")
+    source: str = Field(description="e.g. 'alert 12345', 'ML model', 'similar incident ...', or a knowledge-base ID")
 
 
 class Recommendation(BaseModel):
     action: str
     priority: Literal["immediate", "short-term", "long-term"]
-    source: str = Field(description="Where the action comes from, e.g. 'ATT&CK v20.1 M1017'; empty if none")
+    source: str = Field(description="Where the action comes from (a knowledge-base ID if one was given); empty if none")
 
 
 class Report(BaseModel):
@@ -246,8 +246,8 @@ for m in ["correctness", "evidence_completeness", "actionability", "unsupported_
     out["paired_diff_rag_minus_no_rag"][m] = {"mean": round(float(diff.mean()), 3),
                                                "ci95": [round(float(np.percentile(boots, 2.5)), 3),
                                                         round(float(np.percentile(boots, 97.5)), 3)],
-                                               "rag_better": int((diff > 0).sum()), "tie": int((diff == 0).sum()),
-                                               "rag_worse": int((diff < 0).sum())}
+                                               "rag_higher": int((diff > 0).sum()), "tie": int((diff == 0).sum()),
+                                               "rag_lower": int((diff < 0).sum())}
 
 # ---------------- blind sheet for human scoring ----------------
 items = [(c["key"], cond) for c in ctx for cond in ["no_rag", "rag"] if (cond, args.model, c["key"]) in writer.cache]

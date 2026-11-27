@@ -1,0 +1,88 @@
+[   20s] context ready for 50 incidents
+[   98s] 10/50 incidents
+[  170s] 20/50 incidents
+[  170s] 30/50 incidents
+[  189s] 40/50 incidents
+[  217s] 50/50 incidents
+{
+ "model": "gemini-3.8-flash",
+ "judge": "gemini-4-hydrogen",
+ "attack_version": "20.1",
+ "n_incidents": 50,
+ "decision_correct": 0.64,
+ "conditions": {
+  "no_rag": {
+   "correctness": 3.52,
+   "evidence_completeness": 4.46,
+   "actionability": 4.16,
+   "unsupported_claims": 0.54,
+   "alert_citation_valid": 1.0,
+   "technique_id_valid": 0.82,
+   "mitigation_ids": 0.0,
+   "mitigation_id_valid": 0.0,
+   "mapping_recall": 1.0,
+   "rec_with_source": 0.455,
+   "writer_tokens_in": 698.66,
+   "writer_tokens_out": 699.04,
+   "writer_latency_s": 9.4238
+  },
+  "rag": {
+   "correctness": 3.5,
+   "evidence_completeness": 4.56,
+   "actionability": 3.76,
+   "unsupported_claims": 0.9,
+   "alert_citation_valid": 1.0,
+   "technique_id_valid": 0.86,
+   "mitigation_ids": 2.7,
+   "mitigation_id_valid": 1.0,
+   "mapping_recall": 0.9375,
+   "rec_with_source": 0.9093,
+   "writer_tokens_in": 1678.78,
+   "writer_tokens_out": 726.3,
+   "writer_latency_s": 7.7452
+  }
+ },
+ "paired_diff_rag_minus_no_rag": {
+  "correctness": {
+   "mean": -0.02,
+   "ci95": [
+    -0.12,
+    0.08
+   ],
+   "rag_higher": 3,
+   "tie": 43,
+   "rag_lower": 4
+  },
+  "evidence_completeness": {
+   "mean": 0.1,
+   "ci95": [
+    -0.06,
+    0.26
+   ],
+   "rag_higher": 10,
+   "tie": 35,
+   "rag_lower": 5
+  },
+  "actionability": {
+   "mean": -0.4,
+   "ci95": [
+    -0.66,
+    -0.16
+   ],
+   "rag_higher": 7,
+   "tie": 19,
+   "rag_lower": 24
+  },
+  "unsupported_claims": {
+   "mean": 0.36,
+   "ci95": [
+    0.18,
+    0.56
+   ],
+   "rag_higher": 15,
+   "tie": 34,
+   "rag_lower": 1
+  }
+ },
+ "seconds": 217
+}

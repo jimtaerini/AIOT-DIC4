@@ -438,6 +438,41 @@ python experiments/e0_profile_guide.py data/archive/GUIDE_Train.csv > experiment
 
 結果檔：`experiments/results/e1g_agent_eval.json`、`e1g_val_grid.csv`、`e1f_llm_cache.jsonl`。
 
+### E2 ATT&CK 對應（2026-11-27）
+
+- 知識庫：ATT&CK Enterprise v20.1 STIX（706 個技術、44 個緩解措施），`gemini-embedding-001` 向量 + cosine 檢索；GUIDE 標籤正規化到 v20.1（revoked 對應到取代者，deprecated 與 ICS 的 T08xx 刪除）。
+- 樣本：測試集有標註的告警，每個 Category 最多 20 個（365 個、19 類，seed 303）。LLM 看不到標籤、告警標題、DetectorId。
+
+| 方法 | Technique F1 | Parent F1 | Tactic F1 |
+|---|---|---|---|
+| Category prior（train） | 0.409 | 0.458 | 0.711 |
+| Detector lookup（train） | 0.930 | 0.941 | 0.973 |
+| LLM only | 0.307 | 0.371 | 0.705 |
+| LLM + RAG（K=10） | 0.248 | 0.342 | 0.654 |
+
+發現：GUIDE 的技術幾乎是 detector 的固定屬性（每個 detector 1.13 組）；檢索前 10 名只有 52% 含正確技術，而 RAG 有 94% 只從清單中選 → 檢索沒命中時 F1 掉到 0.029（LLM only 0.178）；命中時兩者相近（0.430 vs 0.415）。兩者都沒有產生不存在的技術 ID。結論：瓶頸是檢索召回率，檢索結果不應限制 LLM 的答案。
+
+### E4 報告品質（2026-11-27）
+
+- 50 個事件（取自 E1 的 150 個測試事件，seed 404），報告撰寫 `gemini-3.8-flash`，評分 `gemini-4-hydrogen`（不同模型、不知道條件），看得到證據與真實標籤。
+- RAG 條件：事件的 ATT&CK 技術（沒有時取最相似的 5 個）與對應的緩解措施，附來源 ID。
+
+| 指標 | 無 RAG | RAG |
+|---|---|---|
+| Correctness | 3.52 | 3.50 |
+| Evidence completeness | 4.46 | 4.56 |
+| Actionability | 4.16 | 3.76（−0.40，CI −0.66~−0.16） |
+| Unsupported claims | 0.54 | 0.90（+0.36，CI 0.18~0.56） |
+| 建議附來源 | 46% | 91% |
+| 緩解措施 ID（有效率） | 0 | 2.7（100%） |
+
+發現：正確性取決於決策本身（決策對的報告約 4.5、錯的約 1.7）；RAG 讓建議可追溯，但通用的緩解措施取代了針對事件的處置（被判為 BP/FP 的 37 個事件 actionability 4.22 → 3.73），沒有記錄技術的事件也被引導出無根據的對應。人工評分表已產生（`e4_human_review.md`、`e4_human_scores.csv`），待填。
+
+### E5 成本（2026-11-27）
+
+- Agent 每個事件的 LLM 成本：推理 1 次 + RAG 報告 1 次 = 0.005 美元（2027 起 0.010 美元），12.6 秒；付費層沒有任何重試。
+- E1、E2、E4 全部 1,368 次呼叫（含評分）共 2.06 美元。ReAct 工具呼叫次數待 E3。
+
 ## 14. Limitations & Risks
 
 | 風險 | 影響 | 對策 |
@@ -463,3 +498,4 @@ python experiments/e0_profile_guide.py data/archive/GUIDE_Train.csv > experiment
 | v0.8 | 2026-11-03 | R3 改為不要求先後順序（GUIDE 時間戳記有雜訊） |
 | v0.9 | 2026-11-26 | §5 待確認項目完成；GBDT 改用 scikit-learn 直方圖 GBDT；§13 加入 E1 非 LLM 結果、SHAP 與相似事件、R1–R5 與信心升級；決定 R1 不修改、作為發現報告 |
 | v1.0 | 2026-11-27 | §13 加入 LLM 基準與 Agent 融合結果（gemini-3.8-flash，150 個測試事件）；e1f 支援平行呼叫（付費層） |
+| v1.1 | 2026-11-27 | §13 加入 E2（ATT&CK v20.1 知識庫與對應）、E4（報告品質，LLM judge）、E5（成本） |

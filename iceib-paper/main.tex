@@ -700,7 +700,7 @@ E1 Triage & GUIDE & Baselines (i)--(iv) & Macro-F1, P/R, MR, ER \\
 E2 ATT\&CK & GUIDE (annotated) & LLM vs.\ LLM+RAG & Technique/tactic P, R \\
 E3 Investigation & ExCyTIn-Bench & Published scores; single-turn LLM & Benchmark reward \\
 E4 Report & 50 sampled incidents & Without RAG & Rubric scores \\
-E5 Cost & E1, E3 & -- & Tokens, latency, tool calls \\
+E5 Cost & E1--E4 & -- & Tokens, latency, tool calls \\
 Ablation & GUIDE & Remove \textcircled{5}, \textcircled{6}, or escalation rules & As E1 \\
 \bottomrule
 \end{tabular}
@@ -862,8 +862,64 @@ LLM alone (F1 0.430 vs.\ 0.415); where it missed, it collapsed (0.029
 vs.\ 0.178). Neither setting produced an ID that does not exist in
 ATT\&CK v20.1. Retrieval, not the LLM, is thus the bottleneck, and on
 anonymized alerts retrieved candidates must not restrict the answer.
-\TBD{} Report E3 reward, E4 rubric scores, E5 cost, and the ablation,
-using values from \texttt{experiments/results/} only.
+
+% [A2Z:U]
+% Values: experiments/results/e4_report_quality.json, e4_scores.csv (writer gemini-3.8-flash, judge gemini-4-hydrogen)
+For E4 the agent wrote reports for 50 of the 150 E1 test incidents,
+with and without the retrieved ATT\&CK technique texts and their linked
+mitigations; when an incident records no technique (34 of 50), the
+five most similar techniques are retrieved. A different model, Gemini
+4 Hydrogen, graded each report blind to the condition, given the
+evidence and the true label (Table~\ref{tab:e4}). Correctness follows
+the decision, not the retrieval: reports that explain one of the 32
+correct decisions score about 4.5, those that explain a wrong one about
+1.7, and the paired RAG difference is $-0.02$. Retrieval makes reports
+traceable, with 91\% instead of 46\% of recommendations citing a
+source and 2.7 mitigation IDs per report, all valid in ATT\&CK v20.1.
+However, the judge rated RAG reports less actionable ($-0.40$, 95\% CI
+$-0.66$ to $-0.16$) and found more unsupported claims ($+0.36$ per
+report, CI 0.18--0.56). Generic mitigations of the retrieved
+techniques displaced incident-specific steps: for the 37 incidents the
+agent labeled benign or false, actionability fell from 4.22 to 3.73,
+as the judge asked for detector tuning rather than hardening. Where no
+technique was recorded, the retrieved ones also invited unsupported
+mappings (1.12 vs.\ 0.74 unsupported claims). Human scoring of the same
+100 reports, prepared as a blind sheet, is pending.
+
+% [A2Z:U]
+% Values: experiments/results/e5_cost.json (Gemini list prices checked 2026-11-27)
+In E5, the agent's LLM steps per incident, one reasoning call (754
+input and 132 output tokens) and one RAG report (1{,}679 and 726),
+cost US\$0.005 at Gemini 3.8 Flash prices until December 2026
+(US\$0.010 from January 2027) and take 12.6~s; the GBDT, SHAP, and
+retrieval steps add little. No paid call needed a retry, and all
+1{,}368 calls of E1, E2, and E4, including the judge, cost US\$2.06.
+The planner's tool calls are measured in E3.
+\TBD{} Report E3 reward and the ablation, using values from
+\texttt{experiments/results/} only.
+
+\begin{table}[t]
+% [A2Z:U]
+% Values: experiments/results/e4_report_quality.json (50 incidents, means per report)
+\caption{Report Quality on 50 Incidents (Judge Scores 1--5)}
+\label{tab:e4}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Measure} & \textbf{Without RAG} & \textbf{With RAG} \\
+\midrule
+Correctness               & 3.52 & 3.50 \\
+Evidence completeness     & 4.46 & 4.56 \\
+Actionability             & 4.16 & 3.76 \\
+Unsupported claims        & 0.54 & 0.90 \\
+Recommendations with source & 46\% & 91\% \\
+Mitigation IDs (valid)    & 0.0 (--) & 2.7 (100\%) \\
+Prompt tokens             & 699 & 1{,}679 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \begin{table}[t]
 % [A2Z:U]
@@ -977,8 +1033,16 @@ but its disagreement with the ML is a cheap and informative escalation
 signal: at ER 8.0\% the agent misses fewer TPs than the GBDT does at
 ER 17.3\%, which supports condition C2. The agent still misses seven
 TP incidents on which the GBDT and the LLM agree on the same benign or
-false label; only a higher $\tau$ catches them. \TBD{} Report which module the
-ablation shows matters most.
+false label; only a higher $\tau$ catches them.
+
+% [A2Z:V]
+E2 and E4 verify the knowledge module only in part. Retrieved
+knowledge makes most recommendations traceable to valid mitigation
+IDs, but on anonymized alerts it narrowed the mapping and diluted the
+advice. Retrieval should therefore enrich rather than
+restrict the LLM's answer, and remediation retrieval should depend on
+the decision, since containment steps fit TP incidents, not benign or
+false ones. \TBD{} Report which module the ablation shows matters most.
 
 % [A2Z:V]
 Several threats qualify these results. GUIDE is anonymized and comes
@@ -986,8 +1050,9 @@ from one vendor ecosystem, which limits LLM semantic reasoning and
 generalization; ExCyTIn-Bench and organization-held-out splits
 partially address this. LLMs may hallucinate mappings or actions;
 retrieval with citations, cross-checking with the ML output, and
-escalation on conflict reduce but do not remove this risk. Rubric
-scores in E4 are partly subjective. Finally, an adversary may delete
+escalation on conflict reduce but do not remove this risk. E4 relies
+on an LLM judge until the human scores are in, and its rubric is
+partly subjective. Finally, an adversary may delete
 logs to induce early closure; R4 and condition C3 treat such gaps as
 signals rather than as evidence of benignity.
 
@@ -1020,7 +1085,9 @@ disagreements lower MR from 27.0\% to 18.9\% while escalating 8.0\% of
 a 150-incident sample, at about 750 prompt tokens per incident.
 In ATT\&CK mapping, retrieval was the bottleneck: the retrieved
 techniques missed the true one for 48\% of alerts, and the LLM rarely
-looked beyond them. \TBD{} Add the investigation and report-quality results.
+looked beyond them. In reports, retrieval made recommendations
+traceable but less tailored, and the agent's LLM steps cost about
+US\$0.005 per incident. \TBD{} Add the investigation results.
 
 % [A2Z:Z]
 In conclusion, turning SOC domain principles into checkable decision

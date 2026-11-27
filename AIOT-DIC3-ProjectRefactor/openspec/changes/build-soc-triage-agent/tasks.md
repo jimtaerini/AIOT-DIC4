@@ -25,8 +25,8 @@
 
 ## 4. 領域知識（W2–W3）
 
-- [ ] 4.1 鎖定 ATT&CK STIX 版本，切塊存入 Chroma，驗證：以技術 ID 查詢可取回描述、偵測與緩解
-- [ ] 4.2 實作 ATT&CK 對應與攻擊鏈階段推估，驗證：E2 在有 `MitreTechniques` 的告警上產生 Technique / Tactic Precision、Recall
+- [x] 4.1 鎖定 ATT&CK STIX 版本（v20.1），切塊存入向量索引（改用 Gemini embedding + numpy，未使用 Chroma），驗證：以技術 ID 查詢可取回描述、偵測與緩解
+- [x] 4.2 實作 ATT&CK 對應與攻擊鏈階段推估，驗證：E2 在有 `MitreTechniques` 的告警上產生 Technique / Tactic Precision、Recall
 - [x] 4.3 實作高風險規則 R1–R5，驗證：單元測試涵蓋每條規則，且 R3 不要求先後順序
 - [ ] 4.4 依 NIST SP 800-61 Rev. 3 與 D3FEND 整理處置 playbook，驗證：帳號遭盜用情境產生停用帳號、保留證據等建議
 
@@ -45,9 +45,9 @@
 ## 7. 實驗與交付（W5–W6）
 
 - [ ] 7.1 完成 E1（含純 LLM baseline）並繪製漏判率–升級率曲線，驗證：結果含曲線圖與多次執行的平均、標準差
-- [ ] 7.2 完成 E5 成本統計，驗證：報告每事件 token、延遲、工具呼叫次數
+- [ ] 7.2 完成 E5 成本統計，驗證：報告每事件 token、延遲、工具呼叫次數（token 與延遲已完成；工具呼叫次數待 E3）
 - [ ] 7.3 建置 ExCyTIn-Bench 並完成 E3（第 5 週無法運作則改用 BOTS v3），驗證：產生 benchmark reward
-- [ ] 7.4 抽樣 50 個事件完成 E4 報告品質評分，驗證：評分表含正確性、證據完整性、可執行性
+- [ ] 7.4 抽樣 50 個事件完成 E4 報告品質評分（LLM judge 已完成；人工評分待填 `e4_human_scores.csv`），驗證：評分表含正確性、證據完整性、可執行性
 - [ ] 7.5 完成消融實驗（移除 ⑤、⑥、升級規則），驗證：結果以 E1 指標呈現
 - [ ] 7.6 建置 Streamlit Dashboard，驗證：可顯示事件佇列、報告與 SHAP 圖
 - [ ] 7.7 更新 README、DESIGN.md 的 How to Run 與 Results，驗證：新成員照 README 可重跑 E1
