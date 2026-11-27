@@ -45,13 +45,15 @@ my_ref/
 4. **D. Development（證據融合與升級）**
    * ReAct LLM Planner + 規則式證據足夠性 `IsSufficient(E)`（C1–C3）＋ 工具預算 B。
    * GBDT（scikit-learn 直方圖 GBDT，LightGBM 同類）三類機率 + SHAP + k 個相似事件。
-   * ATT&CK STIX 2.1 RAG（Chroma）＋ NIST SP 800-61 Rev. 3 / D3FEND playbook ＋ 高風險規則 R1–R5。
+   * ATT&CK Enterprise v20.1 RAG（`gemini-embedding-001` + cosine）＋ ATT&CK 緩解措施（依 NIST SP 800-61 Rev. 3 撰寫建議）＋ 高風險規則 R1–R5。
    * Evidence Fusion：`s = w_ml·p + w_llm·q`；信心不足、ML 與 LLM 衝突、高風險或證據不足即升級。
-5. **E. Experiments（GUIDE + ExCyTIn-Bench）**
-   * Microsoft GUIDE（實測 707,108 起事件、5,769 個組織）與 ExCyTIn-Bench；E1–E5 + 消融。
+5. **E. Experiments（GUIDE）**
+   * Microsoft GUIDE（實測 707,108 起事件、5,769 個組織）；E1–E4 + 消融（ExCyTIn-Bench 列為未來工作）。
    * 比較：多數類別、Detector 歷史誤報率規則、純 GBDT、純 LLM（無知識庫）。
-6. **F. Findings（尚未實驗）**
-   * **尚無實驗結果**。論文中所有結果一律標示 `[TBD]`，只能以 `AIOT-DIC3-ProjectRefactor/experiments/results/` 的結果檔填入。
+6. **F. Findings（實測，來源 `AIOT-DIC3-ProjectRefactor/experiments/results/`）**
+   * 303k 個 GUIDE 測試事件：GBDT Macro-F1 **0.780**；信心升級（τ = 0.50）MR **25.5% → 18.0%**、ER **12.0%**。
+   * 150 個事件樣本：純 LLM 把 **98%** 判為 TP（F1 0.127）；Agent 只在 ML 與 LLM 分歧時升級，MR **27.0% → 18.9%**、ER **8.0%**。
+   * E2 ATT&CK 對應、E3 報告品質、E4 成本、消融：見根目錄 README 的實驗結果摘要。
 
 ---
 
@@ -101,18 +103,17 @@ my_ref/
 
 **GUIDE 論文規模**：約 1,300 萬筆證據、160 萬筆告警、100 萬起事件、6.1k 個組織、441 種技術。
 
-**ExCyTIn-Bench**：57 張 log 表、8 條攻擊鏈、7,542 題。
+**ExCyTIn-Bench**：57 張 log 表、8 條攻擊鏈、7,542 題（只在 Related Work 引用；調查實驗未做）。
 
 | 實驗 | 內容 | 指標 |
 |---|---|---|
 | E1 | 分級 vs. 四個 baseline | Macro-F1、P/R、TP 漏判率、人工升級率 |
 | E2 | ATT&CK 對應：LLM vs. LLM + RAG | Technique／Tactic P、R |
-| E3 | ExCyTIn 調查推理 | Benchmark reward |
-| E4 | 報告品質（50 個事件） | 評分表 |
-| E5 | 成本 | token、延遲、工具呼叫數 |
+| E3 | 報告品質（50 個事件）：有 vs. 無 RAG | 評分表（LLM judge；人工待填） |
+| E4 | 成本 | token、延遲 |
 | Ablation | 移除 ⑤、⑥ 或升級規則 | 同 E1 |
 
-**誠實原則**：未執行的實驗一律標 `[TBD]`；不得填入預期或推測的數字。LLM 實驗花費上限約 550 美元。
+**誠實原則**：未執行的實驗一律標 `[TBD]`；不得填入預期或推測的數字。實際 LLM 花費：E1–E3 共 1,368 次呼叫約 2.06 美元，加上消融約 0.35 美元。
 
 ---
 

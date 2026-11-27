@@ -12,7 +12,7 @@
 |---|---|
 | [docs/project-core.md](docs/project-core.md) | 一頁整理：Abstract A–F、5 個核心思維（M1–M5）、3 個取捨（T1–T3）、10 個深度問題 |
 | [docs/proposal.md](docs/proposal.md) | 完整 Proposal；Introduction 依 A2Z G–L、Related Work 依 M–O 重構 |
-| [DESIGN.md](DESIGN.md) | 系統設計文件（v0.8），已轉換為下方的 OpenSpec 變更 |
+| [DESIGN.md](DESIGN.md) | 系統設計文件（v1.2），§13 為所有實驗結果；已轉換為下方的 OpenSpec 變更 |
 
 ## OpenSpec 工作流程（Spec-Driven Development）
 
@@ -73,8 +73,10 @@ openspec archive build-soc-triage-agent             # 任務完成後封存並�
 7. Decision/Recommendation
 8. Output & Interaction
 
-## 實驗規劃
+## 實驗與結果
 
-- **資料集**：Microsoft GUIDE、ExCyTIn-Bench
+- **資料集**：Microsoft GUIDE（ExCyTIn-Bench 調查實驗已決定不做，列為未來工作）
 - **基線**：多數類別、歷史誤報率規則、純 GBDT、純 LLM
-- **評估指標**：Macro-F1、TP 漏判率、人工升級率
+- **評估指標**：Macro-F1、TP 漏判率 MR、人工升級率 ER；ATT&CK 對應 P/R/F1；報告品質評分；成本
+- **程式**：[`experiments/`](experiments/)（e0–e5、消融 `e1h_ablation.py`），結果在 [`experiments/results/`](experiments/results/)，摘要見 [DESIGN.md](DESIGN.md) §13 與上一層的 [README](../README.md)
+- **LLM**：`gemini-3.8-flash`（評分用 `gemini-4-hydrogen`），API key 只從環境變數 `GEMINI_API_KEY` 讀取，不寫入任何檔案
