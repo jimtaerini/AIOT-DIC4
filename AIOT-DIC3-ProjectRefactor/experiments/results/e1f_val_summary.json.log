@@ -1,0 +1,45 @@
+[   20s] context ready for 50 val incidents
+[   36s] 10/50 incidents
+[   52s] 20/50 incidents
+[   65s] 30/50 incidents
+[   79s] 40/50 incidents
+[  117s] 50/50 incidents
+{
+ "split": "val",
+ "model": "gemini-3.8-flash",
+ "n_requested": 50,
+ "incidents_done": 50,
+ "seconds": 117,
+ "llm_only": {
+  "n": 50,
+  "parse_errors": 0,
+  "accuracy": 0.18,
+  "gbdt_accuracy_same_incidents": 0.86,
+  "tp_recall": 1.0,
+  "mean_tokens_in": 392,
+  "mean_tokens_out": 80,
+  "mean_tokens_thinking": 16,
+  "mean_latency_s": 6.65,
+  "confidence_counts": {
+   "medium": 21,
+   "low": 19,
+   "high": 10
+  }
+ },
+ "agent": {
+  "n": 50,
+  "parse_errors": 0,
+  "accuracy": 0.84,
+  "gbdt_accuracy_same_incidents": 0.86,
+  "tp_recall": 0.875,
+  "mean_tokens_in": 776,
+  "mean_tokens_out": 104,
+  "mean_tokens_thinking": 31,
+  "mean_latency_s": 4.8,
+  "confidence_counts": {
+   "high": 30,
+   "medium": 13,
+   "low": 7
+  }
+ }
+}

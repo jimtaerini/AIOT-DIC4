@@ -414,6 +414,30 @@ python experiments/e0_profile_guide.py data/archive/GUIDE_Train.csv > experiment
 - R2 是唯一明顯富含 TP 的規則（52%），但極少觸發。
 - **決定（2026-11-26）**：R1–R5 維持不變，以便與設計一致比較；把「類別式攻擊鏈規則在 GUIDE 上精確度低」寫進論文 IV-F 與 V（限制與未來工作：每條規則先以環境標籤校準，才允許強制升級）。若日後要修改規則，需先建立 OpenSpec change。
 
+### LLM 基準與 Agent 融合（E1f/E1g，2026-11-27）
+
+- 模型：`gemini-3.8-flash`（付費層，temperature 0、low thinking、JSON schema 輸出）；400 次呼叫、0 次解析錯誤；Agent 平均 754 輸入 / 104 輸出 token、4.9 秒。
+- 樣本：驗證 50 個（seed 101）調參，測試 150 個（seed 202；37 TP / 73 BP / 40 FP）只報告一次。其他方法在同一批 150 個事件上重新計分。
+- Agent 尚未接 ATT&CK 檢索（without RAG）；LLM 看到證據摘要、GBDT 機率、SHAP 前 5、5 個相似事件、觸發的規則。
+- 驗證集選出：w_ml = 0.9、τ = 0（只在 ML–LLM 衝突時升級）、規則不強制升級。
+
+| 方法（150 個測試事件） | Macro-F1 | TP recall | MR | ER |
+|---|---|---|---|---|
+| GBDT only | 0.739 | 0.730 | 0.270 | – |
+| GBDT + 信心升級（τ = 0.50） | 0.739 | 0.730 | 0.162 | 0.173 |
+| LLM only | 0.127 | 0.946 | 0.054 | – |
+| Agent 中 LLM 自己的標籤 | 0.735 | 0.730 | 0.270 | – |
+| **Agent（融合 + 衝突升級）** | 0.734 | 0.730 | 0.189 | 0.080 |
+
+發現：
+1. 純 LLM 把 147/150 判為 TP、0 個 BP（匿名化證據 + assume breach 指示），無法單獨分級。
+2. 有 ML 資訊時 LLM 幾乎跟隨 GBDT（138/150 一致；12 個分歧中 LLM 對 3、GBDT 對 4）。
+3. LLM 的價值在於「分歧」是便宜的升級訊號：ER 8.0% 就把 MR 從 27.0% 降到 18.9%；GBDT 信心升級需 ER 17.3% 才到 MR 16.2%。提高 τ 後 Agent 曲線與 GBDT 相當或略好。
+4. 95% bootstrap 區間重疊（Agent MR 6.9–32.4%，GBDT 12.8–41.7%），37 個 TP 下只能說是趨勢，不顯著。
+5. 仍漏掉 7 個 GBDT 與 LLM 都給同一個非 TP 標籤的 TP 事件。
+
+結果檔：`experiments/results/e1g_agent_eval.json`、`e1g_val_grid.csv`、`e1f_llm_cache.jsonl`。
+
 ## 14. Limitations & Risks
 
 | 風險 | 影響 | 對策 |
@@ -438,3 +462,4 @@ python experiments/e0_profile_guide.py data/archive/GUIDE_Train.csv > experiment
 | v0.7 | 2026-11-03 | 列出高風險攻擊鏈規則 R1–R5；說明 `IsSufficient` 第 3 項在 GUIDE 上的檢查方式 |
 | v0.8 | 2026-11-03 | R3 改為不要求先後順序（GUIDE 時間戳記有雜訊） |
 | v0.9 | 2026-11-26 | §5 待確認項目完成；GBDT 改用 scikit-learn 直方圖 GBDT；§13 加入 E1 非 LLM 結果、SHAP 與相似事件、R1–R5 與信心升級；決定 R1 不修改、作為發現報告 |
+| v1.0 | 2026-11-27 | §13 加入 LLM 基準與 Agent 融合結果（gemini-3.8-flash，150 個測試事件）；e1f 支援平行呼叫（付費層） |

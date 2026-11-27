@@ -87,13 +87,13 @@ and LLM Reasoning}
 % =====================================================================
 \begin{abstract}
 % [A2Z:A]
-Security operations centers (SOCs) face a growing flood of alerts, and
-the speed of triage directly determines the cost of a breach.
+Security operations centers (SOCs) face a flood of alerts, and triage
+speed determines the cost of a breach.
 % [A2Z:B]
 However, machine-learning (ML) triage models say little about where an
 alert sits in an attack chain, large language model (LLM) agents miss
-many attacks and close cases too early when evidence is missing, and
-automation makes analysts complacent.
+many attacks and close cases too early on missing evidence, and
+automation breeds analyst complacency.
 % [A2Z:C]
 To address these challenges, we propose the AI SOC Analyst Agent, which
 classifies incidents as true positive, benign positive, or false
@@ -107,19 +107,20 @@ and an evidence-fusion algorithm that escalates on low confidence,
 model conflict, high-risk kill-chain patterns, or insufficient
 evidence.
 % [A2Z:E]
-To evaluate the scheme, we design experiments on Microsoft GUIDE,
-with 707{,}108 analyst-labeled training incidents from 5{,}769
-organizations, and on ExCyTIn-Bench, comparing against majority-class,
-detector-rule, ML-only, and LLM-only baselines under leakage-free
-incident, organization, and time splits.
+We evaluate it on Microsoft GUIDE (707{,}108 analyst-labeled training
+incidents from 5{,}769 organizations) and ExCyTIn-Bench against
+majority-class, detector-rule, ML-only, and LLM-only baselines under
+leakage-free splits.
 % [A2Z:F]
-% Interim F for the abstract submission (no experimental numbers yet).
-% Replace with measured results from Section IV before the full paper.
+% Values: experiments/results/e1_results.json, e1e_rules_escalation.json, e1g_agent_eval.json
 We prove that raising the confidence threshold never increases the
-true-positive miss rate and that every incident matching a late-stage
-kill-chain rule reaches an analyst, and the evaluation reports the miss
-rate jointly with the escalation rate so that a SOC can choose its
-operating point explicitly.
+true-positive miss rate (MR) and that every incident matching a
+late-stage kill-chain rule reaches an analyst. On 303k GUIDE test
+incidents, the classifier reaches a macro-F1 of 0.780, and confidence
+escalation lowers MR from 25.5\% to 18.0\% at 12.0\% escalation. On a
+150-incident sample, an LLM alone labels 98\% of incidents as true
+positives, whereas the agent lowers MR from 27.0\% to 18.9\% by
+escalating only the 8.0\% on which the classifier and the LLM disagree.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -757,14 +758,26 @@ training incidents held out for validation. We also report
 organization-held-out and time-ordered splits. The agent is implemented
 in Python with pandas and DuckDB, scikit-learn's histogram GBDT and SHAP,
 mitreattack-python and Chroma, a tool-using LLM API, and a Streamlit
-dashboard; all scripts fix random seeds.
+dashboard; all scripts fix random seeds. The LLM is Gemini 3.8 Flash
+(temperature 0, low thinking effort, JSON output against a fixed
+schema). Because each LLM judgment is a paid API call, the LLM methods
+are evaluated on random samples of 50 validation and 150 test
+incidents (natural class mix, fixed seeds), and every other method is
+re-scored on the same 150 incidents. In this E1 run the agent sees the
+evidence summary, the GBDT probabilities, the five largest SHAP
+contributions, the five most similar training incidents with their
+labels, and the rules that fired; ATT\&CK retrieval is evaluated
+separately in E2.
 
 \subsection{Parameter Tuning}
 % [A2Z:T]
-All parameters are tuned on the validation split only. We search
-$w_{ml}\in\{0.5,0.6,0.7,0.8\}$, $\tau_{safety}\in\{0.2,0.3,0.4\}$, the
-tool budget $B\in\{5,10,15\}$, the R5 tactic threshold in $\{3,4,5\}$,
-and the LLM confidence mapping around $\{0.5,0.7,0.9\}$. The threshold
+All parameters are tuned on validation data only. For the agent in
+E1 we search $w_{ml}\in\{0,0.1,\dots,1\}$, $\tau\in\{0\}\cup\{0.50,0.55,\dots,0.95\}$
+($\tau=0$ escalates on conflicts and rules only), and whether all of
+R1--R5, only R2--R5, or no rule forces escalation, with
+$\tau_{safety}=0.3$ and the LLM confidence mapping
+$\{0.5,0.7,0.9\}$ fixed; the tool budget $B\in\{5,10,15\}$ is tuned
+for E3. The threshold
 $\tau$ is swept over $[0.50,0.95]$ in steps of 0.05; by
 Proposition~\ref{prop:mono} this traces a monotone
 $\mathrm{MR}$--$\mathrm{ER}$ curve, and we select the lowest-MR point
@@ -800,6 +813,28 @@ validation incidents, but only 7.0\% of them are TP (base rate
 and false alerts; R2 is TP-enriched (52\%) but fires on only 0.03\%.
 Adding R1--R5 therefore raises ER by 13--15 points at every $\tau$
 while lowering MR by at most 0.3 points.
+
+% [A2Z:U]
+% Values: experiments/results/e1g_agent_eval.json (gemini-3.8-flash; 150 test incidents: 37 TP, 73 BP, 40 FP)
+The lower block of Table~\ref{tab:e1} compares the LLM methods with the
+GBDT on the same 150 test incidents. The LLM alone labels 147 of the
+150 incidents as TP and none as BP, so its TP recall is high (0.946) but
+its macro-F1 is only 0.127: without labels or base rates, anonymized
+evidence and the instruction to assume breach push every incident
+toward TP. Given the ML outputs and similar cases, the LLM's own label
+agrees with the GBDT on 138 of 150 incidents (macro-F1 0.735); on the 12
+disagreements it is right three times and the GBDT four times. The
+selected agent ($w_{ml}=0.9$, $\tau=0$, no rule escalation) therefore
+keeps the GBDT's labels (macro-F1 0.734 vs.\ 0.739) and uses the
+disagreement only to escalate: MR falls from 27.0\% to 18.9\% at ER
+8.0\%, whereas confidence escalation of the GBDT needs ER 17.3\% to
+reach MR 16.2\%. When $\tau$ is raised, the agent's MR--ER curve
+(Fig.~\ref{fig:mr-er}) stays at or slightly below that of the GBDT,
+for example MR 5.4\% at ER 32.7\% versus 34.7\%. All 95\% bootstrap
+intervals overlap (agent MR 6.9--32.4\%, GBDT 12.8--41.7\%), so with 37
+TP incidents the gain is suggestive rather than significant. The
+agent's prompts average 754 input and 104 output tokens, and a call
+takes 4.9~s.
 \TBD{} Report E2 precision and recall, E3 reward, E4 rubric scores,
 E5 cost, and the ablation, using values from \texttt{experiments/results/} only.
 
@@ -823,19 +858,26 @@ E5 cost, and the ablation, using values from \texttt{experiments/results/} only.
 \addlegendentry{Detector FP-rate rule}
 \addplot[only marks, mark=o, mark size=3pt, red, thick] coordinates {(12.0,18.0)};
 \addlegendentry{Selected on validation ($\tau=0.50$)}
+% experiments/results/e1g_agent_eval.json, test_agent_curve (150-incident sample, w_ml = 0.9, no rules)
+\addplot[thick, green!50!black, mark=diamond*, mark size=1.5pt] coordinates
+  {(8.0,18.9) (16.7,16.2) (22.0,13.5) (32.7,5.4) (38.0,5.4) (42.0,5.4) (46.7,5.4) (49.3,2.7) (53.3,2.7) (58.7,2.7) (69.3,0.0)};
+\addlegendentry{Agent, LLM fusion (150-incident sample)}
 \end{axis}
 \end{tikzpicture}
 \caption{TP miss rate versus escalation rate on the GUIDE test set
 (incident split) as the confidence threshold $\tau$ rises from 0.50 to
-0.95, without an LLM. As Proposition~\ref{prop:mono} predicts, raising
-$\tau$ increases ER and never increases MR. \TBD{} Add the curve of the
-full agent with LLM fusion.}
+0.95. Blue and orange curves use all 303k test incidents without an
+LLM; the green curve is the agent on the 150-incident sample, whose
+left-most point ($\tau=0$) escalates only on ML--LLM conflict. As
+Proposition~\ref{prop:mono} predicts, raising $\tau$ increases ER and
+never increases MR.}
 \label{fig:mr-er}
 \end{figure}
 
 \begin{table}[t]
 % [A2Z:U]
-\caption{Triage Results on GUIDE (Incident Split)}
+\caption{Triage Results on GUIDE (Incident Split). MR Counts Only TP
+Incidents That Are Not Escalated}
 \label{tab:e1}
 \centering
 \footnotesize
@@ -851,8 +893,13 @@ Detector FP-rate rule & 0.675 & 0.421 & 0.579 & -- \\
 GBDT only             & 0.780 & 0.747 & 0.253 & -- \\
 % experiments/results/e1e_rules_escalation.json (seed 0; tau chosen on validation, ER <= 20%; TP recall = 1 - MR)
 GBDT + escalation ($\tau{=}0.50$) & -- & 0.820 & 0.180 & 0.120 \\
-LLM only (no KB)      & \TBD & \TBD & \TBD & -- \\
-\textbf{Proposed agent} & \TBD & \TBD & \TBD & \TBD \\
+\midrule
+\multicolumn{5}{@{}l}{\textit{Random 150-incident test sample (37 TP, 73 BP, 40 FP)}} \\
+% experiments/results/e1g_agent_eval.json (gemini-3.8-flash; agent: w_ml = 0.9, tau = 0, chosen on 50 val incidents)
+GBDT only             & 0.739 & 0.730 & 0.270 & -- \\
+GBDT + escalation ($\tau{=}0.50$) & 0.739 & 0.730 & 0.162 & 0.173 \\
+LLM only (no KB)      & 0.127 & 0.946 & 0.054 & -- \\
+\textbf{Proposed agent} & 0.734 & 0.730 & 0.189 & 0.080 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -875,9 +922,16 @@ finding: kill-chain rules should be validated against each
 environment's labels before they are allowed to force escalation.
 
 % [A2Z:V]
-\TBD{} State whether the agent lowers MR relative to GBDT-only and
-LLM-only at the selected ER, which module the ablation shows matters
-most, and on which incidents it still fails.
+The LLM results verify the reason for fusion rather than a gain in
+accuracy. Alone, the LLM is safe but useless: it misses few TPs only
+because it calls almost everything TP, and an analyst would have to
+review every incident. Inside the agent it adds little to the labels,
+but its disagreement with the ML is a cheap and informative escalation
+signal: at ER 8.0\% the agent misses fewer TPs than the GBDT does at
+ER 17.3\%, which supports condition C2. The agent still misses seven
+TP incidents on which the GBDT and the LLM agree on the same benign or
+false label; only a higher $\tau$ catches them. \TBD{} Report which module the
+ablation shows matters most.
 
 % [A2Z:V]
 Several threats qualify these results. GUIDE is anonymized and comes
@@ -911,8 +965,13 @@ threshold controls the workload--safety trade-off
 (Proposition~\ref{prop:mono}).
 
 % [A2Z:Y]
-\TBD{} Summarize the measured MR, ER, macro-F1, ATT\&CK mapping, and
-cost results reported in Section~\ref{sec:exp}.
+On Microsoft GUIDE, the classifier reaches a macro-F1 of 0.780 and
+confidence escalation cuts the TP miss rate from 25.5\% to 18.0\% at
+12.0\% escalation. An LLM alone is not a usable triage model on
+anonymized evidence (macro-F1 0.127), but fused with the classifier its
+disagreements lower MR from 27.0\% to 18.9\% while escalating 8.0\% of
+a 150-incident sample, at about 750 prompt tokens per incident.
+\TBD{} Add the ATT\&CK mapping and investigation results.
 
 % [A2Z:Z]
 In conclusion, turning SOC domain principles into checkable decision

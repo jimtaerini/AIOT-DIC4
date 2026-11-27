@@ -1,0 +1,55 @@
+[   20s] context ready for 150 test incidents
+[   37s] 10/150 incidents
+[   51s] 20/150 incidents
+[   77s] 30/150 incidents
+[   89s] 40/150 incidents
+[   92s] 50/150 incidents
+[  103s] 60/150 incidents
+[  115s] 70/150 incidents
+[  159s] 80/150 incidents
+[  159s] 90/150 incidents
+[  159s] 100/150 incidents
+[  171s] 110/150 incidents
+[  182s] 120/150 incidents
+[  196s] 130/150 incidents
+[  207s] 140/150 incidents
+[  221s] 150/150 incidents
+{
+ "split": "test",
+ "model": "gemini-3.8-flash",
+ "n_requested": 150,
+ "incidents_done": 150,
+ "seconds": 221,
+ "llm_only": {
+  "n": 150,
+  "parse_errors": 0,
+  "accuracy": 0.2333,
+  "gbdt_accuracy_same_incidents": 0.7533,
+  "tp_recall": 0.9459,
+  "mean_tokens_in": 359,
+  "mean_tokens_out": 81,
+  "mean_tokens_thinking": 42,
+  "mean_latency_s": 5.21,
+  "confidence_counts": {
+   "medium": 68,
+   "low": 67,
+   "high": 15
+  }
+ },
+ "agent": {
+  "n": 150,
+  "parse_errors": 0,
+  "accuracy": 0.7467,
+  "gbdt_accuracy_same_incidents": 0.7533,
+  "tp_recall": 0.7297,
+  "mean_tokens_in": 746,
+  "mean_tokens_out": 104,
+  "mean_tokens_thinking": 26,
+  "mean_latency_s": 4.91,
+  "confidence_counts": {
+   "high": 92,
+   "medium": 46,
+   "low": 12
+  }
+ }
+}

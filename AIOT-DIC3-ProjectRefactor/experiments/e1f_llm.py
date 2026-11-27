@@ -15,6 +15,7 @@ Usage (run from AIOT-DIC3-ProjectRefactor/, after e1d):
 """
 import argparse
 import json
+from concurrent.futures import ThreadPoolExecutor
 import sys
 import time
 from pathlib import Path
@@ -37,7 +38,8 @@ ap.add_argument("--split", choices=["val", "test"], required=True)
 ap.add_argument("--n", type=int, required=True)
 ap.add_argument("--modes", default="llm_only,agent")
 ap.add_argument("--model", default="gemini-4-hydrogen")
-ap.add_argument("--interval", type=float, default=4.0, help="seconds between calls (free-tier rate limit)")
+ap.add_argument("--interval", type=float, default=4.0, help="seconds between call starts (free-tier rate limit)")
+ap.add_argument("--workers", type=int, default=1, help="parallel calls (paid tier)")
 args = ap.parse_args()
 t0 = time.time()
 CACHE = "experiments/results/e1f_llm_cache.jsonl"
@@ -62,22 +64,30 @@ rows = load_alert_rows(keys)
 print(f"[{time.time() - t0:5.0f}s] context ready for {len(keys)} {args.split} incidents", flush=True)
 
 judge = GeminiJudge(model=args.model, min_interval_s=args.interval, cache_path=CACHE)
+modes = args.modes.split(",")
+
+
+def run_incident(i: int, key: str) -> None:
+    summary = summarize(key, rows)
+    a = rows[rows["kid"] == key]
+    techs = {t for s in a["techniques"].dropna() for t in s.split(";") if t}
+    rules = fired_rules(RuleInput.from_categories(set(a["category"]), techs))
+    for mode in modes:
+        prompt = llm_only_prompt(summary) if mode == "llm_only" else \
+            agent_prompt(summary, p[i], tops[i], sims[i], rules, RULE_DESCRIPTIONS)
+        judge.judge(mode, key, SYSTEM, prompt)
+
+
 done = 0
 try:
-    for i, key in enumerate(keys):
-        summary = summarize(key, rows)
-        a = rows[rows["kid"] == key]
-        techs = {t for s in a["techniques"].dropna() for t in s.split(";") if t}
-        rules = fired_rules(RuleInput.from_categories(set(a["category"]), techs))
-        for mode in args.modes.split(","):
-            prompt = llm_only_prompt(summary) if mode == "llm_only" else \
-                agent_prompt(summary, p[i], tops[i], sims[i], rules, RULE_DESCRIPTIONS)
-            judge.judge(mode, key, SYSTEM, prompt)
-        done += 1
-        if done % 10 == 0:
-            print(f"[{time.time() - t0:5.0f}s] {done}/{len(keys)} incidents", flush=True)
+    with ThreadPoolExecutor(max_workers=args.workers) as pool_ex:
+        for fut in [pool_ex.submit(run_incident, i, k) for i, k in enumerate(keys)]:
+            fut.result()
+            done += 1
+            if done % 10 == 0:
+                print(f"[{time.time() - t0:5.0f}s] {done}/{len(keys)} incidents", flush=True)
 except QuotaExhausted as e:
-    print(f"Free-tier quota exhausted after {done} incidents; rerun later to resume. {e}", flush=True)
+    print(f"Quota exhausted after {done} incidents; rerun later to resume. {e}", flush=True)
 except ModelUnavailable as e:
     print(f"Model overloaded (503) after {done} incidents; rerun later to resume. {e}", flush=True)
 
@@ -89,7 +99,7 @@ sample = pd.DataFrame({"incident": keys, "y": [["TP", "BP", "FP"][int(v)] for v 
 sample.to_csv(f"experiments/results/e1f_sample_{args.split}.csv", index=False)
 out = {"split": args.split, "model": args.model, "n_requested": len(keys), "incidents_done": done,
        "seconds": round(time.time() - t0)}
-for mode in args.modes.split(","):
+for mode in modes:
     r = recs[recs["mode"] == mode].merge(sample, on="incident")
     if r.empty:
         continue

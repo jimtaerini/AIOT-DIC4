@@ -1,0 +1,312 @@
+2026-11-26 20:44:34 val: 0/50 incidents done
+[   20s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-26 20:54:48 pausing 600s before resuming
+2026-11-26 21:04:48 val: 6/50 incidents done
+[   21s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-26 21:09:48 pausing 600s before resuming
+2026-11-26 21:19:48 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-26 21:24:46 pausing 600s before resuming
+2026-11-26 21:34:46 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-26 21:39:44 pausing 600s before resuming
+2026-11-26 21:49:44 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-26 21:54:42 pausing 600s before resuming
+2026-11-26 22:04:42 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-26 22:09:41 pausing 600s before resuming
+2026-11-26 22:19:41 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-26 22:24:39 pausing 600s before resuming
+2026-11-26 22:34:39 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-26 22:39:37 pausing 600s before resuming
+2026-11-26 22:49:37 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-26 22:54:35 pausing 600s before resuming
+2026-11-26 23:04:35 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-26 23:09:33 pausing 600s before resuming
+2026-11-26 23:19:33 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-26 23:24:31 pausing 600s before resuming
+2026-11-26 23:34:31 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-26 23:39:29 pausing 600s before resuming
+2026-11-26 23:49:29 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-26 23:54:27 pausing 600s before resuming
+2026-11-27 00:04:27 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 00:09:25 pausing 600s before resuming
+2026-11-27 00:19:25 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 00:24:23 pausing 600s before resuming
+2026-11-27 00:34:24 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 00:39:21 pausing 600s before resuming
+2026-11-27 00:49:21 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Model overloaded (503) after 6 incidents; rerun later to resume. 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}
+ "incidents_done": 6,
+2026-11-27 00:55:59 pausing 600s before resuming
+2026-11-27 01:05:59 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 01:10:57 pausing 600s before resuming
+2026-11-27 01:20:57 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 01:25:55 pausing 600s before resuming
+2026-11-27 01:35:55 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 01:40:53 pausing 600s before resuming
+2026-11-27 01:50:53 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 01:55:51 pausing 600s before resuming
+2026-11-27 02:05:51 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 02:10:49 pausing 600s before resuming
+2026-11-27 02:20:49 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 02:25:46 pausing 600s before resuming
+2026-11-27 02:35:46 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 02:40:44 pausing 600s before resuming
+2026-11-27 02:50:44 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 02:55:42 pausing 600s before resuming
+2026-11-27 03:05:42 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 03:10:40 pausing 600s before resuming
+2026-11-27 03:20:41 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 03:25:39 pausing 600s before resuming
+2026-11-27 03:35:39 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 03:40:36 pausing 600s before resuming
+2026-11-27 03:50:37 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 03:55:34 pausing 600s before resuming
+2026-11-27 04:05:34 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 04:10:32 pausing 600s before resuming
+2026-11-27 04:20:32 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 04:25:30 pausing 600s before resuming
+2026-11-27 04:35:30 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 04:40:28 pausing 600s before resuming
+2026-11-27 04:50:28 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 04:55:25 pausing 600s before resuming
+2026-11-27 05:05:25 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 05:10:23 pausing 600s before resuming
+2026-11-27 05:20:23 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 05:25:21 pausing 600s before resuming
+2026-11-27 05:35:21 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 05:40:19 pausing 600s before resuming
+2026-11-27 05:50:19 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 05:55:17 pausing 600s before resuming
+2026-11-27 06:05:17 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 06:10:15 pausing 600s before resuming
+2026-11-27 06:20:15 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 06:25:12 pausing 600s before resuming
+2026-11-27 06:35:12 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 06:40:10 pausing 600s before resuming
+2026-11-27 06:50:10 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 06:55:08 pausing 600s before resuming
+2026-11-27 07:05:08 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 07:10:06 pausing 600s before resuming
+2026-11-27 07:20:06 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 07:28:48 pausing 600s before resuming
+2026-11-27 07:38:48 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 07:43:46 pausing 600s before resuming
+2026-11-27 07:53:46 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 07:58:44 pausing 600s before resuming
+2026-11-27 08:08:44 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 08:13:42 pausing 600s before resuming
+2026-11-27 08:23:42 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 08:28:40 pausing 600s before resuming
+2026-11-27 08:38:40 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 08:43:38 pausing 600s before resuming
+2026-11-27 08:53:38 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 08:58:36 pausing 600s before resuming
+2026-11-27 09:08:37 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 09:13:35 pausing 600s before resuming
+2026-11-27 09:23:35 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 09:28:33 pausing 600s before resuming
+2026-11-27 09:38:33 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 09:43:31 pausing 600s before resuming
+2026-11-27 09:53:31 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 09:58:29 pausing 600s before resuming
+2026-11-27 10:08:29 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 10:13:27 pausing 600s before resuming
+2026-11-27 10:23:27 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 10:28:25 pausing 600s before resuming
+2026-11-27 10:38:25 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 10:43:23 pausing 600s before resuming
+2026-11-27 10:53:23 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 10:58:21 pausing 600s before resuming
+2026-11-27 11:08:21 val: 6/50 incidents done
+[   21s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 11:13:21 pausing 600s before resuming
+2026-11-27 11:23:21 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 11:28:19 pausing 600s before resuming
+2026-11-27 11:38:19 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 11:43:17 pausing 600s before resuming
+2026-11-27 11:53:17 val: 6/50 incidents done
+[   19s] context ready for 50 val incidents
+Free-tier quota exhausted after 6 incidents; rerun later to resume. 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Q
+ "incidents_done": 6,
+2026-11-27 11:58:15 pausing 600s before resuming
+2026-11-27 12:08:15 val: 6/50 incidents done
+[   20s] context ready for 50 val incidents
+Traceback (most recent call last):
+    errors.APIError.raise_for_response(response)
+    raise ClientError(status_code, response_json, response)
+google.genai.errors.ClientError: 402 RESOURCE_EXHAUSTED. {'error': {'code': 402, 'message': 'Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. ', 'status': 'RESOURCE_EXHAUSTED'}}
+2026-11-27 12:09:52 pausing 600s before resuming

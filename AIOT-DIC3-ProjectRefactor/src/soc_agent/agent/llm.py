@@ -3,11 +3,13 @@
 The API key is read from the GEMINI_API_KEY environment variable and is never
 written to disk or logs. Every call's tokens and latency are recorded (NFR4,
 E5). Results are appended to a JSONL cache keyed by (mode, model, incident),
-so an interrupted run resumes without spending quota twice.
+so an interrupted run resumes without spending quota twice. judge() is thread-safe,
+so callers may run several judgments in parallel (paid tier).
 """
 from __future__ import annotations
 
 import json
+import threading
 import time
 from pathlib import Path
 from typing import Literal
@@ -34,6 +36,7 @@ class GeminiJudge:
         self.min_interval_s = min_interval_s
         self.max_retries = max_retries
         self._last = 0.0
+        self._lock = threading.Lock()
         self.cache_path = Path(cache_path) if cache_path else None
         self.cache: dict[tuple, dict] = {}
         if self.cache_path and self.cache_path.exists():
@@ -53,10 +56,11 @@ class GeminiJudge:
             temperature=0.0,
         )
         for attempt in range(self.max_retries):
-            wait = self.min_interval_s - (time.time() - self._last)
-            if wait > 0:
-                time.sleep(wait)
-            self._last = time.time()
+            with self._lock:  # spaces call starts by min_interval_s across threads
+                start = max(time.time(), self._last + self.min_interval_s)
+                self._last = start
+            if start > time.time():
+                time.sleep(start - time.time())
             t = time.time()
             try:
                 r = self.client.models.generate_content(model=self.model, contents=prompt, config=config)
@@ -84,10 +88,11 @@ class GeminiJudge:
                        "confidence": None, "rationale": f"ERROR: {type(e).__name__}: {str(e)[:200]}",
                        "tokens_in": 0, "tokens_out": 0, "tokens_thinking": 0, "latency_s": 0,
                        "attempts": attempt + 1}
-        self.cache[key] = rec
-        if self.cache_path:
-            with self.cache_path.open("a") as f:
-                f.write(json.dumps(rec) + "\n")
+        with self._lock:
+            self.cache[key] = rec
+            if self.cache_path:
+                with self.cache_path.open("a") as f:
+                    f.write(json.dumps(rec) + "\n")
         return rec
 
 
